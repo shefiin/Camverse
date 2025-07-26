@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+</head>
+<body class="min-h-screen bg-cover bg-center flex items-center justify-center" style="background-image: url('/plain/img/reg.png'); font-family: 'Open Sans', sans-serif;">
+  <div class="bg-white p-10 rounded-lg shodow-lg w-full max-w-md">
+    <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: 'Michroma',sans-serif;">Camverse</h2>
+    <h1 class="text-3xl font-medium mb-6" style="font-family: 'Kanit',sans-serif;">Create New Account</h1>
+
+    <form action="/register" method="POST" class="space-y-4">
+
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+        <input 
+          type="text"
+          name="name"
+          id="name"
+          class="w-full px-4 py-2 font-extralight border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
+          <p id="nameError" class="text-xs font-extralight text-red-500 mt-1 hidden">Name must not contain numbers or special characters</p>
+      </div>
+
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Email</label>
+        <input 
+          type="email"
+          name="email"
+          id="email"
+          class="w-full px-4 py-2 font-extralight border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
+          <p id="emailError" class="text-xs font-extralight text-red-500 mt-1 hidden">Please enter a valid email address</p>
+      </div>
+
+      <div class="relative">
+        <label for="name" class="block text-sm font-medium text-gray-700">Password</label>
+        <input 
+          type="password"
+          name="password"
+          id="password"
+          pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,23}$"
+          class="w-full px-4 py-2 font-extralight border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
+          <span class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer toggle-password">
+            <i class="fa-solid fa-eye-slash"></i>
+          </span>
+          <p id="passwordError" class="text-xs font-extralight text-gray-400 mt-1">Mix of numbers and characters, 8-23 characters</p>
+      </div>
+
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-600">Confirm Password</label>  
+        <div class="relative">
+          <input 
+            type="password"
+            name="confirmPassword"
+            id="confirmPassword"
+            pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,23}$"
+            class="w-full px-4 py-2 font-extralight border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
+      
+          <span class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer toggle-password">
+            <i class="fa-solid fa-eye-slash"></i>
+          </span>
+        </div>
+      
+        <div id="confirmPasswordError" class="flex items-center gap-1 mt-1 hidden">
+          <i id="confirmPasswordIcon" class="fa-solid fa-circle-exclamation text-red-500"></i>
+          <p id="confirmPasswordMessage" class="text-xs font-extralight text-red-500">Passwords match</p>
+        </div>
+      </div>
+      
+
+    </form>
+
+    <button id="submitBtn" disabled class="w-full bg-gray-100 text-gray-300 px-4 py-2 mt-8 rounded-md cursor-not-allowed transition-colors">
+      SUBMIT
+    </button>
+
+    <p class="text-sm text-gray-600 font-extralight text-center mt-2">
+      Already have an account? 
+      <a href="/login" class="text-blue-600 font-semibold hover:underline">Login</a>
+    </p>
+
+  </div>
+
+  <script>
+
+    document.querySelectorAll('.toggle-password').forEach((eyeIcon) => {
+      eyeIcon.addEventListener('click', () => {
+        const input = eyeIcon.previousElementSibling;
+        const icon = eyeIcon.querySelector('i');
+  
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        } else {
+          input.type = 'password';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        }
+      });
+    });
+
+
+    const nameInput = document.getElementById('name');
+    const nameError = document.getElementById('nameError');
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const passwordInput = document.getElementById('password');
+    const passwordError = document.getElementById('passwordError');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const confirmPasswordError = document.getElementById('confirmPasswordError');
+    const confirmPasswordIcon = document.getElementById('confirmPasswordIcon');
+    const confirmPasswordMessage = document.getElementById('confirmPasswordMessage');
+    const requiredInputs = document.querySelectorAll('.requiredFields');
+    const submitBtn = document.getElementById('submitBtn');
+
+    nameInput.addEventListener('input', () => {
+      const nameValue = nameInput.value.trim();
+
+      const isValid = /^[A-Za-z\s]+$/.test(nameValue);
+
+      if(!isValid) {
+        nameInput.classList.remove('focus:ring-blue-400');
+        nameInput.classList.add('ring-2','focus:ring-red-400');
+        nameError.classList.remove('hidden');
+      } else {
+        nameInput.classList.remove('focus:ring-red-400', 'ring-2');
+        nameInput.classList.add('focus:ring-blue-400');
+        nameError.classList.add('hidden');
+      }
+    });
+
+
+    emailInput.addEventListener('blur', () => {
+      const emailValue = emailInput.value.trim();
+
+      const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+
+      if(!isValid) {
+        emailInput.classList.remove('focus:ring-blue-400');
+        emailInput.classList.add('ring-2', 'ring-red-400');
+        emailError.classList.remove('hidden');
+      }
+    });  
+
+    emailInput.addEventListener('click', () => {
+        emailInput.classList.remove('focus:ring-red-400', 'ring-2');
+        emailInput.classList.add('focus:ring-blue-400');
+        emailError.classList.add('hidden');
+    });
+
+
+    passwordInput.addEventListener('blur', () => {
+      const passwordValue = passwordInput.value.trim();
+      const isValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,23}$/.test(passwordValue);
+
+      if(!isValid) {
+        passwordInput.classList.remove('focus:ring-blue-400');
+        passwordInput.classList.add('ring-2', 'ring-red-400');
+        passwordError.classList.remove('text-gray-400');
+        passwordError.classList.add('text-red-500');
+      } 
+    });
+
+    passwordInput.addEventListener('click', () => {
+      passwordInput.classList.remove('focus:ring-red-400', 'ring-2');
+      passwordInput.classList.add('focus:ring-blue-400');
+      passwordError.classList.remove('text-red-500');
+      passwordError.classList.add('text-gray-400');
+    });
+
+
+    function validatePasswordMatch() {
+      const passwordValue = passwordInput.value.trim();
+      const confirmPasswordValue = confirmPasswordInput.value.trim();
+
+      if (confirmPasswordValue === '') {
+        confirmPasswordError.classList.add('hidden');
+      } else if (passwordValue === confirmPasswordValue) {
+        confirmPasswordError.classList.remove('hidden');
+        confirmPasswordIcon.classList.remove('fa-circle-exclamation', 'text-red-500');
+        confirmPasswordIcon.classList.add('fa-circle-check', 'text-green-500');
+        confirmPasswordMessage.classList.remove('text-red-500');
+        confirmPasswordMessage.classList.add('text-green-500');
+        confirmPasswordMessage.textContent = 'Passwords matches';
+      } else {
+        confirmPasswordError.classList.remove('hidden');
+        confirmPasswordIcon.classList.remove('fa-circle-check', 'text-green-500');
+        confirmPasswordIcon.classList.add('fa-circle-exclamation', 'text-red-500');
+        confirmPasswordMessage.classList.remove('text-green-500');
+        confirmPasswordMessage.classList.add('text-red-500');
+        confirmPasswordMessage.textContent = 'Passwords do not match';
+      }
+    }
+
+    
+    passwordInput.addEventListener('input', () => {
+      validatePasswordMatch();
+      validateForm(); 
+    });
+
+    confirmPasswordInput.addEventListener('input', () => {
+      validatePasswordMatch();
+      validateForm();
+    });
+
+
+    function isPasswordValid(password) {
+      const pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,23}$/;
+      return pattern.test(password);
+    }
+
+    function checkAllFieldsFilled() {
+      let allFilled = true;
+
+      requiredInputs.forEach(input => {
+        if (input.value.trim() === '' || !input.checkValidity()) {
+          allFilled = false;
+        }
+      });
+
+      
+      if (!isPasswordValid(passwordInput.value)) {
+        allFilled = false;
+      }
+
+      
+      if (passwordInput.value !== confirmPasswordInput.value) {
+        allFilled = false;
+      }
+
+      if (allFilled) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('bg-gray-100', 'text-gray-300', 'cursor-not-allowed');
+        submitBtn.classList.add('bg-gray-800', 'text-white', 'cursor-pointer');
+      } else {
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('bg-gray-800', 'text-white', 'cursor-pointer');
+        submitBtn.classList.add('bg-gray-100', 'text-gray-300', 'cursor-not-allowed');
+      }
+    }
+
+    requiredInputs.forEach(input => {
+      input.addEventListener('input', checkAllFieldsFilled);
+    });
+
+    passwordInput.addEventListener('input', checkAllFieldsFilled);
+    confirmPasswordInput.addEventListener('input', checkAllFieldsFilled);
+
+  </script> 
+</body>
+</html>

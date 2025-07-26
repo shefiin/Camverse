@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Product</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    /* Hamburger button animation */
+    .hamburger span {
+      transition: all 0.3s ease;
+    }
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+    /* Sidebar slide animation for mobile/tablet */
+    .sidebar {
+      transition: transform 0.3s ease;
+    }
+    .overlay {
+      transition: opacity 0.3s ease;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .overlay.active {
+        opacity: 0.5;
+        pointer-events: auto;
+      }
+    }
+    /* Michroma font for brand name */
+    .brand-name {
+      font-family: 'Michroma', sans-serif;
+    }
+    /* Image preview styling */
+    .image-preview img {
+      max-width: 64px;
+      max-height: 64px;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar w-64 bg-gray-900 text-white flex flex-col fixed inset-y-0 z-50 md:static md:translate-x-0">
+      <nav class="flex-1 flex flex-col">
+        <ul class="space-y-2 p-4">
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 bg-gray-700 rounded"><i class="fas fa-box"></i><span>Products</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-shopping-cart"></i><span>Orders</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-users"></i><span>Users</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-th"></i><span>Category</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-tag"></i><span>Brands</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-percentage"></i><span>Offers</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-image"></i><span>Banner</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-ticket-alt"></i><span>Coupons</span></a></li>
+        </ul>
+        <ul class="mt-auto p-4">
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-red-500 rounded"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+      </nav>
+    </aside>
+    <!-- Overlay for mobile/tablet -->
+    <div id="overlay" class="overlay fixed inset-0 bg-black opacity-0 pointer-events-none z-40 md:hidden"></div>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Navbar -->
+      <nav class="bg-white shadow p-4 flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+          <button id="hamburger" class="hamburger md:hidden flex flex-col justify-center items-center w-10 h-10 space-y-1.5">
+            <span class="w-8 h-1 bg-gray-800 rounded"></span>
+            <span class="w-8 h-1 bg-gray-800 rounded"></span>
+            <span class="w-8 h-1 bg-gray-800 rounded"></span>
+          </button>
+          <h1 class="text-xl font-semibold brand-name">Camverse</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span>Welcome, Admin</span>
+          <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
+        </div>
+      </nav>
+      <!-- Content -->
+      <main class="p-6 flex-1 overflow-auto">
+        <h2 class="text-2xl font-bold mb-4">Add Product</h2>
+        <!-- Add Product Form -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <form id="add-product-form" class="space-y-4">
+            <div>
+              <label for="images" class="block text-sm font-medium text-gray-700">Images</label>
+              <input type="file" id="images" name="images" accept="image/*" multiple class="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <div id="image-preview" class="image-preview flex flex-wrap gap-2 mt-2"></div>
+            </div>
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+              <input type="text" id="name" name="name" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+              <textarea id="description" name="description" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4"></textarea>
+            </div>
+            <div>
+              <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>
+              <select id="brand" name="brand" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="" disabled selected>Select a brand</option>
+                <option value="Canon">Canon</option>
+                <option value="Sony">Sony</option>
+                <option value="Nikon">Nikon</option>
+                <option value="GoPro">GoPro</option>
+                <option value="Panasonic">Panasonic</option>
+                <option value="Fujifilm">Fujifilm</option>
+                <option value="Polaroid">Polaroid</option>
+              </select>
+            </div>
+            <div>
+              <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+              <select id="category" name="category" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="" disabled selected>Select a category</option>
+                <option value="DSLR">DSLR</option>
+                <option value="Mirrorless">Mirrorless</option>
+                <option value="Action">Action</option>
+                <option value="Point and Shoot">Point and Shoot</option>
+                <option value="Compact">Compact</option>
+                <option value="Bridge">Bridge</option>
+                <option value="Instant">Instant</option>
+              </select>
+            </div>
+            <div>
+              <label for="price" class="block text-sm font-medium text-gray-700">Price (₹)</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₹</span>
+                <input type="number" id="price" name="price" required min="0" step="0.01" class="mt-1 block w-full pl-8 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+            </div>
+            <div>
+              <label for="stock" class="block text-sm font-medium text-gray-700">Stock Count</label>
+              <input type="number" id="stock" name="stock" required min="0" class="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Featured</label>
+              <div class="mt-1 flex space-x-4">
+                <label class="flex items-center">
+                  <input type="radio" name="featured" value="Yes" class="mr-2 focus:ring-blue-500">
+                  Yes
+                </label>
+                <label class="flex items-center">
+                  <input type="radio" name="featured" value="No" checked class="mr-2 focus:ring-blue-500">
+                  No
+                </label>
+              </div>
+            </div>
+            <div>
+              <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Product</button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const form = document.getElementById('add-product-form');
+    const imageInput = document.getElementById('images');
+    const imagePreview = document.getElementById('image-preview');
+    let selectedImages = [];
+
+    function toggleSidebar() {
+      hamburger.classList.toggle('active');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+
+    hamburger.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', toggleSidebar);
+
+    imageInput.addEventListener('change', () => {
+      imagePreview.innerHTML = '';
+      selectedImages = Array.from(imageInput.files);
+      selectedImages.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const div = document.createElement('div');
+          div.className = 'relative';
+          div.innerHTML = `
+            <img src="${e.target.result}" alt="Preview" class="w-16 h-16 object-cover rounded">
+            <button type="button" class="absolute top-0 right-0 text-red-500 hover:text-red-700" data-index="${index}">
+              <i class="fas fa-trash"></i>
+            </button>
+          `;
+          imagePreview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    imagePreview.addEventListener('click', (e) => {
+      if (e.target.closest('button')) {
+        const index = parseInt(e.target.closest('button').dataset.index);
+        selectedImages.splice(index, 1);
+        const dt = new DataTransfer();
+        selectedImages.forEach(file => dt.items.add(file));
+        imageInput.files = dt.files;
+        imageInput.dispatchEvent(new Event('change'));
+      }
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const product = {
+        images: selectedImages.map(file => file.name),
+        name: formData.get('name'),
+        description: formData.get('description'),
+        brand: formData.get('brand'),
+        category: formData.get('category'),
+        price: parseFloat(formData.get('price')).toFixed(2),
+        stock: parseInt(formData.get('stock')),
+        featured: formData.get('featured'),
+        lastUpdated: new Date().toISOString().split('T')[0]
+      };
+      console.log('New Product:', product);
+      alert('Product added (logged to console).');
+      form.reset();
+      imagePreview.innerHTML = '';
+      selectedImages = [];
+    });
+  </script>
+</body>
+</html>

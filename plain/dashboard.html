@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* Hamburger button animation */
+    .hamburger span {
+      transition: all 0.3s ease;
+    }
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+    /* Sidebar slide animation for mobile/tablet */
+    .sidebar {
+      transition: transform 0.3s ease;
+    }
+    .overlay {
+      transition: opacity 0.3s ease;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .overlay.active {
+        opacity: 0.5;
+        pointer-events: auto;
+      }
+    }
+    /* Michroma font for brand name */
+    .brand-name {
+      font-family: 'Michroma', sans-serif;
+    }
+    /* Hide rows initially, show only for current page */
+    .product-row {
+      display: none;
+    }
+    .product-row.active {
+      display: table-row;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar w-64 bg-gray-900 text-white flex flex-col fixed inset-y-0 z-50 md:static md:translate-x-0">
+      <nav class="flex-1 flex flex-col">
+        <ul class="space-y-2 p-4">
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-box"></i><span>Products</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-shopping-cart"></i><span>Orders</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-users"></i><span>Users</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-th"></i><span>Category</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-tag"></i><span>Brands</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-percentage"></i><span>Offers</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-image"></i><span>Banner</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-ticket-alt"></i><span>Coupons</span></a></li>
+        </ul>
+        <ul class="mt-auto p-4">
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-red-500 rounded"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+      </nav>
+    </aside>
+    <!-- Overlay for mobile/tablet -->
+    <div id="overlay" class="overlay fixed inset-0 bg-black opacity-0 pointer-events-none z-40 md:hidden"></div>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Navbar -->
+      <nav class="bg-white shadow p-4 flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+          <button id="hamburger" class="hamburger md:hidden flex flex-col justify-center items-center w-10 h-10 space-y-1.5">
+            <span class="w-8 h-1 bg-gray-800 rounded"></span>
+            <span class="w-8 h-1 bg-gray-800 rounded"></span>
+            <span class="w-8 h-1 bg-gray-800 rounded"></span>
+          </button>
+          <h1 class="text-xl font-semibold brand-name">Camverse</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span>Welcome, Admin</span>
+          <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
+        </div>
+      </nav>
+      <!-- Content -->
+      <main class="p-6 flex-1 overflow-auto">
+        <h2 class="text-2xl font-bold mb-4">Admin Dashboard</h2>
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div class="bg-black text-white p-4 rounded-lg shadow">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-users text-xl text-blue-400"></i>
+              <h3 class="text-lg font-semibold">Total Users</h3>
+            </div>
+            <p class="text-2xl mt-2">1,234</p>
+          </div>
+          <div class="bg-black text-white p-4 rounded-lg shadow">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-box-open text-xl text-green-400"></i>
+              <h3 class="text-lg font-semibold">Items Sold</h3>
+            </div>
+            <p class="text-2xl mt-2">2,567</p>
+          </div>
+          <div class="bg-black text-white p-4 rounded-lg shadow">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-indian-rupee-sign text-xl text-yellow-400"></i>
+              <h3 class="text-lg font-semibold">Total Sales</h3>
+            </div>
+            <p class="text-2xl mt-2">₹56,789</p>
+          </div>
+          <div class="bg-black text-white p-4 rounded-lg shadow">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-clock text-xl text-orange-400"></i>
+              <h3 class="text-lg font-semibold">Pending Orders</h3>
+            </div>
+            <p class="text-2xl mt-2">89</p>
+          </div>
+        </div>
+        <!-- Top Sold Products Table -->
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-semibold">Top Sold Products</h3>
+          
+        </div>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <table id="products-table" class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="p-3 text-left">ID</th>
+                <th class="p-3 text-left">Image</th>
+                <th class="p-3 text-left">Name</th>
+                <th class="p-3 text-left">Brand</th>
+                <th class="p-3 text-left">Price</th>
+                <th class="p-3 text-left">Revenue</th>
+                <th class="p-3 text-left">QTY Sold</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="product-row" data-page="1">
+                <td class="p-3">1</td>
+                <td class="p-3">
+                  <img src="https://via.placeholder.com/50" alt="DSLR Camera" class="w-12 h-12 object-cover rounded">
+                </td>
+                <td class="p-3">DSLR Camera</td>
+                <td class="p-3">Canon</td>
+                <td class="p-3">₹45,000</td>
+                <td class="p-3">₹90,000</td>
+                <td class="p-3">2</td>
+              </tr>
+              <tr class="product-row" data-page="1">
+                <td class="p-3">2</td>
+                <td class="p-3">
+                  <img src="https://via.placeholder.com/50" alt="Mirrorless Camera" class="w-12 h-12 object-cover rounded">
+                </td>
+                <td class="p-3">Mirrorless Camera</td>
+                <td class="p-3">Sony</td>
+                <td class="p-3">₹65,000</td>
+                <td class="p-3">₹1,30,000</td>
+                <td class="p-3">2</td>
+              </tr>
+              <tr class="product-row" data-page="1">
+                <td class="p-3">3</td>
+                <td class="p-3">
+                  <img src="https://via.placeholder.com/50" alt="Action Cam" class="w-12 h-12 object-cover rounded">
+                </td>
+                <td class="p-3">Action Cam</td>
+                <td class="p-3">GoPro</td>
+                <td class="p-3">₹30,000</td>
+                <td class="p-3">₹60,000</td>
+                <td class="p-3">2</td>
+              </tr>
+              <tr class="product-row" data-page="1">
+                <td class="p-3">4</td>
+                <td class="p-3">
+                  <img src="https://via.placeholder.com/50" alt="Tripod" class="w-12 h-12 object-cover rounded">
+                </td>
+                <td class="p-3">Tripod</td>
+                <td class="p-3">Manfrotto</td>
+                <td class="p-3">₹10,000</td>
+                <td class="p-3">₹20,000</td>
+                <td class="p-3">2</td>
+              </tr>
+              <tr class="product-row" data-page="1">
+                <td class="p-3">5</td>
+                <td class="p-3">
+                  <img src="https://via.placeholder.com/50" alt="Lens Kit" class="w-12 h-12 object-cover rounded">
+                </td>
+                <td class="p-3">Lens Kit</td>
+                <td class="p-3">Nikon</td>
+                <td class="p-3">₹25,000</td>
+                <td class="p-3">₹50,000</td>
+                <td class="p-3">2</td>
+              </tr>
+              <tr class="product-row" data-page="2">
+                <td class="p-3">6</td>
+                <td class="p-3">
+                  <img src="https://via.placeholder.com/50" alt="Drone" class="w-12 h-12 object-cover rounded">
+                </td>
+                <td class="p-3">Drone</td>
+                <td class="p-3">DJI</td>
+                <td class="p-3">₹80,000</td>
+                <td class="p-3">₹1,60,000</td>
+                <td class="p-3">2</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination -->
+        <div class="flex justify-center mt-4">
+          <div id="pagination" class="flex space-x-2">
+            <button id="prev-btn" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50" disabled>Previous</button>
+            <div id="page-numbers" class="flex space-x-1">
+              <button class="px-3 py-1 rounded bg-blue-500 text-white" data-page="1">1</button>
+              <button class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300" data-page="2">2</button>
+            </div>
+            <button id="next-btn" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Next</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const pageNumbers = document.querySelectorAll('#page-numbers button');
+    const productRows = document.querySelectorAll('.product-row');
+
+    function toggleSidebar() {
+      hamburger.classList.toggle('active');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+
+    hamburger.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', toggleSidebar);
+
+    function showPage(page) {
+      productRows.forEach(row => {
+        row.classList.remove('active');
+        if (parseInt(row.dataset.page) === page) {
+          row.classList.add('active');
+        }
+      });
+      prevBtn.disabled = page === 1;
+      nextBtn.disabled = page === 2; // 2 pages since 6 items with 5 per page
+      pageNumbers.forEach(btn => {
+        btn.classList.remove('bg-blue-500', 'text-white');
+        btn.classList.add('bg-gray-200', 'hover:bg-gray-300');
+        if (parseInt(btn.dataset.page) === page) {
+          btn.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+          btn.classList.add('bg-blue-500', 'text-white');
+        }
+      });
+    }
+
+    pageNumbers.forEach(button => {
+      button.addEventListener('click', () => {
+        const page = parseInt(button.dataset.page);
+        showPage(page);
+      });
+    });
+
+    prevBtn.addEventListener('click', () => {
+      const currentPage = parseInt(document.querySelector('#page-numbers .bg-blue-500')?.dataset.page || 1);
+      if (currentPage > 1) {
+        showPage(currentPage - 1);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      const currentPage = parseInt(document.querySelector('#page-numbers .bg-blue-500')?.dataset.page || 1);
+      if (currentPage < 2) {
+        showPage(currentPage + 1);
+      }
+    });
+
+  
+    // Show first page on load
+    showPage(1);
+  </script>
+</body>
+</html>

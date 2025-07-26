@@ -1,0 +1,11 @@
+<% if (currentPage > 1) { %> 
+    <a href="?page=<%= currentPage - 1 %>" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Previous</a>
+  <% } %> 
+  
+  <% for (let i = 1; i <= totalPages; i++) { %>
+    <a href="?page=<%= i %>" class="px-3 py-1 rounded <%= i === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300' %>"><%= i %></a>
+  <% } %>
+
+  <% if (currentPage < totalPages) { %>
+    <a href="?page=<%= currentPage + 1 %>" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Next</a>
+  <% } %> 

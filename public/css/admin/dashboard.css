@@ -1,0 +1,11 @@
+    /* Michroma font for brand name */
+    .brand-name {
+        font-family: 'Michroma', sans-serif;
+      }
+      /* Hide rows initially, show only for current page */
+      .product-row {
+        display: none;
+      }
+      .product-row.active {
+        display: table-row;
+      }

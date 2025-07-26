@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    /* Hamburger button animation */
+    .hamburger span {
+      transition: all 0.3s ease;
+    }
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+    /* Sidebar slide animation for mobile/tablet */
+    .sidebar {
+      transition: transform 0.3s ease;
+    }
+    .overlay {
+      transition: opacity 0.3s ease;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .overlay.active {
+        opacity: 0.5;
+        pointer-events: auto;
+      }
+    }
+    /* Michroma font for brand name */
+    .brand-name {
+      font-family: 'Michroma', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar w-64 bg-gray-900 text-white flex flex-col fixed inset-y-0 z-50 md:static md:translate-x-0">
+      <nav class="flex-1 flex flex-col">
+        <ul class="space-y-2 p-4">
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-box"></i><span>Products</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-shopping-cart"></i><span>Orders</span></a></li>
+          <li><a href="users.html" class="flex items-center space-x-2 p-2 bg-gray-700 rounded"><i class="fas fa-users"></i><span>Users</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-th"></i><span>Category</span></a></li>
+          <li><a href="brand-management.html" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-tag"></i><span>Brands</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-percentage"></i><span>Offers</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-image"></i><span>Banner</span></a></li>
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-ticket-alt"></i><span>Coupons</span></a></li>
+        </ul>
+        <ul class="mt-auto p-4">
+          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-red-500 rounded logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+      </nav>
+    </aside>
+    <!-- Overlay for mobile/tablet -->
+    <div id="overlay" class="overlay fixed inset-0 bg-black opacity-0 pointer-events-none z-40 md:hidden"></div>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Navbar -->
+      <nav class="bg-white shadow p-4 flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+          <button id="hamburger" class="hamburger md:hidden flex flex-col justify-center items-center w-10 h-10 space-y-1.5">
+            <span class="w-8 h-1 bg-gray-800 rounded"></span>
+            <span class="w-8 h-1 bg-gray-800 rounded"></span>
+            <span class="w-8 h-1 bg-gray-800 rounded"></span>
+          </button>
+          <h1 class="text-xl font-semibold brand-name">Camverse</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span>Welcome, Admin</span>
+          <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 logout">Logout</button>
+        </div>
+      </nav>
+      <!-- Content -->
+      <main class="p-6 flex-1 overflow-auto">
+        <h2 class="text-2xl font-bold mb-4">Users</h2>
+        <div class="bg-white rounded-lg shadow p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-2">
+              <input type="text" id="search" placeholder="Search users..." class="w-full max-w-md border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <button id="clear-btn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Clear</button>
+            </div>
+            <button id="add-user-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+              Add User
+            </button>
+          </div>
+          <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table id="user-table" class="w-full">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="p-3 text-left">No.</th>
+                  <th class="p-3 text-left">Image</th>
+                  <th class="p-3 text-left">Username</th>
+                  <th class="p-3 text-left">Email</th>
+                  <th class="p-3 text-left">Address</th>
+                  <th class="p-3 text-left">Date of Creation</th>
+                  <th class="p-3 text-left">Action</th>
+                </tr>
+              </thead>
+              <tbody id="user-table-body">
+                <!-- Initial rows will be generated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination -->
+          <div class="flex justify-center mt-4">
+            <div id="pagination" class="flex space-x-2">
+              <button id="prev-btn" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50" disabled>Previous</button>
+              <div id="page-numbers" class="flex space-x-1"></div>
+              <button id="next-btn" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Next</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const searchInput = document.getElementById('search');
+    const clearBtn = document.getElementById('clear-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const pageNumbers = document.getElementById('page-numbers');
+    const userTableBody = document.getElementById('user-table-body');
+    const addUserBtn = document.getElementById('add-user-btn');
+
+    function toggleSidebar() {
+      hamburger.classList.toggle('active');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+
+    hamburger.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', toggleSidebar);
+
+    const logoutButtons = document.querySelectorAll('.logout');
+    logoutButtons.forEach(button => {
+      button.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const result = await Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to log out?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#ef4444',
+          cancelButtonColor: '#6b7280',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No'
+        });
+        if (result.isConfirmed) {
+          console.log('Logout confirmed');
+          Swal.fire({
+            title: 'Logged Out',
+            text: 'You have been logged out successfully!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+          });
+        }
+      });
+    });
+
+    // Simulated user data with new fields
+    const usersData = [
+      { id: 1, image: "https://via.placeholder.com/40", username: "johndoe", email: "john@example.com", address: "123 Main St, City", dateCreated: "2025-06-01", status: "Active" },
+      { id: 2, image: "https://via.placeholder.com/40", username: "janesmith", email: "jane@example.com", address: "456 Oak Ave, Town", dateCreated: "2025-06-02", status: "Active" },
+      { id: 3, image: "https://via.placeholder.com/40", username: "bobjohnson", email: "bob@example.com", address: "789 Pine Rd, Village", dateCreated: "2025-06-03", status: "Blocked" }
+    ];
+
+    let currentPage = 1;
+    const itemsPerPage = 5;
+    let filteredData = [...usersData];
+
+    function displayUsers(page) {
+      userTableBody.innerHTML = '';
+      const start = (page - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const paginatedData = filteredData.slice(start, end);
+
+      paginatedData.forEach(user => {
+        const row = document.createElement('tr');
+        row.className = 'border-t';
+        const buttonText = user.status === "Active" ? "Unblock" : "Block";
+        const buttonClass = user.status === "Active" ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600";
+        row.innerHTML = `
+          <td class="p-3">${user.id}</td>
+          <td class="p-3"><img src="${user.image}" alt="${user.username}" class="w-10 h-10 rounded-full"></td>
+          <td class="p-3">${user.username}</td>
+          <td class="p-3">${user.email}</td>
+          <td class="p-3">${user.address}</td>
+          <td class="p-3">${user.dateCreated}</td>
+          <td class="p-3">
+            <button class="w-24 toggle-status ${buttonClass} text-white px-2 py-1 rounded" data-id="${user.id}" data-status="${user.status}">${buttonText}</button>
+          </td>
+        `;
+        userTableBody.appendChild(row);
+      });
+
+      // Add event listeners to new toggle buttons
+      document.querySelectorAll('.toggle-status').forEach(button => {
+        button.addEventListener('click', toggleUserStatus);
+      });
+
+      updatePagination();
+    }
+
+    function updatePagination() {
+      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      prevBtn.disabled = currentPage === 1;
+      nextBtn.disabled = currentPage === totalPages;
+      pageNumbers.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.textContent = i;
+        pageBtn.className = `px-3 py-1 rounded ${i === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`;
+        pageBtn.addEventListener('click', () => {
+          currentPage = i;
+          displayUsers(currentPage);
+        });
+        pageNumbers.appendChild(pageBtn);
+      }
+    }
+
+    async function toggleUserStatus(e) {
+      const button = e.target;
+      const userId = parseInt(button.getAttribute('data-id'));
+      const currentStatus = button.getAttribute('data-status');
+      const newStatus = currentStatus === "Active" ? "Blocked" : "Active";
+      const newText = newStatus === "Active" ? "Unblock" : "Block";
+      const newClass = newStatus === "Active" ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600";
+
+      // Show confirmation dialog
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to ${newText.toLowerCase()} this user?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      });
+
+      if (result.isConfirmed) {
+        // Update the button and status in the DOM
+        button.textContent = newText;
+        button.setAttribute('data-status', newStatus);
+        button.className = `w-24 toggle-status ${newClass} text-white px-2 py-1 rounded`;
+        const row = button.closest('tr');
+        row.cells[5].textContent = newStatus; // Update the status column (index 5 due to new fields)
+
+        // Update the data array (for persistence in this session)
+        const userIndex = usersData.findIndex(user => user.id === userId);
+        if (userIndex !== -1) {
+          usersData[userIndex].status = newStatus;
+          filteredData = [...usersData]; // Refresh filtered data
+          currentPage = 1; // Reset to first page
+          displayUsers(currentPage);
+        }
+      }
+    }
+
+    // Add user button functionality (placeholder)
+    addUserBtn.addEventListener('click', () => {
+      Swal.fire({
+        title: 'Add User',
+        text: 'User addition functionality to be implemented.',
+        icon: 'info',
+        confirmButtonText: 'OK'
+      });
+    });
+
+    // Real-time search on input
+    searchInput.addEventListener('input', () => {
+      const searchTerm = searchInput.value.trim().toLowerCase();
+      filteredData = searchTerm ? usersData.filter(user => 
+        user.username.toLowerCase().includes(searchTerm) || 
+        user.email.toLowerCase().includes(searchTerm) || 
+        user.address.toLowerCase().includes(searchTerm)
+      ) : [...usersData];
+      currentPage = 1;
+      displayUsers(currentPage);
+    });
+
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      filteredData = [...usersData];
+      currentPage = 1;
+      displayUsers(currentPage);
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        displayUsers(currentPage);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentPage * itemsPerPage < filteredData.length) {
+        currentPage++;
+        displayUsers(currentPage);
+      }
+    });
+
+    displayUsers(currentPage);
+  </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="/css/admin/sidebar.css">
+  <link rel="stylesheet" href="/css/admin/dashboard.css">
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <%- include('./partials/sidebar') %>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Navbar -->
+      <%- include('./partials/navbar') %>
+      <!-- Content -->
+      <main class="p-6 flex-1 overflow-auto">
+        <h2 class="text-2xl font-bold mb-4">Admin Dashboard</h2>
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div class="bg-black text-white p-4 rounded-lg shadow">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-users text-xl text-blue-400"></i>
+              <h3 class="text-lg font-semibold">Total Users</h3>
+            </div>
+            <p class="text-2xl mt-2"><%= totalUsers %></p>
+          </div>
+          <div class="bg-black text-white p-4 rounded-lg shadow">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-box-open text-xl text-green-400"></i>
+              <h3 class="text-lg font-semibold">Items Sold</h3>
+            </div>
+            <p class="text-2xl mt-2"><%= productsSold %></p>
+          </div>
+          <div class="bg-black text-white p-4 rounded-lg shadow">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-indian-rupee-sign text-xl text-yellow-400"></i>
+              <h3 class="text-lg font-semibold">Total Sales</h3>
+            </div>
+            <p class="text-2xl mt-2">₹<%= totalSales.toLocaleString('en-IN') %></p>
+          </div>
+          <div class="bg-black text-white p-4 rounded-lg shadow">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-clock text-xl text-orange-400"></i>
+              <h3 class="text-lg font-semibold">Pending Orders</h3>
+            </div>
+            <p class="text-2xl mt-2"><%= pendingOrders %></p>
+          </div>
+        </div>
+        <!-- Top Sold Products Table -->
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-semibold">Top Sold Products</h3>
+        </div>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <table id="products-table" class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="p-3 text-left">ID</th>
+                <th class="p-3 text-left">Image</th>
+                <th class="p-3 text-left">Name</th>
+                <th class="p-3 text-left">Brand</th>
+                <th class="p-3 text-left">Price</th>
+                <th class="p-3 text-left">Revenue</th>
+                <th class="p-3 text-left">QTY Sold</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% topProductsWithRevenue.forEach((product, index) => { %> 
+                <tr class="product-row" data-page="1">
+                  <td class="p-3"><%= index + 1 %></td>
+                  <td class="p-3">
+                    <img src="<%= product.image %>" alt="<%= product.name %>" class="w-12 h-12 object-cover rounded">
+                  </td>
+                  <td class="p-3"><%= product.name %></td>
+                  <td class="p-3"><%= product.brand %></td>
+                  <td class="p-3">₹<%= product.price.toLocaleString('en-IN') %>.00</td>
+                  <td class="p-3">₹<%= product.revenue.toLocaleString('en-IN') %>.00</td>
+                  <td class="p-3"><%= product.sold %></td>
+                </tr>
+              <% }) %>  
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination -->
+        <div class="flex justify-center mt-4">
+          <div class="flex space-x-2">
+            <%- include('partials/pagination', { currentPage, totalPages }) %>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="/js/mobileSidebar.js"></script>
+</body>
+</html>

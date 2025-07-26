@@ -1,0 +1,32 @@
+    /* Hamburger button animation */
+    .hamburger span {
+        transition: all 0.3s ease;
+      }
+      .hamburger.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+      .hamburger.active span:nth-child(2) {
+        opacity: 0;
+      }
+      .hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+      }
+      /* Sidebar slide animation for mobile/tablet */
+      .sidebar {
+        transition: transform 0.3s ease;
+      }
+      .overlay {
+        transition: opacity 0.3s ease;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+        .sidebar.active {
+          transform: translateX(0);
+        }
+        .overlay.active {
+          opacity: 0.5;
+          pointer-events: auto;
+        }
+      }

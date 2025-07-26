@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="bg-white rounded-lg shadow p-8 w-full max-w-md space-y-6">
+      <div class="pt-4">
+        <h2 class="text-3xl font-bold text-center">Admin Login</h2>
+      </div>
+      <form id="login-form" class="space-y-6">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700"></label>
+          <input type="email" id="email" name="email" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter email">
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700"></label>
+          <input type="password" id="password" name="password" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter password">
+        </div>
+        <button type="submit" class="w-full bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded">Login</button>
+      </form>
+      <div class="h-8"></div> <!-- Matches the reduced bottom height -->
+    </div>
+  </div>
+  <script>
+    const form = document.getElementById('login-form');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!email || !password) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Please fill in all fields',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+
+      // Hardcoded admin credentials (replace with backend authentication)
+      const adminEmail = 'admin@camverse.com';
+      const adminPassword = 'admin123';
+
+      if (email === adminEmail && password === adminPassword) {
+        Swal.fire({
+          title: 'Success',
+          text: 'Login successful!',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          window.location.href = 'brand-management.html'; // Redirect to dashboard or preferred page
+        });
+      } else {
+        Swal.fire({
+          title: 'Error',
+          text: 'Invalid email or password',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'text-red-600'
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
