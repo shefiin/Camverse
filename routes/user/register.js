@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { renderRegisterPage, register } = require('../../controllers/user/registerController');
+const { renderRegisterPage, register } = require('../../controllers/user/authController');
 const { verifyOtp } = require('../../controllers/user/otpVerification');
-const ensureAuthenticated  = require('../../middlewares/user/auth');
+const { requiredLogin, redirectIfLoggedIn }  = require('../../middlewares/user/auth');
 
-router.get('/', renderRegisterPage); 
+router.get('/', redirectIfLoggedIn, renderRegisterPage); 
 
 router.post('/', register);
 
@@ -19,8 +19,10 @@ router.get('/verify-otp', (req, res) => {
 
 router.post('/verify-otp', verifyOtp);
 
-router.get('/register-success', ensureAuthenticated, (req, res) => {
-    res.render('user/register-success');
+router.get('/register-success', requiredLogin, (req, res) => {
+    res.render('user/register-success', {
+        user: req.session.user,
+    })
 });
 
 

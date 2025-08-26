@@ -1,317 +1,396 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orders</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= product.name %> - Product Details</title>
+  
+  <!-- Google Fonts: Michroma -->
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet" />
+  
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- FontAwesome CDN for icons (needed for your nav and footer icons) -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
   <style>
-    /* Hamburger button animation */
-    .hamburger span {
-      transition: all 0.3s ease;
-    }
-    .hamburger.active span:nth-child(1) {
-      transform: rotate(45deg) translate(5px, 5px);
-    }
-    .hamburger.active span:nth-child(2) {
-      opacity: 0;
-    }
-    .hamburger.active span:nth-child(3) {
-      transform: rotate(-45deg) translate(7px, -7px);
-    }
-    /* Sidebar slide animation for mobile/tablet */
-    .sidebar {
-      transition: transform 0.3s ease;
-    }
-    .overlay {
-      transition: opacity 0.3s ease;
-    }
-    @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      .sidebar.active {
-        transform: translateX(0);
-      }
-      .overlay.active {
-        opacity: 0.5;
-        pointer-events: auto;
-      }
-    }
-    /* Michroma font for brand name */
-    .brand-name {
+    body {
       font-family: 'Michroma', sans-serif;
-    }
-    /* Pagination button styles */
-    .pagination-btn.active {
-      background-color: #3b82f6;
-      color: white;
     }
   </style>
 </head>
-<body class="bg-gray-100 font-sans">
-  <div class="flex h-screen">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar w-64 bg-gray-900 text-white flex flex-col fixed inset-y-0 z-50 md:static md:translate-x-0">
-      <nav class="flex-1 flex flex-col">
-        <ul class="space-y-2 p-4">
-          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-box"></i><span>Products</span></a></li>
-          <li><a href="#" class="flex items-center space-x-2 p-2 bg-gray-700 rounded"><i class="fas fa-shopping-cart"></i><span>Orders</span></a></li>
-          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-users"></i><span>Users</span></a></li>
-          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-th"></i><span>Category</span></a></li>
-          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-tag"></i><span>Brands</span></a></li>
-          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-percentage"></i><span>Offers</span></a></li>
-          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-image"></i><span>Banner</span></a></li>
-          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><i class="fas fa-ticket-alt"></i><span>Coupons</span></a></li>
+<body class="bg-white text-gray-800">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white py-2 shadow-md fixed top-0 left-0 w-full z-50">
+    <div class="w-full px-12 py-4 flex items-center justify-between">
+        <h1 class="flex-1 text-xl tablet:text-2xl  font-bold text-gray-800" style="font-family: 'Michroma', sans-serif;">Camverse</h1>
+
+        <ul class="hidden tablet:flex space-x-8 text-sm font-medium text-gray-700">
+            <li><a href="" class="hover:underline">Home</a></li>
+            <li><a href="/shop" class="hover:underline">Shop</a></li>
+
+            <li class="relative group">
+                <a href="" class="hover:underline">Brands</a>
+                <ul class="absolute left-0 top-full bg-white shadow-md w-40 hidden group-hover:block z-50">
+                    <% brands.forEach(brand => { %>
+                        <li><a href="/shop?brand=<%= brand.name %>" class="block px-4 py-2 hover:bg-gray-100"><%= brand.name %></a></li>
+                    <% }) %>
+                </ul>
+            </li>
+            <li class="relative group">
+                <a href="" class="hover:underline">Categories</a>
+                <ul class="absolute left-0 top-full bg-white shadow-md w-40 hidden group-hover:block z-50">
+                    <% categories.forEach(cat => { %>
+                        <li><a href="/shop?category=<%= cat.name %>" class="block px-4 py-2 hover:bg-gray-100"><%= cat.name %></a></li>
+                    <% }) %>
+                </ul>
+            </li>
+            <li><a href="" class="hover:underline">About</a></li>
         </ul>
-        <ul class="mt-auto p-4">
-          <li><a href="#" class="flex items-center space-x-2 p-2 hover:bg-red-500 rounded"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+
+        <div id="login-toggle" class="flex items-center space-x-6 text-gray-700 ml-10">
+            <div class="relative group">
+                <!-- Toggle button to open search -->
+                <button id="search-toggle" class="hover:text-black space-x-1">
+                    <i class="fas fa-search text-xl tablet:text-2xl"></i>
+                </button>
+            
+                <!-- Search form -->
+                <form id="search-bar" action="/search" method="GET" 
+                    class="absolute right-10 top-1/2 -translate-y-1/2 bg-white border border-gray-500 rounded-3xl overflow-hidden flex items-center px-2 w-0 opacity-0 transition-all duration-300 ease-in-out max-w-[500px]">
+                    
+                    <!-- Search input -->
+                    <input
+                        id="search-input"
+                        type="text"
+                        name="search"
+                        value="<%= typeof search !== 'undefined' ? search : '' %>" 
+                        placeholder="Search cameras, brands..."
+                        class="w-full px-4 py-2 focus:outline-none"
+                    />
+            
+                    <!-- Clear button -->
+                    <button type="button" id="clear-search" class="hidden text-gray-400 hover:text-black px-2">
+                        <i class="fas fa-times"></i>
+                    </button>
+            
+                    <!-- Submit button -->
+                    <button type="submit" class="text-gray-600 px-2 hover:text-black">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+            
+
+            <a href="#" class="hover:text-black flex items-center space-x-1">
+              <i class="fa fa-cart-shopping text-xl tablet:text-2xl"></i>  
+            </a>
+
+            <div class="relative group hover:text-black flex items-center space-x-1">
+                <a id="login-click" href="#" class="flex items-center space-x-1">
+                    <i class="fa-solid fa-user text-xl tablet:text-2xl"></i>
+                                      
+                </a>
+                
+
+                <ul id="login-dropdown" class="absolute right-0 top-full bg-white shadow-md w-60 hidden z-50">
+                    <li class="block px-4 py-2 hover:bg-gray-100">
+                        Already a customer?
+                        <a href="/login" class="font-bold text-blue-600 hover:text-blue-800">Login</a>
+                    </li>
+                    <li class="block px-4 py-2 hover:bg-gray-100">
+                        New Customer? 
+                        <a href="/register" class="font-bold text-blue-600 hover:text-blue-800">Register</a>
+                    </li>
+                    <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                        <i class="fa-solid fa-user mr-2"></i>
+                        My Profile
+                        </a>
+                    </li>
+                    <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                        <i class="fa-solid fa-bag-shopping mr-2"></i>
+                        Orders
+                        </a>
+                    </li>
+                    <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                        <i class="fa-solid fa-heart mr-2"></i>
+                        Wishlist
+                        </a>
+                    </li>
+                </ul>
+            </div>  
+        </div>
+
+        <button id="menu-toggle" class="tablet:hidden ml-5 text-xl text-gray-700">
+            <i class="fas fa-bars"></i>
+        </button>
+
+    </div>
+  </nav>
+
+  <ul id="menu" class="hidden mt-20 flex flex-col px-6 py-4 bg-white shadow-md tablet:hidden space-y-4 text-sm font-medium text-gray-700">
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Shop</a></li>
+    <li>
+        <a href="#" id="brand-link" class="inline-flex items-center">
+            Brands
+            <i class="fas fa-chevron-down text-xs ml-2"></i>
+        </a>
+        <ul id="brands-submenu" class="hidden flex-col space-y-2 pl-4 bg-gray-100 text-gray-600 text-sm mt-2">
+            <% brands.forEach(brand => { %>
+                <li><a href="/shop?brand=<%= brand.name %>"><%= brand.name %></a></li>
+            <% }) %>        
         </ul>
-      </nav>
-    </aside>
-    <!-- Overlay for mobile/tablet -->
-    <div id="overlay" class="overlay fixed inset-0 bg-black opacity-0 pointer-events-none z-40 md:hidden"></div>
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
-      <!-- Navbar -->
-      <nav class="bg-white shadow p-4 flex justify-between items-center">
-        <div class="flex items-center space-x-4">
-          <button id="hamburger" class="hamburger md:hidden flex flex-col justify-center items-center w-10 h-10 space-y-1.5">
-            <span class="w-8 h-1 bg-gray-800 rounded"></span>
-            <span class="w-8 h-1 bg-gray-800 rounded"></span>
-            <span class="w-8 h-1 bg-gray-800 rounded"></span>
+    </li>
+
+    <li>
+        <a href="#" id="category-link" class="inline-flex items-center">
+            Categories
+            <i class="fas fa-chevron-down text-xs ml-2"></i>
+        </a>
+        <ul id="categories-submenu" class="hidden flex-col space-y-2 pl-4 bg-gray-100 text-gray-600 text-sm mt-2">
+            <% categories.forEach(cat => { %>
+                <li><a href="/shop?category=<%= cat.name %>"><%= cat.name %></a></li>
+            <% }) %>
+        </ul>
+    </li>
+    <li><a href="#">About</a></li>
+  </ul>
+
+  <!-- PAGE CONTENT -->
+  <div class="container mx-auto px-6 py-20 mt-8">
+
+    <div class="flex flex-col md:flex-row gap-10">
+
+      <!-- Thumbnails and arrows -->
+      <div class="flex flex-col items-center space-y-6 md:w-1/6">
+        <button id="thumbUp" class="text-3xl font-bold">&uarr;</button>
+
+        <div id="thumbnails" class="flex flex-col space-y-4 max-h-[400px] overflow-y-auto">
+          <% product.images.forEach((img, index) => { %>
+            <img 
+              src="<%= img %>" 
+              alt="Thumbnail <%= index + 1 %>" 
+              class="w-20 h-20 object-contain border-2 cursor-pointer <%= index === 0 ? 'border-black' : 'border-transparent' %>" 
+              data-index="<%= index %>"
+            />
+          <% }) %>
+        </div>
+
+        <button id="thumbDown" class="text-3xl font-bold">&darr;</button>
+      </div>
+
+      <!-- Main Image -->
+      <div class="md:w-1/3 flex justify-center items-center">
+        <img 
+          id="mainImage" 
+          src="<%= product.images[0] %>" 
+          alt="Product Image" 
+          class="max-w-full max-h-[350px] object-contain" 
+        />
+      </div>
+
+      <!-- Product Details -->
+      <div class="md:w-1/2 space-y-4">
+
+        <h1 class="text-lg md:text-xl font-semibold">
+          <%= product.name %>
+        </h1>
+
+        <p class="text-3xl font-bold">
+          ₹<%= product.price.toLocaleString() %>
+        </p>
+        <p class="text-sm text-gray-600">(Incl. all Taxes)</p>
+
+        <hr />
+
+        <p class="text-gray-400 line-through text-sm">
+          MRP: ₹<%= product.mrp.toLocaleString() %>
+        </p>
+
+        <p class="text-sm">
+          (Save ₹<%= (product.mrp - product.price).toLocaleString() %>, 
+          <%= (((product.mrp - product.price) / product.mrp) * 100).toFixed(2) %>% off)
+        </p>
+
+        <div class="border border-gray-300 rounded p-4 mt-4">
+          <strong class="block mb-2">Key Features</strong>
+          <ul class="list-disc list-inside text-sm space-y-1">
+            <% product.features.forEach(feature => { %>
+              <li><%= feature %></li>
+            <% }) %>
+          </ul>
+        </div>
+
+        <div class="flex gap-4 mt-6">
+          <button class="bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
+            Add To Cart
           </button>
-          <h1 class="text-xl font-semibold brand-name">Camverse</h1>
+          <button class="bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
+            Add To Wishlist
+          </button>
         </div>
-        <div class="flex items-center space-x-4">
-          <span>Welcome, Admin</span>
-          <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
-        </div>
-      </nav>
-      <!-- Content -->
-      <main class="p-6 flex-1 overflow-auto">
-        <h2 class="text-2xl font-bold mb-4">Orders</h2>
-        <!-- Search -->
-        <div class="flex justify-between items-center mb-4">
-          <div class="relative w-full md:w-1/3">
-            <input id="search-input" type="text" placeholder="Search by Username or Product Name" class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          </div>
-        </div>
-        <!-- Orders Table -->
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-          <table id="orders-table" class="w-full">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="p-3 text-left">Username</th>
-                <th class="p-3 text-left">Order ID</th>
-                <th class="p-3 text-left">Product Name</th>
-                <th class="p-3 text-left">Brand</th>
-                <th class="p-3 text-left">Address</th>
-                <th class="p-3 text-left">Price</th>
-                <th class="p-3 text-left">Order Date</th>
-                <th class="p-3 text-left">Status</th>
-                <th class="p-3 text-left">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-t">
-                <td class="p-3">John Doe</td>
-                <td class="p-3">1</td>
-                <td class="p-3">DSLR Camera</td>
-                <td class="p-3">Canon</td>
-                <td class="p-3">123 Main St, Mumbai, India</td>
-                <td class="p-3">₹45,000</td>
-                <td class="p-3">2025-07-01</td>
-                <td class="p-3"><span class="text-yellow-600">Pending</span></td>
-                <td class="p-3">
-                  <a href="#" class="text-red-500 hover:text-red-700 delete-order" data-id="1"><i class="fas fa-trash"></i></a>
-                </td>
-              </tr>
-              <tr class="border-t">
-                <td class="p-3">Jane Smith</td>
-                <td class="p-3">2</td>
-                <td class="p-3">Mirrorless Camera</td>
-                <td class="p-3">Sony</td>
-                <td class="p-3">456 Park Ave, Delhi, India</td>
-                <td class="p-3">₹65,000</td>
-                <td class="p-3">2025-07-02</td>
-                <td class="p-3"><span class="text-blue-600">Shipped</span></td>
-                <td class="p-3">
-                  <a href="#" class="text-red-500 hover:text-red-700 delete-order" data-id="2"><i class="fas fa-trash"></i></a>
-                </td>
-              </tr>
-              <tr class="border-t">
-                <td class="p-3">Alice Johnson</td>
-                <td class="p-3">3</td>
-                <td class="p-3">Action Camera</td>
-                <td class="p-3">GoPro</td>
-                <td class="p-3">789 Oak Rd, Bangalore, India</td>
-                <td class="p-3">₹30,000</td>
-                <td class="p-3">2025-07-03</td>
-                <td class="p-3"><span class="text-green-600">Delivered</span></td>
-                <td class="p-3">
-                  <a href="#" class="text-red-500 hover:text-red-700 delete-order" data-id="3"><i class="fas fa-trash"></i></a>
-                </td>
-              </tr>
-              <tr class="border-t">
-                <td class="p-3">Bob Wilson</td>
-                <td class="p-3">4</td>
-                <td class="p-3">Point and Shoot</td>
-                <td class="p-3">Nikon</td>
-                <td class="p-3">101 Pine St, Chennai, India</td>
-                <td class="p-3">₹25,000</td>
-                <td class="p-3">2025-07-04</td>
-                <td class="p-3"><span class="text-red-600">Cancelled</span></td>
-                <td class="p-3">
-                  <a href="#" class="text-red-500 hover:text-red-700 delete-order" data-id="4"><i class="fas fa-trash"></i></a>
-                </td>
-              </tr>
-              <tr class="border-t">
-                <td class="p-3">Emma Brown</td>
-                <td class="p-3">5</td>
-                <td class="p-3">Compact Camera</td>
-                <td class="p-3">Panasonic</td>
-                <td class="p-3">202 Elm St, Kolkata, India</td>
-                <td class="p-3">₹20,000</td>
-                <td class="p-3">2025-07-05</td>
-                <td class="p-3"><span class="text-yellow-600">Pending</span></td>
-                <td class="p-3">
-                  <a href="#" class="text-red-500 hover:text-red-700 delete-order" data-id="5"><i class="fas fa-trash"></i></a>
-                </td>
-              </tr>
-              <tr class="border-t">
-                <td class="p-3">Michael Lee</td>
-                <td class="p-3">6</td>
-                <td class="p-3">Bridge Camera</td>
-                <td class="p-3">Fujifilm</td>
-                <td class="p-3">303 Maple Ave, Hyderabad, India</td>
-                <td class="p-3">₹35,000</td>
-                <td class="p-3">2025-07-06</td>
-                <td class="p-3"><span class="text-blue-600">Shipped</span></td>
-                <td class="p-3">
-                  <a href="#" class="text-red-500 hover:text-red-700 delete-order" data-id="6"><i class="fas fa-trash"></i></a>
-                </td>
-              </tr>
-              <tr class="border-t">
-                <td class="p-3">Sarah Davis</td>
-                <td class="p-3">7</td>
-                <td class="p-3">Instant Camera</td>
-                <td class="p-3">Polaroid</td>
-                <td class="p-3">404 Cedar Rd, Pune, India</td>
-                <td class="p-3">₹15,000</td>
-                <td class="p-3">2025-07-06</td>
-                <td class="p-3"><span class="text-green-600">Delivered</span></td>
-                <td class="p-3">
-                  <a href="#" class="text-red-500 hover:text-red-700 delete-order" data-id="7"><i class="fas fa-trash"></i></a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <!-- Pagination -->
-        <div class="flex justify-center mt-4">
-          <div id="pagination" class="flex space-x-2">
-            <button id="prev-btn" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50" disabled>Previous</button>
-            <div id="page-numbers" class="flex space-x-1"></div>
-            <button id="next-btn" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Next</button>
-          </div>
-        </div>
-      </main>
+
+      </div>
     </div>
   </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-black text-white py-10 mt-20">
+    <div class="max-w-6xl mx-auto px-4">
+  
+      <div class="hidden md:grid grid-cols-4 gap-8">
+        
+        <div>
+          <h2 class="text-2xl font-semibold text-gray-400 mb-4" style="font-family: 'Michroma', sans-serif;">Camverse</h2>
+          <p class="text-sm">123 Street, City, Country</p>
+          <p class="text-sm">+91 9876543210</p>
+        </div>
+  
+        <div>
+          <h2 class="text-lg font-semibold mb-4">Quick Links</h2>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:underline">Home</a></li>
+            <li><a href="#" class="hover:underline">Shop</a></li>
+            <li><a href="#" class="hover:underline">About</a></li>
+            <li><a href="#" class="hover:underline">Contact</a></li>
+          </ul>
+        </div>
+  
+        <div>
+          <h2 class="text-lg font-semibold mb-4">Support</h2>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:underline">FAQs</a></li>
+            <li><a href="#" class="hover:underline">Shipping</a></li>
+            <li><a href="#" class="hover:underline">Returns</a></li>
+            <li><a href="#" class="hover:underline">Terms & Conditions</a></li>
+          </ul>
+        </div>
+  
+        <div>
+          <h2 class="text-lg font-semibold mb-4">Follow Us</h2>
+          <div class="flex space-x-4 text-xl">
+            <a href="#"><i class="fab fa-facebook hover:text-yellow-400"></i></a>
+            <a href="#"><i class="fab fa-instagram hover:text-yellow-400"></i></a>
+            <a href="#"><i class="fab fa-twitter hover:text-yellow-400"></i></a>
+            <a href="#"><i class="fab fa-youtube hover:text-yellow-400"></i></a>
+          </div>
+        </div>
+      </div>
+  
+      <div class="block md:hidden space-y-6 mt-4">
+        
+        <div>
+          <h2 class="text-2xl font-semibold text-gray-400 mb-2" style="font-family: 'Michroma', sans-serif;">Camverse</h2>
+          <p class="text-sm">123 Street, City, Country</p>
+          <p class="text-sm">+91 9876543210</p>
+        </div>
+  
+        <div class="border-t border-gray-700 pt-4">
+          <button class="w-full flex justify-between items-center text-left text-lg font-semibold toggle-btn">
+            Quick Links <i class="fas fa-chevron-down"></i>
+          </button>
+          <ul class="space-y-2 text-sm mt-2 hidden toggle-content">
+            <li><a href="#" class="hover:underline">Home</a></li>
+            <li><a href="#" class="hover:underline">Shop</a></li>
+            <li><a href="#" class="hover:underline">About</a></li>
+            <li><a href="#" class="hover:underline">Contact</a></li>
+          </ul>
+        </div>
+  
+        <div class="border-t border-gray-700 pt-4">
+          <button class="w-full flex justify-between items-center text-left text-lg font-semibold toggle-btn">
+            Support <i class="fas fa-chevron-down"></i>
+          </button>
+          <ul class="space-y-2 text-sm mt-2 hidden toggle-content">
+            <li><a href="#" class="hover:underline">FAQs</a></li>
+            <li><a href="#" class="hover:underline">Shipping</a></li>
+            <li><a href="#" class="hover:underline">Returns</a></li>
+            <li><a href="#" class="hover:underline">Terms & Conditions</a></li>
+          </ul>
+        </div>
+  
+        <div class="border-t border-gray-700 pt-4">
+          <button class="w-full flex justify-between items-center text-left text-lg font-semibold toggle-btn">
+            Follow Us <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="flex space-x-4 text-xl mt-2 hidden toggle-content">
+            <a href="#"><i class="fab fa-facebook hover:text-yellow-400"></i></a>
+            <a href="#"><i class="fab fa-instagram hover:text-yellow-400"></i></a>
+            <a href="#"><i class="fab fa-twitter hover:text-yellow-400"></i></a>
+            <a href="#"><i class="fab fa-youtube hover:text-yellow-400"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="mt-10 border-t border-gray-700 pt-4 text-center text-xs text-gray-400">
+      &copy; 2025 Camverse. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- SCRIPT: Thumbnail Image + Nav toggles -->
   <script>
-    const hamburger = document.getElementById('hamburger');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const searchInput = document.getElementById('search-input');
-    const ordersTable = document.getElementById('orders-table');
-    const rows = ordersTable.querySelectorAll('tbody tr');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const pageNumbers = document.getElementById('page-numbers');
+    document.addEventListener('DOMContentLoaded', () => {
+      // Thumbnail image swap
+      const thumbnails = document.querySelectorAll('#thumbnails img');
+      const mainImage = document.getElementById('mainImage');
+      let currentIndex = 0;
 
-    let currentPage = 1;
-    const rowsPerPage = 5;
-
-    function toggleSidebar() {
-      hamburger.classList.toggle('active');
-      sidebar.classList.toggle('active');
-      overlay.classList.toggle('active');
-    }
-
-    hamburger.addEventListener('click', toggleSidebar);
-    overlay.addEventListener('click', toggleSidebar);
-
-    function filterRows() {
-      const searchTerm = searchInput.value.toLowerCase();
-      const visibleRows = Array.from(rows).filter(row => {
-        const username = row.cells[0].textContent.toLowerCase();
-        const productName = row.cells[2].textContent.toLowerCase();
-        return username.includes(searchTerm) || productName.includes(searchTerm);
-      });
-      return visibleRows;
-    }
-
-    function displayRows(page) {
-      const visibleRows = filterRows();
-      const start = (page - 1) * rowsPerPage;
-      const end = start + rowsPerPage;
-
-      rows.forEach(row => row.style.display = 'none');
-      visibleRows.slice(start, end).forEach(row => row.style.display = '');
-
-      const totalPages = Math.ceil(visibleRows.length / rowsPerPage);
-      prevBtn.disabled = page === 1;
-      nextBtn.disabled = page === totalPages || totalPages === 0;
-
-      pageNumbers.innerHTML = '';
-      for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        btn.className = `px-3 py-1 rounded ${i === page ? 'pagination-btn active' : 'bg-gray-200 hover:bg-gray-300'}`;
-        btn.addEventListener('click', () => {
-          currentPage = i;
-          displayRows(currentPage);
+      thumbnails.forEach((thumb, idx) => {
+        thumb.addEventListener('click', () => {
+          mainImage.src = thumb.src;
+          thumbnails.forEach(t => t.classList.remove('border-black'));
+          thumb.classList.add('border-black');
+          currentIndex = idx;
         });
-        pageNumbers.appendChild(btn);
-      }
-    }
-
-    searchInput.addEventListener('input', () => {
-      currentPage = 1;
-      displayRows(currentPage);
-    });
-
-    prevBtn.addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        displayRows(currentPage);
-      }
-    });
-
-    nextBtn.addEventListener('click', () => {
-      const totalPages = Math.ceil(filterRows().length / rowsPerPage);
-      if (currentPage < totalPages) {
-        currentPage++;
-        displayRows(currentPage);
-      }
-    });
-
-    document.querySelectorAll('.delete-order').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        const orderId = button.dataset.id;
-        console.log(`Delete order with ID: ${orderId}`);
-        alert(`Order ${orderId} deleted (logged to console).`);
       });
-    });
 
-    displayRows(currentPage);
+      // Scroll thumbnails
+      const thumbContainer = document.getElementById('thumbnails');
+      document.getElementById('thumbUp').addEventListener('click', () => {
+        thumbContainer.scrollBy({ top: -80, behavior: 'smooth' });
+      });
+      document.getElementById('thumbDown').addEventListener('click', () => {
+        thumbContainer.scrollBy({ top: 80, behavior: 'smooth' });
+      });
+
+      // Responsive mobile menu toggle
+      const menuToggle = document.getElementById('menu-toggle');
+      const menu = document.getElementById('menu');
+      menuToggle.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+      });
+
+      // Submenu toggles on mobile
+      const brandLink = document.getElementById('brand-link');
+      const brandsSubmenu = document.getElementById('brands-submenu');
+      brandLink.addEventListener('click', e => {
+        e.preventDefault();
+        brandsSubmenu.classList.toggle('hidden');
+      });
+
+      const categoryLink = document.getElementById('category-link');
+      const categoriesSubmenu = document.getElementById('categories-submenu');
+      categoryLink.addEventListener('click', e => {
+        e.preventDefault();
+        categoriesSubmenu.classList.toggle('hidden');
+      });
+
+      // Login dropdown toggle
+      const loginClick = document.getElementById('login-click');
+      const loginDropdown = document.getElementById('login-dropdown');
+      loginClick.addEventListener('click', e => {
+        e.preventDefault();
+        loginDropdown.classList.toggle('hidden');
+      });
+
+      // Search bar toggle
+      const searchToggle = document.getElementById('search-toggle');
+      const searchBar = document.getElementById('search-bar');
+      const clearSearch = document.getElementById('clear-search');
+      const searchInput = document.getElementById('search-input');
+    });
   </script>
-</body>
-</html>

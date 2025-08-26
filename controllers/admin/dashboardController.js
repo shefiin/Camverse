@@ -24,16 +24,18 @@ const renderDashboard = async (req, res) => {
             { $group: { _id: null, totalQty: { $sum: "$products.quantity" }}}
         ]);
 
-        const topProducts = await Product.find()
+        const top20Products = await Product.find()
             .sort({ sold: -1 })
+            .limit(5)
+            .populate('category')
             .skip(skip)
-            .limit(5);
 
-        const totalProduct = await Product.countDocuments();
-        const totalPages = Math.ceil(totalProduct / ITEMS_PER_PAGE);    
+        const paginatedProducts = top20Products.slice(skip, skip + ITEMS_PER_PAGE)    
+  
+        const totalPages = Math.ceil(20 / ITEMS_PER_PAGE);    
             
 
-        const topProductsWithRevenue = topProducts.map(product => {
+        const topProductsWithRevenue = top20Products.map(product => {
             return {
                 ...product.toObject(),
                 revenue: product.price * product.sold
@@ -47,11 +49,12 @@ const renderDashboard = async (req, res) => {
             totalOrders,
             totalSales: totalSales[0]?.total || 0,
             productsSold: productsSold[0]?.totalQty || 0,
-            topProducts,
+            top20Products : paginatedProducts,
             pendingOrders,
             topProductsWithRevenue,
             totalPages,
-            currentPage: page
+            currentPage: page,
+            skip
         });
     } catch (error) {
         console.error('Error fetching dashboard data:', error);

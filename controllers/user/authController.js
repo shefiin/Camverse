@@ -1,0 +1,295 @@
+const bcrypt = require('bcrypt');
+const User = require('../../models/user');
+const sendOTP = require('../../utils/sendEmail');
+
+
+const renderRegisterPage = (req, res) => {
+    res.render('user/register', { error: null, formData: {} });
+};
+
+
+const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000);
+};
+
+
+const register = async (req, res) => {
+    try {
+        const { name, email, password, confirmPassword } = req.body;
+
+        if (!name || !email || !password || !confirmPassword) {
+            return res.send('All fields are required');
+        }
+
+        if (password !== confirmPassword) {
+            return res.send('Passwords do not match');
+        }
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.render('user/register', {
+                error: `An account with this email already exists.
+                <a href="/login" class="underline text-red-500 hover:text-red-700">Sign in</a> or
+                <a href="/reset-password" class="underline text-red-500 hover:text-red-700">reset password</a>.`,
+                formData: { name, email }
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const otp = generateOTP();
+
+        req.session.tempUser = {
+            name,
+            email,
+            password: hashedPassword
+        };
+
+        req.session.otp = otp;
+
+        await sendOTP(email, otp);
+        res.redirect('/register/verify-otp');
+
+            
+
+    } catch (err) {
+        console.error(err);
+        res.render('user/register', {
+            error: 'An error occurred while registering. Please try again.',
+            formData: {
+                name: req.body.name,
+                email: req.body.email
+            }
+        })
+    }
+};
+
+
+const login = async (req, res) => {
+    try{
+        const { email, password } = req.body;
+        console.log('Email:', email);
+        console.log('Password:', password);
+
+        const user = await User.findOne({ email });
+        if(!user) {
+            req.flash('error', 'User does not exists');
+            return res.redirect('/login')
+        }
+        if (user.isBlocked) {
+            req.flash('error', 'Your account is blocked');
+            return res.redirect('/login');
+        }
+
+        console.log('Received password:', password);
+        console.log('Stored hash:', user.password);
+
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if(!isMatch){
+            req.flash('error', 'Invalid email or password');
+            return res.redirect('/login');
+        }
+
+        req.session.userId = user._id;
+        req.session.user = {
+            _id: user._id,
+            name: user.name,
+            email: user.email
+        };
+          
+
+        res.redirect('/');
+
+    } catch(error){
+        console.error('something went wrong while logging', error);
+        return res.status(500).send('internal server Error');
+    }
+};
+
+
+const logout = (req, res) => {
+    req.session.destroy(err => {
+        if(err) {
+            console.error('Logout error:', err);
+            return res.status(500).send('Could not logout.')
+        }
+        res.clearCookie('connect.sid');
+        res.redirect('/');
+    })
+}
+
+
+const renderReset1 = (req, res) => {
+    const error = req.flash('error');
+    res.render('user/reset-password-mail', 
+        { errorMessage: error.length > 0 ? error[0] : null}
+    );
+}
+
+
+
+// const checkUserExist = async (req, res) => {
+//     try{
+//         const { email } = req.body;
+//         const user = await User.findOne({email});
+    
+//         if(!user || user.isBlocked === true) {
+//             req.flash('error', 'User does not exists');
+//             return res.redirect('/reset')
+//         }
+
+//         const otp = generateOTP();
+
+//         req.session.emailOtp = otp;
+//         req.session.otpExpiry = Date.now() + 5 * 60 * 1000;
+//         req.session.resendAllowedAt = Date.now() + 30 * 1000;
+//         req.session.user = user
+
+//         await new Promise(resolve => req.session.save(resolve));
+
+//         await sendOTP(user.email, otp);
+
+//         res.render('user/reset-otp', {
+//             email: user.email,
+//             remainingResend: Math.ceil((req.session.resendAllowedAt - Date.now()) / 1000),
+//             error: null,
+//             userId: user._id
+//         });
+        
+//     } catch(error){
+//         console.log('error', error);
+//         res.status(400).send('something wrong')
+//     }
+
+
+
+// }
+
+
+
+// const verifyResetOtp = async (req, res) => {
+
+//     try{
+//         const {otp} = req.body;
+//         const {otpExpiry, emailOtp, email} = req.session;
+//         const user = req.session;
+    
+//         if(Date.now() > otpExpiry){
+//             return res.render('user/reset-otp', {
+//                 email: user.email,
+//                 remainingResend:  Math.ceil((req.session.resendAllowedAt - Date.now()) / 1000),
+//                 error: 'OTP expired. Please request a new one.',
+//                 userId
+//             });
+//         }
+    
+//         if(parseInt(otp.trim()) !== parseInt(emailOtp)){
+//             return res.render('user/reset-otp', {
+//                 email: user.email,
+//                 remainingResend: Math.ceil((req.session.resendAllowedAt - Date.now()) / 1000),
+//                 error: 'Invalid OTP. Please try again.',
+//             });
+//         }
+
+//         delete req.session.emailOtp;
+//         delete req.session.otpExpiry;
+
+//         req.session.resetEmail = email;
+
+
+
+//         res.render('user/new-password', {
+//             user,
+//             error: null
+//         });
+
+//     } catch(error){
+//         console.error('error', error);
+//         res.status(400).send('something wrong')
+        
+//     }
+
+// };
+
+
+// const resetOtpResend = async (req, res) => {
+//     try {
+//         const email = req.session.email
+//         const user = await User.findOne({email});
+    
+//         if(!user || user.isBlocked === true) {
+//             req.flash('error', 'User does not exists');
+//             return res.redirect('/reset')
+//         }
+
+//         const otp = generateOTP();
+
+//         req.session.emailOtp = otp;
+//         req.session.otpExpiry = Date.now() + 5 * 60 * 1000;
+//         req.session.resendAllowedAt = Date.now() + 30 * 1000;
+//         req.session.userId = user._id
+
+//         await new Promise(resolve => req.session.save(resolve));
+
+//         await sendOTP(user.email, otp);
+
+//         res.render('user/reset-otp', {
+//             email: user.email,
+//             remainingResend: Math.ceil((req.session.resendAllowedAt - Date.now()) / 1000),
+//             error: null,
+//             userId: user._id
+
+//         });
+
+//     } catch(error){
+//         console.error('some error', error);
+//         res.status(400).send('something wrong');
+//     }
+// }
+
+
+const updatePassword = async (req, res) => {
+    try{
+        const email = req.session.resetEmail;
+
+        const user = await User.findOne({email});
+
+        if(!user || user.isBlocked === true){
+            req.flash('error', 'User does not exists');
+            return res.redirect('/reset')
+        }
+
+        const newPassword = req.body;
+
+        const newHashed = await bcrypt.hash(newPassword, 10);
+
+        user.password = newHashed;
+        await user.save();
+
+        delete req.session.resetEmail;
+
+        res.redirect('/login');
+
+    } catch(error){
+        console.log('error: ', error);
+        res.status(400).send('some error');        
+    }
+}
+
+
+
+
+module.exports = {
+    renderRegisterPage,
+    register,
+    login,
+    logout,
+    renderReset1,
+    // checkUserExist,
+    // verifyResetOtp,
+    // resetOtpResend,
+    updatePassword
+};
+
+
+

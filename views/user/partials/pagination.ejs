@@ -1,0 +1,50 @@
+<% if (totalPages && totalPages > 1) { %>
+    <% 
+      // compute the 2-number window
+      let startPage, endPage;
+      if (totalPages === 2) {
+        startPage = 1; endPage = 2;
+      } else if (currentPage === 1) {
+        startPage = 1; endPage = Math.min(2, totalPages);
+      } else if (currentPage === totalPages) {
+        startPage = Math.max(1, totalPages - 1); endPage = totalPages;
+      } else {
+        startPage = currentPage - 1; endPage = currentPage;
+      }
+  
+      // helper to build query string while preserving other params (queryParams passed from controller)
+      const buildQs = (pageNum) => {
+        const obj = Object.assign({}, queryParams || {});
+        obj.page = pageNum;
+        return Object.keys(obj)
+          .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`)
+          .join('&');
+      };
+    %>
+  
+    <div class="flex justify-center items-center space-x-2 mt-6">
+      <!-- Previous: only if there's a previous page -->
+      <% if (currentPage > 1) { %>
+        <a href="?<%= buildQs(currentPage - 1) %>" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition">
+          &lt;
+        </a>
+      <% } %>
+  
+      <!-- Two page numbers (startPage .. endPage) -->
+      <% for (let i = startPage; i <= endPage; i++) { %>
+        <a 
+          href="?<%= buildQs(i) %>" 
+          class="px-3 py-1 rounded transition <%= i === currentPage ? 'bg-gray-800 text-white' : 'bg-gray-200 hover:bg-gray-300' %>"
+        >
+          <%= i %>
+        </a>
+      <% } %>
+  
+      <!-- Next: only if there's a next page -->
+      <% if (currentPage < totalPages) { %>
+        <a href="?<%= buildQs(currentPage + 1) %>" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition">
+          &gt;
+        </a>
+      <% } %>
+    </div>
+  <% } %>

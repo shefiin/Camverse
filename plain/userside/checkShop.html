@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+</head>
+<body style="font-family: 'Kanit', sans-serif;">
+    <nav class="bg-white py-2 shadow-md fixed top-0 left-0 w-full z-50">
+        <div class="w-full px-12 py-4 flex items-center justify-between">
+            <h1 class="flex-1 text-xl tablet:text-2xl  font-bold text-gray-800" style="font-family: 'Michroma', sans-serif;">Camverse</h1>
+
+            <ul class="hidden tablet:flex space-x-8 text-sm font-medium text-gray-700">
+                <li><a href="" class="hover:underline">Home</a></li>
+                <li><a href="" class="hover:underline">Shop</a></li>
+
+                <li class="relative group">
+                    <a href="" class="hover:underline">Brands</a>
+                    <ul class="absolute left-0 top-full bg-white shadow-md w-40 hidden group-hover:block z-50">
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Nikon</a></li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Sony</a></li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">FujiFilm</a></li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Canon</a></li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">GoPro</a></li>
+                    </ul>
+                </li>
+                <li class="relative group">
+                    <a href="" class="hover:underline">Categories</a>
+                    <ul class="absolute left-0 top-full bg-white shadow-md w-40 hidden group-hover:block z-50">
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Mirrorless</a></li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">DSLR</a></li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Action</a></li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Point & Shoot</a></li>
+                    </ul>
+                </li>
+                <li><a href="" class="hover:underline">About</a></li>
+            </ul>
+
+            <div id="login-toggle" class="flex items-center space-x-6 text-gray-700 ml-10">
+                <div class="relative group">
+                    <button id="search-toggle" class="hover:text-black space-x-1">
+                        <i class="fas fa-search text-xl tablet:text-2xl"></i>
+                    </button>
+                    
+                    <form id="search-bar" action="/search" method="GET" 
+                        class="absolute right-10 top-1/2 -translate-y-1/2 bg-white border border-gray-500 rounded-3xl overflow-hidden flex items-center px-2 w-0 opacity-0 transition-all duration-300 ease-in-out max-w-[500px]">
+                        <input
+                          type="text"
+                          name="search"
+                          placeholder="Search cameras, brands..."
+                          class="w-full px-4 py-2 focus:outline-none"
+                        />
+                        <button type="submit" class="text-gray-600 px-2 hover:text-black">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+
+
+                <a href="#" class="hover:text-black flex items-center space-x-1">
+                  <i class="fa fa-cart-shopping text-xl tablet:text-2xl"></i>  
+                </a>
+
+                <div class="relative group hover:text-black flex items-center space-x-1">
+                    <a id="login-click" href="#" class="flex items-center space-x-1">
+                        <i class="fa-solid fa-circle-user text-xl tablet:text-2xl"></i>
+                        <i class="fas fa-chevron-down text-xs ml-2"></i>                   
+                    </a>
+
+                    <ul id="login-dropdown" class="absolute right-0 top-full bg-white shadow-md w-60 hidden z-50">
+                        <li class="block px-4 py-2 hover:bg-gray-100">
+                            Already a customer?
+                            <a href="/login" class="font-bold text-blue-600 hover:text-blue-800">Login</a>
+                        </li>
+                        <li class="block px-4 py-2 hover:bg-gray-100">
+                            New Customer? 
+                            <a href="/register" class="font-bold text-blue-600 hover:text-blue-800">Register</a>
+                        </li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                            <i class="fa-solid fa-user mr-2"></i>
+                            My Profile
+                            </a>
+                        </li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                            <i class="fa-solid fa-bag-shopping mr-2"></i>
+                            Orders
+                            </a>
+                        </li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                            <i class="fa-solid fa-heart mr-2"></i>
+                            Wishlist
+                            </a>
+                        </li>
+                    </ul>
+                </div>  
+            </div>
+
+            <button id="menu-toggle" class="tablet:hidden ml-5 text-xl text-gray-700">
+                <i class="fas fa-bars"></i>
+            </button>
+
+        </div>
+    </nav>
+
+    <ul id="menu" class="hidden mt-20 flex flex-col px-6 py-4 bg-white shadow-md tablet:hidden space-y-4 text-sm font-medium text-gray-700">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Shop</a></li>
+        <li>
+            <a href="#" id="brand-link" class="inline-flex items-center">
+                Brands
+                <i class="fas fa-chevron-down text-xs ml-2"></i>
+            </a>
+            <ul id="brands-submenu" class="hidden flex-col space-y-2 pl-4 bg-gray-100 text-gray-600 text-sm mt-2">
+                <li><a href="">Nikon</a></li>
+                <li><a href="">Sony</a></li>
+                <li><a href="">FujiFilm</a></li>
+                <li><a href="">Canon</a></li>
+                <li><a href="">GoPro</a></li>
+            </ul>
+        </li>
+
+        <li>
+            <a href="#" id="category-link" class="inline-flex items-center">
+                Categories
+                <i class="fas fa-chevron-down text-xs ml-2"></i>
+            </a>
+            <ul id="categories-submenu" class="hidden flex-col space-y-2 pl-4 bg-gray-100 text-gray-600 text-sm mt-2">
+                <li><a href="">Mirrorless</a></li>
+                <li><a href="">DSLR</a></li>
+                <li><a href="">Action</a></li>
+                <li><a href="">Point & Shoot</a></li>
+            </ul>
+        </li>
+        <li><a href="#">About</a></li>
+      </ul>
+
+      <section class="px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
+        <h1 class="text-2xl md:text-2xl font-semibold text-gray-800 mb-16">Shop your favorite cameras</h1>
+
+        <div class="hidden md:flex justify-between items-center mb-4">
+            <h2 class="text-md md:text-lg font-semibold text-gray-800">FILTERS</h2>
+              <div class="relative inline-block text-left">
+                <button
+                    id="sortButton"
+                    class="inline-flex items-center bg-white border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md focus:outline-none"
+                    style="border-color: #d1d5db;" 
+                    onfocus="this.style.borderColor='#00A69D'"
+                    onblur="this.style.borderColor='#d1d5db'"
+                >
+                    SORT
+                    <i class="fas fa-chevron-down text-xs ml-2"></i>
+                </button>
+
+              
+                <ul id="sortMenu" class="absolute right-0 mt-1 w-44 bg-white font-extralight shadow-md hidden z-50">
+                  <li><a href="#" class="block px-4 py-2 hover:bg-teal-50 text-sm">Price: Low to High</a></li>
+                  <li><a href="#" class="block px-4 py-2 hover:bg-teal-50 text-sm">Price: High to Low</a></li>
+                  <li><a href="#" class="block px-4 py-2 hover:bg-teal-50 text-sm">Alphabetically: A-Z</a></li>
+                  <li><a href="#" class="block px-4 py-2 hover:bg-teal-50 text-sm">Alphabetically: Z-A</a></li>
+                </ul>
+              </div>  
+        </div>
+    
+        <hr class="border-t border-gray-300 mt-4"/>
+
+        <div class="flex">
+          <aside class="hidden md:block w-1/6 pr-6 border-r border-gray-300">
+          <form action="">
+            
+            <div class="space-y-2">
+              <h3 class="text-xs md:text-sm font-semibold text-gray-800 pt-10">BRAND</h3>
+              <div class="space-y-2 font-light text-xs md:text-sm" style="accent-color: #00A69D;">
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> Nikon
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> Sony
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700 ">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> FujiFilm
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> Canon
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> GoPro
+                </label>
+              </div>
+            </div>
+        
+           
+            <div class="space-y-2 mt-10">
+              <h3 class="text-xs md:text-sm font-semibold text-gray-800">CATEGORY</h3>
+              <div class="space-y-2 text-xs md:text-sm" style="accent-color: #00A69D;">
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> Mirrorless
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> DSLR
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> Action
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> Point & Shoot
+                </label>
+              </div>
+            </div>
+
+            <div class="space-y-2 mt-10">
+              <h3 class="text-xs md:text-sm font-semibold text-gray-800">PRICE RANGE</h3>
+              <div class="space-y-2 font-light text-xs md:text-sm" style="accent-color: #00A69D;">
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> ₹10K - 25K
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> ₹25k - 40k
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> ₹40k - 70k
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> ₹70k - 1 Lakh
+                </label>
+                <label class="flex items-center cursor-pointer  hover:text-teal-700">
+                  <input type="checkbox" class="mr-2 cursor-pointer"> ₹1 Lakh and above
+                </label>
+              </div>
+            </div>
+          </form>
+        </aside>
+        
+
+        <div class="w-full md:w-5/6 md:pl-6 mt-20">
+          <div class="grid grid-cols-2 md2:grid-cols-3 lg2:grid-cols-4 gap-4">
+
+            <div class="relative p-4 shadow-lg rounded-lg px-6 space-y-4 transition group cursor-pointer">
+              <button class="absolute top-2 right-2 text-gray-200 hover:text-gray-300 text-2xl wishlist-btn">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+              <img 
+                src="/plain/img/niko.png" 
+                alt="product" 
+                class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
+
+              />
+              <hr>
+              <div>
+                <h2 class="text-lg font-semibold text-gray-600 group-hover:underline line-clamp-2">
+                  Nikon ZFC FX Mirrorless 4K Digital Camera with Touchscreen and WiFi Connectivity
+                </h2>
+                <div class="text-yellow-500 text-sm mb-2">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold text-xs sm:text-sm md:text-base lg:text-lg text-gray-600">
+                    ₹ 12,999
+                  </p>
+                  <span class="text-xs sm:text-sm md:text-base text-gray-400 line-through">
+                    ₹ 18,999
+                  </span>
+                  <p class="text-xs sm:text-sm text-green-600">
+                    10% Off
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative p-4 shadow-lg rounded-lg px-6 space-y-4 transition group">
+              <button class="absolute top-2 right-2 text-gray-200 hover:text-rose-500 text-2xl">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+              <img 
+                src="/plain/img/nikon-zfc.jpg" 
+                alt="product" 
+                class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
+
+              />
+              <hr class="border-gray-300">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-600 line-clamp-2">
+                  Nikon ZFC FX Mirrorless 4K Digital Camera with Touchscreen and WiFi Connectivity
+                </h2>
+                <div class="text-yellow-500 text-sm mb-2">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold text-sm md:text-lg lg:text-xl text-gray-600">₹ 12,999</p>
+                  <span class="text-sm lg:text-md text-gray-400 line-through">₹ 18,999</span>
+                  <p class="text-sm text-green-600">10% Off</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative p-4 shadow-lg rounded-lg px-6 space-y-4  transition group">
+              <button class="absolute top-2 right-2 text-gray-200 hover:text-rose-500 text-2xl">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+              <img 
+                src="/plain/img/fuji1.png" 
+                alt="product" 
+                class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
+
+              />
+              <hr class="border-gray-300">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-600 line-clamp-2">
+                  Nikon ZFC FX Mirrorless 4K Digital Camera with Touchscreen and WiFi Connectivity
+                </h2>
+                <div class="text-yellow-500 text-sm mb-2">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold text-sm md:text-lg lg:text-xl text-gray-600">₹ 12,999</p>
+                  <span class="text-sm lg:text-md text-gray-400 line-through">₹ 18,999</span>
+                  <p class="text-sm text-green-600">10% Off</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative p-4 shadow-lg rounded-lg px-6 space-y-4 transition group">
+              <button class="absolute top-2 right-2 text-gray-200 hover:text-rose-500 text-2xl">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+              <img 
+                src="/plain/img/fuji1.png" 
+                alt="product" 
+                class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
+              />
+              <hr class="border-gray-300">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-600 line-clamp-2">
+                  Nikon ZFC FX Mirrorless 4K Digital Camera with Touchscreen and WiFi Connectivity
+                </h2>
+                <div class="text-yellow-500 text-sm mb-2">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold text-sm md:text-lg lg:text-xl text-gray-600">₹ 12,999</p>
+                  <span class="text-sm lg:text-md text-gray-400 line-through">₹ 18,999</span>
+                  <p class="text-sm text-green-600">10% Off</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative p-4 shadow-lg rounded-lg px-6 space-y-4 transition group">
+              <button class="absolute top-2 right-2 text-gray-200 hover:text-rose-500 text-2xl">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+              <img 
+                src="/plain/img/niko.png" 
+                alt="product" 
+                class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
+
+              />
+              <hr class="border-gray-300">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-600 line-clamp-2">
+                  Nikon ZFC FX Mirrorless 4K Digital Camera with Touchscreen and WiFi Connectivity
+                </h2>
+                <div class="text-yellow-500 text-sm mb-2">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold text-sm md:text-lg lg:text-xl text-gray-600">₹ 12,999</p>
+                  <span class="text-sm lg:text-md text-gray-400 line-through">₹ 18,999</span>
+                  <p class="text-sm text-green-600">10% Off</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative p-4 shadow-lg rounded-lg px-6 space-y-4 transition group">
+              <button class="absolute top-2 right-2 text-gray-200 hover:text-rose-500 text-2xl">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+              <img 
+                src="/plain/img/nikon-zfc.jpg" 
+                alt="product" 
+                class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
+
+              />
+              <hr class="border-gray-300">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-600 line-clamp-2">
+                  Nikon ZFC FX Mirrorless 4K Digital Camera with Touchscreen and WiFi Connectivity
+                </h2>
+                <div class="text-yellow-500 text-sm mb-2">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold text-sm md:text-lg lg:text-xl text-gray-600">₹ 12,999</p>
+                  <span class="text-sm lg:text-md text-gray-400 line-through">₹ 18,999</span>
+                  <p class="text-sm text-green-600">10% Off</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative p-4 shadow-lg rounded-lg px-6 space-y-4 transition group">
+              <button class="absolute top-2 right-2 text-gray-200 hover:text-rose-500 text-2xl">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+              <img 
+                src="/plain/img/fuji1.png" 
+                alt="product" 
+                class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
+
+              />
+              <hr class="border-gray-300">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-600 line-clamp-2">
+                  Nikon ZFC FX Mirrorless 4K Digital Camera with Touchscreen and WiFi Connectivity
+                </h2>
+                <div class="text-yellow-500 text-sm mb-2">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold text-sm md:text-lg lg:text-xl text-gray-600">₹ 12,999</p>
+                  <span class="text-sm lg:text-md text-gray-400 line-through">₹ 18,999</span>
+                  <p class="text-sm text-green-600">10% Off</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative p-4 shadow-lg rounded-lg px-6 space-y-4  transition group">
+              <button class="absolute top-2 right-2 text-gray-200 hover:text-rose-500 text-2xl">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+              <img 
+                src="/plain/img/fuji1.png" 
+                alt="product" 
+                class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
+              />
+              <hr class="border-gray-300">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-600 line-clamp-2">
+                  Nikon ZFC FX Mirrorless 4K Digital Camera with Touchscreen and WiFi Connectivity
+                </h2>
+                <div class="text-yellow-500 text-sm mb-2">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold text-sm md:text-lg lg:text-xl text-gray-600">₹ 12,999</p>
+                  <span class="text-sm lg:text-md text-gray-400 line-through">₹ 18,999</span>
+                  <p class="text-sm text-green-600">10% Off</p>
+                </div> 
+              </div>
+            </div>
+            
+          </div>
+        </div>
+          
+      </section>
+
+      <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 flex justify-around items-center py-2 px-10 z-50 md:hidden ">
+        
+        <button class="flex flex-col items-center text-sm font-extralight text-gray-400 hover:text-teal-600">
+            <i class="fa fa-sort"></i>
+          SORT
+        </button>
+        <div class="h-6 w-px bg-gray-300"></div>
+        
+        <button id="filterBtn" class="flex flex-col items-center text-sm font-extralight text-gray-400 hover:text-teal-600">
+            <i class="fa-solid fa-sliders"></i>
+          FILTER
+        </button>
+      </div>
+
+      <div id="filterDrawer" class="fixed bottom-0 left-0 right-0 h-[50vh] bg-white border-t z-50 hidden md:hidden">
+
+        <div class="flex justify-between items-center px-4 py-3 bg-white border-b border-gray-300">
+          <h2 class="text-lg font-semibold text-gray-800">FILTERS</h2>
+          <button id="closeFilterBtn" class="text-gray-500 text-xl">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      
+        
+        <div class="flex h-[calc(100%-104px)]"> 
+          <div class="w-1/3 bg-gray-100 p-4">
+            <p class="text-gray-600 mb-4 cursor-pointer" id="brandBtn">Brand</p>
+            <p class="text-gray-600 mb-4 cursor-pointer" id="categoryBtn">Category</p>
+            <p class="text-gray-600 mb-4 cursor-pointer" id="priceBtn">Price</p>
+          </div>
+      
+          <div class="w-2/3 bg-white relative">
+            <div id="drawerContent" class="p-4 overflow-y-auto h-full">
+
+              <div id="brandContent" class="hidden">
+                <h2 class="border-b border-gray-300 mb-2 font-semibold">BRAND</h2>
+                <form action="" class="space-y-2 text-md font-light" style="accent-color: #00A69D;">
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> Nikon
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> Sony
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> FujiFilm
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> Canon
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> GoPro
+                  </label>
+                </form>
+              </div>
+
+              <div id="categoryContent" class="hidden">
+                <h2 class="border-b border-gray-300 mb-2 font-semibold">CATEGORY</h2>
+                <form class="space-y-2 text-md font-light" style="accent-color: #00A69D;">
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> Mirrorless
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> DSLR
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> Action
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> Point & Shoot
+                  </label>
+                </form>
+              </div>
+
+              <div id="priceContent" class="hidden">
+                <h2 class="border-b border-gray-300 mb-2 font-semibold">PRICE</h2>
+                <form class="space-y-2 text-md font-light" style="accent-color: #00A69D;">
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> 10K - 25K
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> 20K - 40K
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> 40K - 70K
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> 70K - 1 Lakh
+                  </label>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input type="checkbox" class="mr-2"> 1 Lakh and above
+                  </label>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        
+
+        <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 flex justify-around items-center py-3 px-10 z-50 md:hidden">
+  
+          <button class="flex items-center text-md font-extralight text-gray-400 hover:text-red-500 gap-1">
+            <i class="fa fa-times"></i>
+            CLEAR
+          </button>
+        
+          <div class="h-6 w-px bg-gray-300"></div>
+        
+          <button class="flex items-center text-md font-extralight text-gray-400 hover:text-teal-600 gap-1">
+            <i class="fa fa-check"></i>
+            APPLY
+          </button>
+        
+        </div>
+        
+        
+      </div>
+          
+
+      <footer class="bg-black text-white py-20 md:py-10 ">
+        <div class="max-w-6xl mx-auto px-4">
+      
+          
+          <div class="hidden md:grid grid-cols-4 gap-8">
+            
+            <div>
+              <h2 class="text-2xl font-semibold text-gray-400 mb-4" style="font-family: 'Michroma', sans-serif;">Camverse</h2>
+              <p class="text-sm">123 Street, City, Country</p>
+              <p class="text-sm">+91 9876543210</p>
+            </div>
+      
+            
+            <div>
+              <h2 class="text-lg font-semibold mb-4">Quick Links</h2>
+              <ul class="space-y-2 text-sm">
+                <li><a href="#" class="hover:underline">Home</a></li>
+                <li><a href="#" class="hover:underline">Shop</a></li>
+                <li><a href="#" class="hover:underline">About</a></li>
+                <li><a href="#" class="hover:underline">Contact</a></li>
+              </ul>
+            </div>
+      
+            
+            <div>
+              <h2 class="text-lg font-semibold mb-4">Support</h2>
+              <ul class="space-y-2 text-sm">
+                <li><a href="#" class="hover:underline">FAQs</a></li>
+                <li><a href="#" class="hover:underline">Shipping</a></li>
+                <li><a href="#" class="hover:underline">Returns</a></li>
+                <li><a href="#" class="hover:underline">Terms & Conditions</a></li>
+              </ul>
+            </div>
+      
+            
+            <div>
+              <h2 class="text-lg font-semibold mb-4">Follow Us</h2>
+              <div class="flex space-x-4 text-xl">
+                <a href="#"><i class="fab fa-facebook hover:text-yellow-400"></i></a>
+                <a href="#"><i class="fab fa-instagram hover:text-yellow-400"></i></a>
+                <a href="#"><i class="fab fa-twitter hover:text-yellow-400"></i></a>
+                <a href="#"><i class="fab fa-youtube hover:text-yellow-400"></i></a>
+              </div>
+            </div>
+          </div>
+      
+          
+          <div class="block md:hidden space-y-6 mt-4">
+            
+            <div>
+              <h2 class="text-2xl font-semibold text-gray-400 mb-2" style="font-family: 'Michroma', sans-serif;">Camverse</h2>
+              <p class="text-sm">123 Street, City, Country</p>
+              <p class="text-sm">+91 9876543210</p>
+            </div>
+      
+            
+            <div class="border-t border-gray-700 pt-4">
+              <button class="w-full flex justify-between items-center text-left text-lg font-semibold toggle-btn">
+                Quick Links <i class="fas fa-chevron-down"></i>
+              </button>
+              <ul class="space-y-2 text-sm mt-2 hidden toggle-content">
+                <li><a href="#" class="hover:underline">Home</a></li>
+                <li><a href="#" class="hover:underline">Shop</a></li>
+                <li><a href="#" class="hover:underline">About</a></li>
+                <li><a href="#" class="hover:underline">Contact</a></li>
+              </ul>
+            </div>
+      
+            <div class="border-t border-gray-700 pt-4">
+              <button class="w-full flex justify-between items-center text-left text-lg font-semibold toggle-btn">
+                Support <i class="fas fa-chevron-down"></i>
+              </button>
+              <ul class="space-y-2 text-sm mt-2 hidden toggle-content">
+                <li><a href="#" class="hover:underline">FAQs</a></li>
+                <li><a href="#" class="hover:underline">Shipping</a></li>
+                <li><a href="#" class="hover:underline">Returns</a></li>
+                <li><a href="#" class="hover:underline">Terms & Conditions</a></li>
+              </ul>
+            </div>
+      
+            <div class="border-t border-gray-700 pt-4">
+              <button class="w-full flex justify-between items-center text-left text-lg font-semibold toggle-btn">
+                Follow Us <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="flex space-x-4 text-xl mt-2 hidden toggle-content">
+                <a href="#"><i class="fab fa-facebook hover:text-yellow-400"></i></a>
+                <a href="#"><i class="fab fa-instagram hover:text-yellow-400"></i></a>
+                <a href="#"><i class="fab fa-twitter hover:text-yellow-400"></i></a>
+                <a href="#"><i class="fab fa-youtube hover:text-yellow-400"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        
+        <div class="mt-10 border-t border-gray-700 pt-4 text-center text-xs text-gray-400">
+          &copy; 2025 Camverse. All rights reserved.
+        </div>
+      </footer>   
+
+
+    <script>
+
+        tailwind.config = {
+            theme: {
+            extend: {
+                screens: {
+                'tablet': '800px',
+                'xs': '610px',
+                'sm2': '800px',
+                'md2': '1201px',
+
+                'lg2': '1321px', 
+                }
+            }
+            }
+        }
+        
+        const toggleBtn = document.getElementById('menu-toggle');
+        const menu = document.getElementById('menu');
+    
+        toggleBtn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    
+    
+        document.getElementById('brand-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('brands-submenu').classList.toggle('hidden');
+        });
+    
+        document.getElementById('category-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('categories-submenu').classList.toggle('hidden');
+        });
+    
+    
+        const loginBtn = document.getElementById('login-click');
+        const dropdown = document.getElementById('login-dropdown');
+    
+       loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            dropdown.classList.toggle('hidden');
+        });
+    
+        document.addEventListener('click', (e) => {
+            const isClickInside = loginBtn.contains(e.target) || dropdown.contains(e.target);
+            if (!isClickInside) {
+                dropdown.classList.add('hidden');
+            }
+        });    
+    
+    
+        const searchToggle = document.getElementById('search-toggle');
+        const searchBar = document.getElementById('search-bar');
+        let searchVisible = false;
+    
+        searchToggle.addEventListener('click', () => {
+            searchVisible = !searchVisible;
+            if (searchVisible) {
+                searchBar.classList.remove('w-0', 'opacity-0');
+                searchBar.classList.add('w-[250px]', 'tablet:w-[500px]', 'opacity-100');
+            } else {
+                searchBar.classList.remove('w-[250px]', 'tablet:w-[500px]', 'opacity-100');
+                searchBar.classList.add('w-0', 'opacity-0');
+            }
+        });
+    
+        document.addEventListener('click', (e) => {
+            if(searchVisible && !searchBar.contains(e.target) && !searchToggle.contains(e.target)) {
+                searchVisible = false;
+                searchBar.classList.remove('w-[250px]', 'tablet:w-[500px]', 'opacity-100');
+                searchBar.classList.add('w-0', 'opacity-0');
+            }
+        })
+    
+    
+    
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+              btn.addEventListener('click', () => {
+                btn.nextElementSibling.classList.toggle('hidden');
+              });
+        });       
+        
+        
+
+        
+        const sortButton = document.getElementById('sortButton');
+        const sortMenu = document.getElementById('sortMenu');
+
+        sortButton.addEventListener('click', () => {
+            sortMenu.classList.toggle('hidden');
+        });
+
+        
+        document.addEventListener('click', (e) => {
+            if (!sortButton.contains(e.target) && !sortMenu.contains(e.target)) {
+            sortMenu.classList.add('hidden');
+            }
+        });
+
+
+        document.querySelectorAll('.wishlist-btn').forEach(button => {
+          button.addEventListener('click', () => {
+            const icon = button.querySelector('i');
+            icon.classList.toggle('text-rose-500');
+          });
+        });
+
+        const filterDrawer = document.getElementById('filterDrawer');
+        const filterBtn = document.getElementById('filterBtn');
+        const closeFilterBtn = document.getElementById('closeFilterBtn');
+
+        let isDrawerOpen = false;
+
+        
+        filterBtn.addEventListener('click', () => {
+          isDrawerOpen = true;
+          if (window.innerWidth < 768) {
+            filterDrawer.classList.remove('hidden');
+          }
+        });
+
+        
+        closeFilterBtn.addEventListener('click', () => {
+          isDrawerOpen = false;
+          filterDrawer.classList.add('hidden');
+        });
+
+        
+        function handleResize() {
+          const isDesktop = window.innerWidth >= 768;
+
+          if (isDesktop) {
+            
+            filterDrawer.classList.add('hidden');
+            isDrawerOpen = false;
+          } else {
+            
+            if (isDrawerOpen) {
+              filterDrawer.classList.remove('hidden');
+            } else {
+              filterDrawer.classList.add('hidden');
+            }
+          }
+        }
+
+        
+        window.addEventListener('DOMContentLoaded', handleResize);
+        window.addEventListener('resize', handleResize);
+
+
+
+        const brandBtn = document.getElementById('brandBtn');
+        const categoryBtn = document.getElementById('categoryBtn');
+        const priceBtn = document.getElementById('priceBtn');
+
+
+        brandBtn.addEventListener('click', () => {
+          document.getElementById('brandContent').classList.toggle('hidden');
+          document.getElementById('categoryContent').classList.add('hidden');
+          document.getElementById('priceContent').classList.add('hidden');
+        });
+
+        categoryBtn.addEventListener('click', () => {
+          document.getElementById('categoryContent').classList.toggle('hidden');
+          document.getElementById('brandContent').classList.add('hidden');
+          document.getElementById('priceContent').classList.add('hidden');
+          
+        });
+
+        priceBtn.addEventListener('click', () => {
+          document.getElementById('priceContent').classList.toggle('hidden');
+          document.getElementById('brandContent').classList.add('hidden');
+          document.getElementById('categoryContent').classList.add('hidden');
+        });
+
+        
+
+
+
+
+    
+    </script>
+    
+</body>
+</html>

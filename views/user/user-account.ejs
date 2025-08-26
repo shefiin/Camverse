@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="font-family:'Open Sans', sans-serif;">
+
+    <%- include('partials/userNavbar') %>
+
+    <section class="px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
+        <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-16">My Account</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+             <a href="/user/profile/<%= user._id %>" class="bg-white shadow p-6 flex flex-col items-center hover:shadow-lg transition">
+                <i class="fa-solid fa-circle-user text-4xl text-blue-700 mb-4"></i>
+                <h2 class="font-semibold text-xl mb-2">My Profile</h2>
+                <p class="text-gray-500 text-center text-sm mb-4">
+                    View and edit your personal details.
+                </p>
+             </a>
+
+             <a href="/user/address%>" class="bg-white shadow p-6 flex flex-col items-center hover:shadow-lg transition">
+                <i class="fa-solid fa-address-card text-4xl text-yellow-600 mb-4"></i>
+                <h2 class="font-semibold text-xl mb-2">My Addresses</h2>
+                <p class="text-gray-500 text-center text-sm mb-4">
+                    Manage your saved addresses for faster checkout.
+                </p>
+             </a>
+
+             <a href="/user/orders" class="bg-white shadow p-6 flex flex-col items-center hover:shadow-lg transition">
+                <i class="fa-solid fa-box-open text-4xl text-green-600 mb-4"></i>
+                <h2 class="font-semibold text-xl mb-2">My Orders</h2>
+                <p class="text-gray-500 text-center text-sm mb-4">
+                    Track and manage your recent orders.
+                </p>
+             </a>
+             <a href="/user/wishlist" class="bg-white shadow p-6 flex flex-col items-center hover:shadow-lg transition">
+                <i class="fa-solid fa-heart text-4xl text-rose-600 mb-4"></i>
+                <h2 class="font-semibold text-xl mb-2">My Wishlist</h2>
+                <p class="text-gray-500 text-center text-sm mb-4">
+                    View and manage your saved items for later purchase.
+                </p>
+             </a>
+             <a href="/user/wallet" class="bg-white shadow p-6 flex flex-col items-center hover:shadow-lg transition">
+                <i class="fa-solid fa-wallet text-4xl text-cyan-600 mb-4"></i>
+                <h2 class="font-semibold text-xl mb-2">My Wallet</h2>
+                <p class="text-gray-500 text-center text-sm mb-4">
+                    Check your balance, add funds, and view transactions.
+                </p>
+             </a>
+            
+        </div>
+    
+        
+    </section>    
+
+    <%- include('partials/mobileFilter') %>
+
+    <%- include('partials/userFooter') %>
+        
+
+    <script src="/js/user/homePage.js"></script>
+</body>
+</html>

@@ -1,11 +1,46 @@
-<% if (currentPage > 1) { %> 
-    <a href="?page=<%= currentPage - 1 %>" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Previous</a>
-  <% } %> 
-  
-  <% for (let i = 1; i <= totalPages; i++) { %>
-    <a href="?page=<%= i %>" class="px-3 py-1 rounded <%= i === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300' %>"><%= i %></a>
-  <% } %>
+<% if (totalPages && totalPages > 1) { %>
+  <% 
+    const maxVisiblePages = 4; // How many numbers to show
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = startPage + maxVisiblePages - 1;
 
-  <% if (currentPage < totalPages) { %>
-    <a href="?page=<%= currentPage + 1 %>" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Next</a>
-  <% } %> 
+    // Adjust if endPage goes beyond totalPages
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // Build query string for admin side
+    const buildQs = (pageNum) => {
+      let qs = `page=${pageNum}`;
+      if (typeof search !== 'undefined' && search.trim() !== '') {
+        qs += `&search=${encodeURIComponent(search)}`;
+      }
+      return qs;
+    };
+  %>
+
+  <div class="flex justify-center items-center space-x-2 mt-6">
+    <!-- Previous -->
+    <% if (currentPage > 1) { %>
+      <a href="?<%= buildQs(currentPage - 1) %>" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+        &lt;
+      </a>
+    <% } %>
+
+    <!-- Page Numbers -->
+    <% for (let i = startPage; i <= endPage; i++) { %>
+      <a href="?<%= buildQs(i) %>" 
+         class="px-3 py-1 rounded <%= i === currentPage ? 'bg-gray-800 text-white' : 'bg-gray-200 hover:bg-gray-300' %>">
+        <%= i %>
+      </a>
+    <% } %>
+
+    <!-- Next -->
+    <% if (currentPage < totalPages) { %>
+      <a href="?<%= buildQs(currentPage + 1) %>" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+        &gt;
+      </a>
+    <% } %>
+  </div>
+<% } %>

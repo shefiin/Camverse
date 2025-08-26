@@ -1,75 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= product.name %> - Product Details</title>
+  
+  
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+
 </head>
-<body class="bg-gray-100 font-sans">
-  <div class="flex items-center justify-center min-h-screen">
-    <div class="bg-white rounded-lg shadow p-8 w-full max-w-md space-y-6">
-      <div class="pt-4">
-        <h2 class="text-3xl font-bold text-center">Admin Login</h2>
+<body class="font-family: 'Kanit', sans-serif;">
+
+  <style>
+
+  </style>
+
+  
+  <%- include('partials/userNavbar') %>
+
+  
+  <div class="container mx-auto px-6 py-20 mt-8">
+
+    <div class="flex flex-col md:flex-row gap-10">
+  
+      
+      <div class="flex flex-col items-center space-y-6 md:w-1/6">
+        
+        <div id="thumbnails" class="flex flex-col space-y-4 max-h-[400px] overflow-y-auto">
+          <% product.images.forEach((img, index) => { %>
+            <img 
+              src="<%= img.url || img.secure_url %>"  
+              alt="Thumbnail <%= index + 1 %>" 
+              class="w-20 h-20 object-contain border-2 cursor-pointer <%= index === 0 ? 'border-black' : 'border-transparent' %>" 
+              data-index="<%= index %>"
+            />
+          <% }) %>
+        </div>
+
       </div>
-      <form id="login-form" class="space-y-6">
+  
+     
+      <div class="md:w-1/3 flex justify-center items-center relative">
+        <img 
+        id="mainImage" 
+        src="<%= product.images[0].url || product.images[0].secure_url %>" 
+        alt="Product Image" 
+        class="max-w-full max-h-[350px] object-contain" 
+        />
+      </div>
+  
+      
+      <div class="md:w-1/2 space-y-4">
+  
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700"></label>
-          <input type="email" id="email" name="email" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter email">
+          <h1 class="text-lg md:text-2xl font-semibold">
+            <%= product.name %>
+          </h1>
+          <p class="text-blue-400">Brand: <%= product.brand.name %></p>
         </div>
+  
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700"></label>
-          <input type="password" id="password" name="password" required class="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter password">
+          <p class="text-xl md:text-2xl font-bold">
+            ₹<%= product.price.toLocaleString() %>
+          </p>
+          <p class="text-sm text-gray-600">(Incl. all Taxes)</p>
         </div>
-        <button type="submit" class="w-full bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded">Login</button>
-      </form>
-      <div class="h-8"></div> <!-- Matches the reduced bottom height -->
+  
+        <hr />
+  
+        <% if (product.mrp && product.mrp > product.price) { %>
+          <p class="text-gray-400 line-through text-sm">
+            MRP: ₹<%= product.mrp.toLocaleString() %>
+          </p>
+  
+          <p class="text-sm text-green-600">
+            (Save ₹<%= (product.mrp - product.price).toLocaleString() %>, 
+            <%= (((product.mrp - product.price) / product.mrp) * 100).toFixed(2) %>% off)
+          </p>
+        <% } %>
+  
+        <div class="border border-gray-300 rounded p-4 mt-4">
+          <strong class="block mb-2">Features</strong>
+          <p class="text-sm text-gray-700 whitespace-pre-line"><%= product.description %></p>
+        </div>
+  
+        <div class="flex gap-4 mt-6">
+          <button class="bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
+            Add To Cart
+          </button>
+          <button class="bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
+            Add To Wishlist
+          </button>
+        </div>
+  
+      </div>
     </div>
   </div>
+  
+
+
+  <%- include('partials/userFooter') %>
+
+ 
   <script>
-    const form = document.getElementById('login-form');
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      const thumbnails = document.querySelectorAll('#thumbnails img');
+      const mainImage = document.getElementById('mainImage');
+      let currentIndex = 0;
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-
-      if (!email || !password) {
-        Swal.fire({
-          title: 'Error',
-          text: 'Please fill in all fields',
-          icon: 'error',
-          confirmButtonText: 'OK'
+      thumbnails.forEach((thumb, idx) => {
+        thumb.addEventListener('click', () => {
+          mainImage.src = thumb.src;
+          thumbnails.forEach(t => t.classList.remove('border-black'));
+          thumb.classList.add('border-black');
+          currentIndex = idx;
         });
-        return;
-      }
+      });
 
-      // Hardcoded admin credentials (replace with backend authentication)
-      const adminEmail = 'admin@camverse.com';
-      const adminPassword = 'admin123';
+      
+      const thumbContainer = document.getElementById('thumbnails');
+      document.getElementById('thumbUp').addEventListener('click', () => {
+        thumbContainer.scrollBy({ top: -80, behavior: 'smooth' });
+      });
+      document.getElementById('thumbDown').addEventListener('click', () => {
+        thumbContainer.scrollBy({ top: 80, behavior: 'smooth' });
+      });
 
-      if (email === adminEmail && password === adminPassword) {
-        Swal.fire({
-          title: 'Success',
-          text: 'Login successful!',
-          icon: 'success',
-          confirmButtonText: 'OK'
-        }).then(() => {
-          window.location.href = 'brand-management.html'; // Redirect to dashboard or preferred page
-        });
-      } else {
-        Swal.fire({
-          title: 'Error',
-          text: 'Invalid email or password',
-          icon: 'error',
-          confirmButtonText: 'OK',
-          customClass: {
-            popup: 'text-red-600'
-          }
-        });
-      }
+      
+      const menuToggle = document.getElementById('menu-toggle');
+      const menu = document.getElementById('menu');
+      menuToggle.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+      });
+
+      const brandLink = document.getElementById('brand-link');
+      const brandsSubmenu = document.getElementById('brands-submenu');
+      brandLink.addEventListener('click', e => {
+        e.preventDefault();
+        brandsSubmenu.classList.toggle('hidden');
+      });
+
+      const categoryLink = document.getElementById('category-link');
+      const categoriesSubmenu = document.getElementById('categories-submenu');
+      categoryLink.addEventListener('click', e => {
+        e.preventDefault();
+        categoriesSubmenu.classList.toggle('hidden');
+      });
+
+      
+      const loginClick = document.getElementById('login-click');
+      const loginDropdown = document.getElementById('login-dropdown');
+      loginClick.addEventListener('click', e => {
+        e.preventDefault();
+        loginDropdown.classList.toggle('hidden');
+      });
+
+      
+      const searchToggle = document.getElementById('search-toggle');
+      const searchBar = document.getElementById('search-bar');
+      const clearSearch = document.getElementById('clear-search');
+      const searchInput = document.getElementById('search-input');
+
     });
   </script>
-</body>
-</html>

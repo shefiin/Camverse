@@ -13,7 +13,7 @@
 
 </head>
 <body class="min-h-screen bg-cover bg-center flex items-center justify-center" style="background-image: url('/images/reg.png'); font-family: 'Open Sans', sans-serif;">
-  <div class="bg-white p-10 rounded-lg shodow-lg w-full max-w-md">
+  <div class="bg-white p-10 shodow-lg w-full max-w-md">
     <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: 'Michroma',sans-serif;">Camverse</h2>
     <h1 class="text-3xl font-medium mb-6" style="font-family: 'Kanit',sans-serif;">Create New Account</h1>
 
@@ -25,7 +25,7 @@
           type="text"
           name="name"
           id="name"
-          class="w-full px-4 py-2 font-extralight border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
+          class="w-full px-3 py-2 font-extralight border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
           <p id="nameError" class="text-xs font-extralight text-red-500 mt-1 hidden">Name must not contain numbers or special characters</p>
       </div>
 
@@ -35,7 +35,7 @@
           type="email"
           name="email"
           id="email"
-          class="w-full px-4 py-2 font-extralight border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
+          class="w-full px-3 py-2 font-extralight border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
           <p id="emailError" class="text-xs font-extralight text-red-500 mt-1 <%= typeof error !== 'undefined' && error ? '' : 'hidden' %>">
             <%- error || 'Please enter a valid email address' %>
           </p>          
@@ -48,7 +48,7 @@
           name="password"
           id="password"
           pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,23}$"
-          class="w-full px-4 py-2 font-extralight border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
+          class="w-full px-3 py-2 font-extralight border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
           <span class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer toggle-password">
             <i class="fa-solid fa-eye-slash"></i>
           </span>
@@ -63,7 +63,7 @@
             name="confirmPassword"
             id="confirmPassword"
             pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,23}$"
-            class="w-full px-4 py-2 font-extralight border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
+            class="w-full px-3 py-2 font-extralight border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
       
           <span class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer toggle-password">
             <i class="fa-solid fa-eye-slash"></i>
@@ -76,7 +76,7 @@
         </div>
       </div>
 
-      <button type="submit" id="submitBtn" disabled class="w-full bg-gray-100 text-gray-300 px-4 py-2 mt-8 rounded-md cursor-not-allowed transition-colors">
+      <button type="submit" id="submitBtn" disabled class="w-full bg-gray-100 text-gray-300 px-4 py-2 mt-8 cursor-not-allowed transition-colors">
         SUBMIT
       </button>
       
@@ -93,7 +93,7 @@
       <hr class="flex-grow border-gray-300">
     </div>
 
-    <a href="/auth/google" class="flex items-center justify-center w-full border border-gray-300 rounded-md py-2 px-4 hover:bg-gray-100">
+    <a href="/auth/google" class="flex items-center justify-center w-full border border-gray-300 py-2 px-4 hover:bg-gray-100">
       <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5 mr-2">
       <span class="text-sm text-gray-700 font-medium">Continue with Google</span>
     </a>

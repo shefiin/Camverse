@@ -13,13 +13,14 @@ const sendOTP = async (email, otp) => {
         await transporter.sendMail({
             from: process.env.EMAIL,
             to: email,
-            subject: 'OTP Verification',
+            subject: 'Camverse OTP Verification',
             text: `Your OTP is: ${otp}`,
-            html: `<p>Your OTP is <strong>${otp}</strong></p>`
+            html: `<h2> Your new OTP for email verification is: <b>${otp}</b></h2>
+                   <p>This OTP is valid for 5 minutes.</p>`
         });
-        console.log('OTP sent successfully');
+        console.log('OTP sent successfully', info.response);
     }   catch (err) {
-        console.error('Error sending OTP:', err);
+        console.error('Error sending OTP:', err.message);
     }
 };
 

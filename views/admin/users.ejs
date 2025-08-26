@@ -1,133 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Users</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="/css/admin/sidebar.css">
-  <link rel="stylesheet" href="/css/admin/userManagement.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 font-sans">
-  <div class="flex h-screen">
-    <!-- Sidebar -->
-    <%- include('./partials/sidebar') %>
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
-      <!-- Navbar -->
-      <%- include('./partials/navbar') %>
-      <!-- Content -->
-      <main class="p-6 flex-1 overflow-auto">
-        <h2 class="text-2xl font-bold mb-4">Users</h2>
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-              <input type="text" id="search" placeholder="Search users..." class="w-full max-w-md border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <button id="clear-btn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Clear</button>
+<body style="font-family: 'Kanit', sans-serif;">
+    
+    <%- include('partials/adminNavbar') %>
+
+    <div class="flex pt-[80px]">
+        <%- include('partials/adminSidebar') %>
+
+        <main class="md:ml-56 flex-1 p-6 w-full relative">
+            <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mb-10">User Management</h1>
+
+
+            <div class="flex justify-between items-center mb-6">
+              
+              <div class="flex items-center space-x-1">
+                <div class="relative w-64 md:w-96">
+                    <form
+                    action="/admin/users"
+                    method="GET"
+                    class="relative flex items-center"
+                  >
+                    <input
+                      type="text"
+                      name="search"
+                      value="<%= typeof search !== 'undefined' ? search : '' %>"
+                      placeholder="Search users..."
+                      class="pl-3 py-2 border border-gray-300 rounded-md px-4 w-64 md:w-96 focus:outline-none focus:ring focus:border-none focus:ring-blue-200"
+                    >
+                
+                    <button
+                      type="submit"
+                      class="absolute inset-y-0 right-0 m-1 p-3 rounded flex items-center bg-gray-200 text-gray-600 hover:text-blue-600">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                
+                  </form>
+                </div>
+                <% if (search) { %>
+                    <a
+                      href="/admin/users"
+                      class="text-sm text-gray-500 hover:text-gray-600 bg-gray-200 hover:bg-gray-300 px-1 py-3 rounded-md"
+                      title="Clear Search"
+                    >
+                      Clear
+                    </a>
+                  <% } %>
             </div>
-            <button id="add-user-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
-              Add User
-            </button>
-          </div>
-          <div class="bg-white rounded-lg shadow overflow-hidden">
-            <table id="user-table" class="w-full">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="p-3 text-left">No.</th>
-                  <th class="p-3 text-left">Image</th>
-                  <th class="p-3 text-left">Username</th>
-                  <th class="p-3 text-left">Email</th>
-                  <th class="p-3 text-left">Address</th>
-                  <th class="p-3 text-left">Date of Creation</th>
-                  <th class="p-3 text-left">Action</th>
-                </tr>
-              </thead>
-              <tbody id="user-table-body">
-                <% users.forEach((user, index) => { %>
-                    <tr class="border-t">
-                      <td class="p-3"><%= index + 1 %></td>
-                      <td class="p-3">
-                        <img src="<%= user.profileImage || 'https://via.placeholder.com/40' %>" alt="<%= user.username %>" class="w-10 h-10 rounded-full">
-                      </td>
-                      <td class="p-3"><%= user.username %></td>
-                      <td class="p-3"><%= user.email %></td>
-                      <td class="p-3"><%= user.address || 'N/A' %></td>
-                      <td class="p-3"><%= user.createdAt.toDateString() %></td>
-                      <td class="p-3">
-                        <td class="p-3">
-                            <button 
-                              type="button"
-                              class="toggle-status-btn w-24 <%= user.status === 'Active' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' %> text-white px-2 py-1 rounded"
-                              data-id="<%= user._id %>"
-                              data-status="<%= user.status === 'Active' ? 'Blocked' : 'Active' %>"
-                            >
-                              <%= user.status === 'Active' ? 'Block' : 'Unblock' %>
-                            </button>
-                          </td>                         
-                      </td>
-                    </tr>
-                  <% }) %>
-              </tbody>
-            </table>
-          </div>
-          <!-- Pagination -->
-          <div class="flex justify-center mt-4">
-            <div class="flex space-x-2">
-              <%- include('partials/pagination', { currentPage, totalPages }) %>
+              
+
+                <a href="/admin/user/add" 
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow">
+                    <i class="fa-solid fa-plus"></i>
+                    Add User
+                </a>
             </div>
-          </div>
-        </div>
-      </main>
+
+            <div class="bg-black rounded-xl shadow p-4 mt-6">
+                <h2 class="text-white text-lg font-semibold mb-4">Users</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-left text-sm text-gray-100">
+                            <thead class="bg-gray-800 text-gray-100 text-sm md:text-base">
+                                <tr>
+                                    <th class="px-4 py-3">No</th>
+                                    <th class="px-4 py-3">User Name</th>
+                                    <th class="px-4 py-3">Email</th>
+                                    <th class="px-4 py-3">Address</th>
+                                    <th class="px-4 py-3">Status</th>
+                                    <th class="px-4 text-center py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700">
+                              <% users.forEach((user, index) => { %>
+                                <tr class="hover:bg-gray-800">
+                                  <td class="px-4 py-2"><%= skip + index + 1 %></td>
+                                  <td class="px-4 py-2"><%= user.name %></td>
+                                  <td class="px-4 py-2"><%= user.email %></td>
+                                  <td class="px-4 py-2"><%= user.address %></td>
+                                  <td class="px-4 py-2">
+                                    <% if (user.status === 'Active') { %>
+                                        <span class="text-green-400 font-medium">Active</span>
+                                    <% } else if (user.status === 'Blocked') { %>
+                                        <span class="text-red-400 font-medium">Blocked</span>
+                                    <% } %>
+                                  </td>
+                                  <td class="px-4 py-2 text-center space-y-2">
+                                    
+                                    <% if (user.isBlocked) { %>
+                                      <form action="/admin/users/unblock/<%= user._id %>?_method=PATCH" method="POST" class="inline-block block-form">
+                                        <button type="submit" class="px-3 py-1 rounded-md bg-green-600 text-white hover:bg-green-700">
+                                          Unblock
+                                        </button>
+                                      </form>
+                                    <% } else { %>
+                                      <form action="/admin/users/block/<%= user._id %>?_method=PATCH" method="POST" class="inline-block block-form">
+                                        <button type="submit" class="px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700">
+                                          Block
+                                        </button>
+                                      </form>
+                                    <% } %>
+
+                                    </div>
+                                  </td>
+                                                                                                                                                           
+                              </tr>
+                              <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+            <%- include('partials/pagination') %>
+        </main>
     </div>
-  </div>
-  <script>
-    
-    const searchInput = document.getElementById('search');
-    const clearBtn = document.getElementById('clear-btn');
-    const addUserBtn = document.getElementById('add-user-btn');
 
-    const logoutButtons = document.querySelectorAll('.logout');
-    logoutButtons.forEach(button => {
-      button.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const result = await Swal.fire({
-          title: 'Are you sure?',
-          text: 'Do you want to log out?',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#ef4444',
-          cancelButtonColor: '#6b7280',
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'No'
-        });
-        if (result.isConfirmed) {
-          console.log('Logout confirmed');
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const menuBtn = document.getElementById('menu-toggle');
+        const menu = document.getElementById('sidebar');
+
+        menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        })
+
+        document.querySelectorAll('.block-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+          e.preventDefault(); 
+    
+          const isUnblock = form.action.includes('/unblock');
+    
           Swal.fire({
-            title: 'Logged Out',
-            text: 'You have been logged out successfully!',
-            icon: 'success',
-            confirmButtonText: 'OK'
+            title: isUnblock ? 'Unblock User?' : 'Block User?',
+            text: isUnblock 
+              ? "This will allow the user access again." 
+              : "This will restrict the user from accessing the system.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: isUnblock ? '#16a34a' : '#dc2626',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: isUnblock ? 'Yes, Unblock' : 'Yes, Block'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              form.submit(); 
+            }
           });
-        }
+        });
       });
-    });
 
 
-
-    // Add user button functionality (placeholder)
-    addUserBtn.addEventListener('click', () => {
-      Swal.fire({
-        title: 'Add User',
-        text: 'User addition functionality to be implemented.',
-        icon: 'info',
-        confirmButtonText: 'OK'
-      });
-    });
-
-    
-  </script>
+    </script>
+  
 </body>
 </html>

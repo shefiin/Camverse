@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Old email</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="min-h-screen bg-cover bg-center flex items-center justify-center" style="background-image: url('/images/pexels-bella-white-201200-635279.jpg');">
+    <div class="bg-white p-10 shodow-lg w-full max-w-md">
+       <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: 'Michroma',sans-serif;">Camverse</h2>
+        <h1 class="text-xl font-semibold mb-6" style="font-family: Inter, sans-serif;">Verify Email</h1>
+        <p class="text-gray-600 font-extralight mb-6">Enter the OTP sent to your email <span class="text-blue-600"><%= email %></span></p>
+        
+        <form action="/user/profile/verify-new-emailOtp/<%= user._id %>" method="POST">
+            <label class="block text-sm font-medium text-gray-700 mb-1" for=""></label>
+            <input 
+                type="text" 
+                name="otp" 
+                maxlength="6"
+                placeholder="Enter 6-digit OTP"
+                class="w-full px-4 py-2 font-extralight border mb-2
+                    <%= error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-400' %>"
+                
+            />
+
+            <% if (error) { %>
+                <p class="text-red-500 text-sm mb-4"><%= error %></p>
+            <% } %>
+                
+                <div 
+                    id="timer-container" 
+                    data-remaining-resend="<%= remainingResend %>">
+                    
+                    <span id="timer" class="text-gray-400 font-medium"></span>
+                    
+                    <a 
+                    href="/user/profile/resend-otp-new/<%= user.id %>"
+                    id="resend-link" 
+                    class="text-gray-400 text-sm font-extralight cursor-not-allowed pointer-events-none ml-2">
+                    Resend OTP
+                    </a>
+                </div>
+          
+        
+
+                <button type="submit" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold px-4 py-2 transition-duration-200 mt-6">
+                    SUBMIT
+                </button>
+        </form>
+    </div>
+
+    <script>
+        const container = document.getElementById('timer-container');
+        let timer = parseInt(container.dataset.remainingResend, 10) || 0;
+
+        const resendLink = document.getElementById('resend-link');
+        const timerDisplay = document.getElementById('timer');
+
+        const interval = setInterval(() => {
+            if (timer > 0) {
+            timerDisplay.textContent = `Resend available in ${timer--}s`;
+            resendLink.classList.add('text-gray-400', 'cursor-not-allowed', 'pointer-events-none');
+            resendLink.classList.remove('text-blue-600', 'cursor-pointer', 'hover:underline');
+            } else {
+            clearInterval(interval);
+            timerDisplay.textContent = '';
+            resendLink.classList.remove('text-gray-400', 'cursor-not-allowed', 'pointer-events-none');
+            resendLink.classList.add('text-blue-600', 'cursor-pointer', 'hover:underline');
+            }
+        }, 1000);
+
+
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit address</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="font-family:'Open Sans', sans-serif;">
+
+    <%- include('../partials/userNavbar') %>
+
+    <section class="px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
+        
+        <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-10">Edit address</h1>
+
+
+        <div class="min-h-screen bg-gray-100 flex items-center justify-center px-6 py-20" style="font-family:'Open Sans', sans-serif;">
+            <form action="/user/address/edit/<%= address._id %>?_method=PATCH" method="POST"
+                  class="bg-white p-8 shadow-lg w-full max-w-2xl space-y-6">
+          
+              <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-6 text-center">Edit address</h1>
+                    
+              
+              <div>
+                <label class="block text-sm font-extralight text-gray-700 mb-1">Full Name (First and Last name)</label>
+                <input type="text" name="name" value="<%= address.fullName %>"
+                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-extralight text-gray-700 mb-1">Phone</label>
+                <input type="tel" name="phone" value="<%= address.mobile %>"
+                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-extralight text-gray-700 mb-1">Pincode</label>
+                <input type="text" name="pincode" value="<%= address.pincode %>"
+                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-extralight text-gray-700 mb-1">Flat, House no., Building, Company, Apartment</label>
+                <input type="text" name="flat" value="<%= address.house %>"
+                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-extralight text-gray-700 mb-1">Area, Street, Sector, Village</label>
+                <input type="text" name="area" value="<%= address && address.area ? address.area : '' %>"
+                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-extralight text-gray-700 mb-1">Landmark</label>
+                <input type="text" name="landmark" value="<%= address && address.landmark ? address.landmark : '' %>"
+                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-extralight text-gray-700 mb-1">Town/City</label>
+                <input type="text" name="town" value="<%= address.city %>"
+                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              </div>
+              <div>
+                <label class="block text-sm font-extralight text-gray-700 mb-1">State</label>
+                <input type="text" name="state" value="<%= address.state %>"
+                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              </div>
+                 
+              <!-- Submit Button -->
+              <div class="pt-4 text-center">
+                <button id="submitBtn" type="submit" 
+                        class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2">
+                  Save Changes
+                </button>
+              </div>
+          
+            </form>
+        </div>
+          
+          
+
+    </section>    
+
+    <%- include('../partials/mobileFilter') %>
+
+    <%- include('../partials/userFooter') %>
+
+    <script src="/js/user/homePage.js"></script>
+    
+    <script>
+         
+      document.addEventListener('DOMContentLoaded', () => {
+
+        const nameInput = document.querySelector('input[name="name"]');
+        const phoneInput = document.querySelector('input[name="phone"]');
+        const pinInput = document.querySelector('input[name="pincode"]');
+        const flatInput = document.querySelector('input[name="flat"]');
+        const areaInput = document.querySelector('input[name="area"]');
+        const landmarkInput = document.querySelector('input[name="landmark"]');
+        const townInput = document.querySelector('input[name="town"]');
+        const stateInput = document.querySelector('input[name="state"]');
+
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Create error message elements
+
+        const phoneError = document.createElement('p');
+        phoneError.className = 'text-red-500 text-sm mt-1 hidden';
+        phoneInput.insertAdjacentElement('afterend', phoneError);
+
+        const pinError = document.createElement('p');
+        pinError.className = 'text-red-500 text-sm mt-1 hidden';
+        pinInput.insertAdjacentElement('afterend', pinError);
+
+
+        
+        function validateForm() {
+            // Start with true, will turn false if any condition fails
+            let valid = true;
+
+            // Check required fields
+            if (
+                nameInput.value.trim() === '' ||
+                phoneInput.value.trim() === '' ||
+                pinInput.value.trim() === '' || 
+                flatInput.value.trim() === '' ||
+                townInput.value.trim() === '' ||
+                stateInput.value.trim() === ''
+            ) {
+                valid = false;
+            }
+
+
+            // Validate Phone (only digits allowed)
+            if (phoneInput.value && !/^\d+$/.test(phoneInput.value)) {
+                phoneError.textContent = 'Phone must be numbers.';
+                phoneError.classList.remove('hidden');
+                phoneInput.classList.remove('focus:ring-teal-500');
+                phoneInput.classList.add('focus:ring-red-400');
+                valid = false;
+            } else if(phoneInput.value.length > 10){
+                phoneError.textContent = 'Maximum 10 digits.';
+                phoneError.classList.remove('hidden');
+                phoneInput.classList.remove('focus:ring-teal-500');
+                phoneInput.classList.add('focus:ring-red-400');
+                valid = false;
+            } else {
+                phoneError.classList.add('hidden');
+                phoneInput.classList.remove('focus:ring-red-400');
+                phoneInput.classList.add('focus:ring-teal-500');
+                // ⚡ Don't set valid=true here, just leave it as is
+            }
+
+            if (pinInput.value && !/^\d+$/.test(pinInput.value)) {
+                pinError.textContent = 'Pincode must be numbers.';
+                pinError.classList.remove('hidden');
+                pinInput.classList.remove('focus:ring-teal-500');
+                pinInput.classList.add('focus:ring-red-400');
+                valid = false;
+            } else if(pinInput.value.length > 6 ){
+                pinError.textContent = 'Maximum 6 digits.';
+                pinError.classList.remove('hidden');
+                pinInput.classList.remove('focus:ring-teal-500');
+                pinInput.classList.add('focus:ring-red-400');
+                valid = false;
+            } else {
+                pinError.classList.add('hidden');
+                pinInput.classList.remove('focus:ring-red-400');
+                pinInput.classList.add('focus:ring-teal-500');
+                // ⚡ Don't set valid=true here, just leave it as is
+            }
+              
+
+            // Enable/disable submit button
+            submitBtn.disabled = !valid;
+            submitBtn.classList.toggle('opacity-50', !valid);
+            submitBtn.classList.toggle('cursor-not-allowed', !valid);
+        }
+
+
+        // Check live while typing
+        [nameInput, phoneInput, pinInput, flatInput, areaInput, landmarkInput, townInput, stateInput]
+            .forEach(input => input.addEventListener('input', validateForm));
+
+
+        // Initial check on page load
+        validateForm();
+
+      });
+
+        
+    </script>
+ 
+</body>
+</html>        

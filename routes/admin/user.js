@@ -2,16 +2,19 @@ const express = require('express');
 const router = express.Router();
 const { checkAdminAuth } = require('../../middlewares/admin/authMiddleware');
 const {
-    renderUserManagementPage,
+    getUsers,
     blockUser,
-    unblockUser
-} = require('../../controllers/admin/userController');
+    unblockUser } = require('../../controllers/admin/userController');
 
 
 
-router.get('/', checkAdminAuth, renderUserManagementPage);
-router.post('/:id/block', checkAdminAuth, blockUser);
-router.post('/:id/unblock', checkAdminAuth, unblockUser);
+router.get('/', checkAdminAuth, getUsers);
+
+router.patch('/block/:id', checkAdminAuth, blockUser);
+
+router.patch('/unblock/:id', checkAdminAuth, unblockUser);
+
+
 
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const category = require('./category');
+const brand = require('./brand');
 
 const productSchema = new mongoose.Schema({
     name: {
@@ -8,19 +9,30 @@ const productSchema = new mongoose.Schema({
         trim: true
     },
     brand: {
-        type: String,
-        required: true,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Brand',
+        required: true
     },
     price: {
         type: Number,
         required: true 
     },
-    image: {
-        type: [String],
-        required: true,
-        default: []
+    mrp: {
+        type: Number,
+        default: null
     },
+    images: [
+        {
+            url:{
+                type: String,
+                required: true
+            },
+            public_id: {
+                type: String,
+                required: true
+            }
+        }
+    ],
     description: {
         type: String,
         required: true
@@ -39,14 +51,18 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
+    status: {
+        type: String,
+        enum: ['Active', 'Blocked'],
+        default: 'Active'
     },
     isDeleted: {
         type: Boolean,
         default: false
-    }
+    }, 
+}, {
+    timestamps: true,
+
 });
 
 

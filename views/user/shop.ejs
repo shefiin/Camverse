@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;        
+        -webkit-box-orient: vertical; 
+        overflow: hidden;             
+        text-overflow: ellipsis;      
+      }
+    </style>
+    
+</head>
+<body style="font-family:'Open Sans', sans-serif;">
+
+    <%- include('partials/userNavbar') %>
+
+      <section class="px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
+        <h1 class="text-2xl md:text-2xl font-semibold text-gray-800 mb-16">Shop your favorite cameras</h1>
+
+        <%- include('partials/userFilter') %>
+        
+
+        <div class="w-full md:w-5/6 md:pl-6 mt-20">
+          <div class="grid grid-cols-2 md2:grid-cols-3 lg2:grid-cols-4 gap-4">
+
+            <% products.forEach(product => { %>
+              <div class="relative p-4 shadow-lg rounded-lg px-6 space-y-4 transition group cursor-pointer">
+            
+                <button class="absolute top-2 right-2 text-gray-200 hover:text-gray-300 text-2xl wishlist-btn">
+                  <i class="fa-solid fa-heart"></i>
+                </button>
+            
+                
+                <a href="/product/<%= product._id %>" class="block">
+                  <img 
+                    src="<%= product.images && product.images.length ? product.images[0].url : '/images/no-image.png' %>"
+                    alt="<%= product.name %>" 
+                    class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
+                  />
+                </a>
+            
+                <hr>
+            
+                <div>
+                  <a href="/product/<%= product._id %>" class="block text-lg font-semibold text-gray-600 group-hover:underline line-clamp-2 truncate max-w-[300px]">
+                    <%= product.name %>
+                  </a>
+
+                  <div class="flex items-center gap-1 text-xs">
+                    <!-- 4 full stars -->
+                    <i class="fa-solid fa-star text-yellow-500"></i>
+                    <i class="fa-solid fa-star text-yellow-500"></i>
+                    <i class="fa-solid fa-star text-yellow-500"></i>
+                    <i class="fa-solid fa-star text-yellow-500"></i>
+                  
+                    <!-- half star -->
+                    <i class="fa-solid fa-star-half-stroke text-yellow-500"></i>
+                  
+                    <!-- rating number -->
+                    <span class="ml-1 text-sm text-green-600">4.5</span>
+                  </div>
+            
+                  <% if (product.rating) { %>
+                    <div class="text-yellow-500 text-sm mb-2">
+                        <% for (let i = 1; i <= 5; i++) { %>
+                            <% if (i <= Math.floor(product.rating)) { %>
+                                <i class="fa-solid fa-star"></i>
+                            <% } else if (i - product.rating < 1) { %>
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                            <% } else { %>
+                                <i class="fa-regular fa-star"></i>
+                            <% } %>
+                        <% } %>
+                    </div>
+                  <% } %>
+            
+                  <div class="flex items-center gap-2">
+                    <p class="font-bold text-sm sm:text-base md:text-lg lg:text-xl text-gray-700">
+                      ₹<%= product.price.toLocaleString() %>
+                    </p>
+                    <% if (product.mrp && product.mrp > product.price) { %>
+                      <span class="text-xs sm:text-sm md:text-base text-gray-400 line-through">
+                        ₹<%= product.mrp.toLocaleString() %>
+                      </span>
+                      <p class="text-xs sm:text-sm text-green-600">
+                        <%= Math.round(((product.mrp - product.price) / product.mrp) * 100) %>% Off
+                      </p>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+            
+   
+          </div>
+          
+          <%- include('partials/pagination') %>
+          
+        </div>
+         
+      </section>
+
+      <%- include('partials/mobileFilter') %>
+
+      <%- include('partials/userFooter') %>
+
+
+    <script src="/js/user/shopPage.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Category</title>
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              screens: {
+                xl1180: '1170px',
+              }
+            }
+          }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body style="font-family: 'Kanit', sans-serif;">
+    
+    <%- include('partials/adminNavbar') %>
+
+    <div class="flex pt-[80px]">
+        <%- include('partials/adminSidebar') %>
+
+        <main class="md:ml-56 flex-1 p-10 w-full relative">
+            <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mb-10">Edit Category</h1>
+                        
+                <form action="/admin/categories/edit/<%= category._id %>?_method=PATCH" method="POST" enctype="multipart/form-data" class="space-y-6">
+
+                    <div class="grid grid-cols-1 xl1180:grid-cols-3 gap-6">
+                      
+                        <div class="lg:col-span-1">
+                            <div class="flex flex-col items-center">
+                                
+                                <div class="flex flex-col items-center w-64 md:w-72">
+                                    <label class="block text-gray-700 font-medium mb-2">Category Image</label>
+                                  
+                                   
+                                    <div id="imageContainer" class="relative border-2 border-dashed border-gray-300 rounded-md aspect-square w-full bg-gray-50 flex items-center justify-center overflow-hidden">
+                                        <input type="file" id="images" name="image" class="hidden" accept="image/*" />
+                                      
+                                        <% if (category.image) { %>
+                                          <div id="previewContainer" class="absolute inset-0 w-full h-full">
+                                            <img id="previewImage" src="<%= category.image[0].url %>" class="w-full h-full object-contain rounded-md" />
+                                            <button id="removePreviewBtn" type="button" class="absolute top-2 right-2 bg-white text-gray-700 hover:text-red-600 rounded-full w-6 h-6 flex items-center justify-center shadow">
+                                              <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                          </div>
+                                        <% } else { %>
+                                          <div id="previewContainer" class="absolute inset-0 urlw-full h-full hidden">
+                                            <img id="previewImage" class="w-full h-full object-contain rounded-md" />
+                                            <button id="removePreviewBtn" type="button" class="absolute top-2 right-2 bg-white text-gray-700 hover:text-red-600 rounded-full w-6 h-6 flex items-center justify-center shadow">
+                                              <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                          </div>
+                                        <% } %>
+                                      </div>
+                                      
+                                                                     
+                                    <div id="thumbnailContainer" class="flex gap-2 mt-2 overflow-x-auto w-full justify-start"></div>
+
+                                    <p class="text-sm text-red-600 hidden my-2" id="imageError"></p>
+                                                                     
+                                    <label for="images" class="mt-3 inline-flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-3 py-1 rounded-md cursor-pointer transition">
+                                      <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+                                      Upload Image
+                                    </label>
+                                  </div>
+                                  
+                            </div>
+                        </div>
+
+                        
+                        <div class="lg:col-span-2 grid grid-cols-1 gap-6">
+                                                       
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2" for="name">Category Name</label>
+                                <input type="text" name="name" id="name" required
+                                    value="<%= category.name %>"
+                                    class="w-full border-2 border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <span id="nameError" class="text-red-500 text-sm hidden">Name too long (max 25 characters)</span>    
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2" for="status">Status</label>
+                                <select name="status" id="status" required
+                                    class="w-full h-[44px] border-2 border-gray-300 rounded-md px-4 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="Active" <%= category.status === 'Active' ? 'selected' : '' %>>Active</option>
+                                    <option value="Inactive" <%= category.status === 'Inactive' ? 'selected' : '' %>>Inactive</option>
+                                </select>                              
+                            </div>
+                                                                                        
+                            <div class="md:col-span-2">
+                                <label class="block text-gray-700 font-medium mb-2" for="description">Description</label>
+                                <textarea name="description" id="description" rows="5" required                                    
+                                    class="w-full border-2 border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <%= category.description %>
+                                </textarea>
+                                <span id="descError" class="text-red-500 text-sm hidden">Description too long (max 100 characters)</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 flex justify-center">
+                            <button type="submit"
+                                id="addProductBtn"
+                                class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium shadow">
+                                Save Changes
+                            </button>
+                        </div>
+                        
+                    </div>
+                  
+                </form>
+                  
+            </div>
+               
+        </main>
+    </div>
+
+    <script src="/js/admin/add-categories.js"></script>
+    
+</body>
+</html>

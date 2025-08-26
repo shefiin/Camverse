@@ -1,0 +1,118 @@
+<div class="hidden md:flex justify-between items-center mb-4">
+    <h2 class="text-md md:text-lg font-semibold text-gray-800">FILTERS</h2>
+      <div class="relative inline-block text-left">
+        <button
+            id="sortButton"
+            class="inline-flex items-center bg-white border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md focus:outline-none"
+            style="border-color: #d1d5db;" 
+            onfocus="this.style.borderColor='#00A69D'"
+            onblur="this.style.borderColor='#d1d5db'"
+        >
+            SORT
+            <i class="fas fa-chevron-down text-xs ml-2"></i>
+        </button>
+
+      
+        <% const currentParams = new URLSearchParams(queryParams); %>
+        <ul id="sortMenu" class="absolute right-0 mt-1 w-44 bg-white font-extralight shadow-md hidden z-50">
+          <li>
+            <a href="?<%= new URLSearchParams({...Object.fromEntries(currentParams), sort: 'price_asc'}) %>"
+               class="block px-4 py-2 hover:bg-teal-50 text-sm">Price: Low to High</a>
+          </li>
+          <li>
+            <a href="?<%= new URLSearchParams({...Object.fromEntries(currentParams), sort: 'price_desc'}) %>"
+               class="block px-4 py-2 hover:bg-teal-50 text-sm">Price: High to Low</a>
+          </li>
+          <li>
+            <a href="?<%= new URLSearchParams({...Object.fromEntries(currentParams), sort: 'alpha_asc'}) %>"
+               class="block px-4 py-2 hover:bg-teal-50 text-sm">Alphabetically: A-Z</a>
+          </li>
+          <li>
+            <a href="?<%= new URLSearchParams({...Object.fromEntries(currentParams), sort: 'alpha_desc'}) %>"
+               class="block px-4 py-2 hover:bg-teal-50 text-sm">Alphabetically: Z-A</a>
+          </li>
+        </ul>
+        
+      </div>  
+</div>
+
+<hr class="border-t border-gray-300 mt-4"/>
+
+        <div class="flex">
+          <aside class="hidden md:block w-1/6 pr-6 border-r border-gray-300">
+           <form action="/shop" method="GET">
+            <% if (queryParams.search) { %>
+              <input type="hidden" name="search" value="<%= queryParams.search %>">
+            <% } %>
+          
+            <div class="space-y-2">
+              <h3 class="text-xs md:text-sm font-semibold text-gray-800 pt-10">BRAND</h3>
+              <div class="space-y-2 font-light text-xs md:text-sm" style="accent-color: #00A69D;">
+                <% brands.forEach(brand => { %>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input 
+                      type="checkbox" 
+                      name="brand" 
+                      value="<%= brand._id %>"
+                      class="mr-2 cursor-pointer"
+                      <%= (Array.isArray(queryParams.brand) && queryParams.brand.includes(brand._id.toString())) || queryParams.brand === brand._id.toString() ? 'checked' : '' %>
+                    >
+                    <%= brand.name %>
+                  </label>
+                <% }) %>
+              </div>
+            </div>
+        
+           
+            <div class="space-y-2 mt-10">
+              <h3 class="text-xs md:text-sm font-semibold text-gray-800">CATEGORY</h3>
+              <div class="space-y-2 text-xs md:text-sm" style="accent-color: #00A69D;">
+                <% categories.forEach(category => { %>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                    <input 
+                      type="checkbox" 
+                      name="category" 
+                      value="<%= category._id %>"
+                      class="mr-2 cursor-pointer"
+                      <%= (Array.isArray(queryParams.category) && queryParams.category.includes(category._id.toString())) || queryParams.category === category._id.toString() ? 'checked' : '' %>
+                    >
+                    <%= category.name %>
+                  </label>
+                <% }) %>
+              </div>
+            </div>
+
+            <div class="space-y-2 mt-10">
+              <h3 class="text-xs md:text-sm font-semibold text-gray-800">PRICE RANGE</h3>
+
+              <div class="space-y-2 font-light text-xs md:text-sm" style="accent-color: #00A69D;">
+                <% priceRanges.forEach(range => { %>
+                  <label class="flex items-center cursor-pointer hover:text-teal-700">
+                      <input 
+                          type="checkbox" 
+                          name="price" 
+                          value="<%= range.min %>-<%= range.max || '' %>" 
+                          class="mr-2 cursor-pointer"
+                          <%= (
+                              Array.isArray(queryParams.price) 
+                              && queryParams.price.includes(`${range.min}-${range.max || ''}`)
+                          ) || queryParams.price === `${range.min}-${range.max || ''}`
+                              ? 'checked'
+                              : ''
+                          %>
+                      >
+                      <%= range.label %>
+                  </label>
+                <% }) %>
+              </div>
+
+            </div>
+
+            <div class="mt-6">
+              <button type="submit" class="bg-teal-600 text-white py-2 hover:bg-teal-700 w-full">
+                Apply
+              </button>
+            </div>
+
+          </form>
+        </aside>

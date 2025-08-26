@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="font-family:'Open Sans', sans-serif";>
+
+    <%- include('partials/userNavbar') %>
+
+    <section class="px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
+        <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-10">My Account</h1>
+
+
+        <div class="px-6 py-20 lg:px-12 lg:py-20">
+            <h1 class="text-2xl md:text-3xl text-gray-800 mb-8">My Addresses</h1>
+
+
+            <div id="successMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
+              <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
+                <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: Michroma, sans-serif;">Camverse</h2>
+                <div class="w-full flex items-center justify-center py-4 px-4 text-6xl text-green-600">
+                  <i class="fa-regular fa-circle-check"></i>
+                </div>
+                <h1 class="flex items-center justify-center text-2xl font-extralight mb-2" style="font-family: 'Kanit', sans-serif;">Address added successfully</h1>
+              </div>
+            </div>
+
+            <div id="editSuccess" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
+              <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
+                <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: Michroma, sans-serif;">Camverse</h2>
+                <div class="w-full flex items-center justify-center py-4 px-4 text-6xl text-green-600">
+                  <i class="fa-regular fa-circle-check"></i>
+                </div>
+                <h1 class="flex items-center justify-center text-2xl font-extralight mb-2" style="font-family: 'Kanit', sans-serif;">Address updated successfully</h1>
+              </div>
+            </div>
+
+
+            <div id="dltSuccess" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
+              <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
+                <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: Michroma, sans-serif;">Camverse</h2>
+                <div class="w-full flex items-center justify-center py-4 px-4 text-6xl text-green-600">
+                  <i class="fa-regular fa-circle-check"></i>
+                </div>
+                <h1 class="flex items-center justify-center text-2xl font-extralight mb-2" style="font-family: 'Kanit', sans-serif;">Address deleted successfully</h1>
+              </div>
+            </div>
+          
+            <!-- Add Address Button -->
+            <a href="/user/address/add" 
+               class="mb-6 inline-block bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">
+               <i class="fa-solid fa-plus"></i>
+               Add New Address
+            </a>
+          
+            <!-- Address List -->
+            <div class="grid gap-6 sm:grid-cols-2">
+              <% addresses.forEach((address, index) => { %>    
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+                  
+                  <% if (address.isDefault) { %>
+                    <span class="inline-block bg-gray-400 text-white text-xs px-2 py-1 rounded-full">
+                      Default
+                    </span>
+                  <% } %>
+
+                  <h2 class="font-medium text-lg mt-2"> <%= address.fullName %> </h2>
+                  <p class="text-gray-500 font-extralight text-sm"> <%= address.mobile %> </p>
+                  <p class="text-gray-500 font-extralight text-sm mt-2">
+                    <%= address.house %>, <%= address.area %>,
+                    <%= address.city %>, <%= address.state %> - <%= address.pincode %>
+                  </p>
+                  <% if(address.landmark) { %>
+                    <p class="text-gray-500 font-extralight text-sm mt-1">Landmark: <%= address.landmark %></p>
+                  <% } %>
+            
+                  <div class="mt-4 flex gap-4">
+                    <a href="/user/address/edit/<%= address._id %>" 
+                      class="text-blue-600 hover:bg-gray-100 text-xs border p-1">Edit</a>
+                    <a href="/user/address/delete/<%= address._id %>" 
+                      class="text-red-600 hover:bg-gray-100 text-xs border p-1">Delete</a>
+                    <a href="/user/address/default/<%= address._id %>" 
+                      class="text-teal-600 hover:bg-gray-100 text-xs border p-1">Set as Default</a>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+        </div>
+          
+
+
+
+
+
+
+
+
+    </section>    
+
+    <%- include('partials/mobileFilter') %>
+
+    <%- include('partials/userFooter') %>
+
+    <script src="/js/user/homePage.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get('success');
+
+        if (success === '1') {
+            const message = document.getElementById('successMessage');
+            message.classList.remove('hidden');
+
+            setTimeout(() => {
+            message.classList.add('hidden');
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+            }, 2000);
+
+        } else if (success === '2') {
+            const dltSuccess = document.getElementById('dltSuccess');
+            dltSuccess.classList.remove('hidden');
+
+            setTimeout(() => {
+            dltSuccess.classList.add('hidden');
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+            }, 2000); 
+            
+        } else if (success === '3') {
+            const editSuccess = document.getElementById('editSuccess');
+            editSuccess.classList.remove('hidden');
+
+            setTimeout(() => {
+            editSuccess.classList.add('hidden');
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+            }, 2000); 
+        }        
+
+    </script>
+ 
+</body>
+</html>        

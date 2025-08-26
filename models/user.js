@@ -1,6 +1,22 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+
+
+const addressSchema = new mongoose.Schema({
+    fullName: { type: String, required: true },
+    mobile: { type: String, required: true },
+    pincode: { type: String, required: true },
+    house: { type: String, required: true },   
+    area: { type: String, required: true },    
+    landmark: { type: String },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    isDefault: {type: Boolean, dafault: false}
+  }, { timestamps: true });
+  
+
+
 const userSchema = new mongoose.Schema({
     authType: {
       type: String,  
@@ -18,6 +34,20 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    lastName: {
+        type: String,
+        trim: true,
+        default: null
+    },
+    gender: {
+        type: String,
+        enum: ['Male', 'Female'],
+        default: null
+    },
+    dateOfBirth: {
+        type: Date,
+        default: null
+    },
     email: {
         type: String,
         required: true,
@@ -29,6 +59,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null,
         trim: true
+    },
+    status: {
+        type: String,
+        enum: ['Active', 'Blocked', 'Deleted'],
+        default: 'Active'
     },
     password: {
         type: String,
@@ -52,10 +87,17 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }, 
     isAdmin: {
         type: Boolean,
         default: false
     },
+
+    addresses: [addressSchema],
+
     createdAt: {
         type: Date,
         default: Date.now
