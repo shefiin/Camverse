@@ -9,11 +9,13 @@ router.get('/google',
 router.get('/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
+        req.session.userId = req.user._id;
         req.session.user = {
-            _id: req.user._id,
-            name: req.user.name,
-            email: req.user.email
+          _id: req.user._id,
+          name: req.user.name,
+          email: req.user.email
         };
+    
         res.redirect('/');
     }
 );

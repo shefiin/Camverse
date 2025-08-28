@@ -1,4 +1,5 @@
-tailwind.config = {
+
+  tailwind.config = {
     theme: {
     extend: {
         screens: {
@@ -94,19 +95,39 @@ document.querySelectorAll('.toggle-btn').forEach(btn => {
 
 
 
-const sortButton = document.getElementById('sortButton');
-const sortMenu = document.getElementById('sortMenu');
+// const sortButton = document.getElementById('sortButton');
+// const sortMenu = document.getElementById('sortMenu');
 
-sortButton.addEventListener('click', () => {
-    sortMenu.classList.toggle('hidden');
-});
+// sortButton.addEventListener('click', () => {
+//     sortMenu.classList.toggle('hidden');
+// });
 
 
-document.addEventListener('click', (e) => {
-    if (!sortButton.contains(e.target) && !sortMenu.contains(e.target)) {
-    sortMenu.classList.add('hidden');
+// document.addEventListener('click', (e) => {
+//     if (!sortButton.contains(e.target) && !sortMenu.contains(e.target)) {
+//     sortMenu.classList.add('hidden');
+//     }
+// });
+
+
+const sortButton = document.getElementById("sortButton");
+const sortMenu = document.getElementById("sortMenu");
+
+if (sortButton && sortMenu) {
+  // Toggle dropdown on button click
+  sortButton.addEventListener("click", (e) => {
+    e.stopPropagation(); // prevent immediate close
+    sortMenu.classList.toggle("hidden");
+  });
+
+  // Close dropdown if clicked outside
+  document.addEventListener("click", (e) => {
+    if (!sortMenu.contains(e.target) && !sortButton.contains(e.target)) {
+      sortMenu.classList.add("hidden");
     }
-});
+  });
+}
+
 
 
 document.querySelectorAll('.wishlist-btn').forEach(button => {
@@ -183,3 +204,4 @@ priceBtn.addEventListener('click', () => {
   document.getElementById('brandContent').classList.add('hidden');
   document.getElementById('categoryContent').classList.add('hidden');
 });
+  

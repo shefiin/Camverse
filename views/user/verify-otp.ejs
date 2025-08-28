@@ -33,37 +33,43 @@
                 <p class="text-red-500 text-sm mb-4"><%= error %></p>
             <% } %>
                 
-                <div class="text-sm text-gray-600 mb-4">
-                    <span id="timer" class="text-blue-600 font-medium"></span>
+                <div 
+                    id="timer-container" 
+                    data-remaining-resend="<%= remainingResend %>">
+                    
+                    <span id="timer" class="text-gray-400 font-medium"></span>
+                    
                     <a 
-                     href="/resend-otp"
-                     id="resend-link" 
-                     class="text-blue-600 text-sm font-extralight cursor-pointer hover:underline hidden">
-                     Resend OTP
+                    href="/register/resend-otp"
+                    id="resend-link" 
+                    class="text-gray-400 text-sm font-extralight cursor-not-allowed pointer-events-none ml-2">
+                    Resend OTP
                     </a>
                 </div>
 
-                <button type="submit" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold px-4 py-2 rounded-md transition-duration-200 mt-6">
+                <button type="submit" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold px-4 py-2 transition-duration-200 mt-6">
                     SUBMIT
                 </button>
         </form>
     </div>
 
     <script>
-        let timer = 30;
-        const timerDisplay = document.getElementById('timer');
+        const container = document.getElementById('timer-container');
+        let timer = parseInt(container.dataset.remainingResend, 10) || 0;
+
         const resendLink = document.getElementById('resend-link');
-    
+        const timerDisplay = document.getElementById('timer');
+
         const interval = setInterval(() => {
             if (timer > 0) {
-                resendLink.classList.remove('text-blue-600', 'hover:underline', 'cursor-pointer', 'hidden');
-                resendLink.classList.add('text-gray-400', 'cursor-not-allowed', 'pointer-events-none');
-                resendLink.textContent = `Resend OTP in (${timer--}s)`;
+            timerDisplay.textContent = `Resend available in ${timer--}s`;
+            resendLink.classList.add('text-gray-400', 'cursor-not-allowed', 'pointer-events-none');
+            resendLink.classList.remove('text-blue-600', 'cursor-pointer', 'hover:underline');
             } else {
-                clearInterval(interval);
-                resendLink.textContent = 'Resend OTP';
-                resendLink.classList.remove('text-gray-400', 'cursor-not-allowed', 'pointer-events-none');
-                resendLink.classList.add('text-blue-600', 'cursor-pointer', 'hover:underline');
+            clearInterval(interval);
+            timerDisplay.textContent = '';
+            resendLink.classList.remove('text-gray-400', 'cursor-not-allowed', 'pointer-events-none');
+            resendLink.classList.add('text-blue-600', 'cursor-pointer', 'hover:underline');
             }
         }, 1000);
     </script>

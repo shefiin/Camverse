@@ -36,15 +36,6 @@
 .z-50 {
   z-index: 50;
 }
-.z-440 {
-  z-index: 440;
-}
-.col-span-2 {
-  grid-column: span 2 / span 2;
-}
-.col-span-3 {
-  grid-column: span 3 / span 3;
-}
 .container {
   width: 100%;
 }
@@ -253,9 +244,6 @@
 .justify-center {
   justify-content: center;
 }
-.justify-end {
-  justify-content: flex-end;
-}
 .justify-start {
   justify-content: flex-start;
 }
@@ -314,9 +302,6 @@
 }
 .border-transparent {
   border-color: transparent;
-}
-.bg-\[\#ffce12\] {
-  background-color: #ffce12;
 }
 .bg-\[\#ffd500\] {
   background-color: #ffd500;

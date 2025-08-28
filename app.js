@@ -36,7 +36,7 @@ const userSearchRoutes = require('./routes/user/search');
 const userProductRoutes = require('./routes/user/product');
 const userLogoutRoutes = require('./routes/user/logout');
 const userSpecificRoutes = require('./routes/user/user');
-// const resetPasswordRoutes = require('./routes/user/reset');
+const resetPasswordRoutes = require('./routes/user/reset');
 const userCartRoutes = require('./routes/user/cart');
 const userCheckoutRoutes = require('./routes/user/checkout');
 
@@ -94,7 +94,7 @@ app.use('/search', userSearchRoutes);
 app.use('/product', userProductRoutes);
 app.use('/logout', userLogoutRoutes);
 app.use('/user', ensureLoggedIn, checkBlocked, userSpecificRoutes);
-// app.use('/reset', resetPasswordRoutes);
+app.use('/reset', resetPasswordRoutes);
 app.use('/cart', ensureLoggedIn, checkBlocked, userCartRoutes);
 app.use('/checkout', ensureLoggedIn, checkBlocked, userCheckoutRoutes)
 

@@ -33,18 +33,19 @@ const verifyOtp = async (req, res) => {
         await login(newUser);
 
 
+        req.session.userId = newUser._id;
         req.session.user = {
             _id: newUser._id,
             name: newUser.name,
             email: newUser.email,
         };
-
         
         delete req.session.tempUser;
         delete req.session.otp;
 
-       
+        
         return res.redirect('/register/register-success');
+
     } catch (err) {
         console.error('Error creating user:', err);
         return res.redirect('/register');
