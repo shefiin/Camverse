@@ -11,7 +11,7 @@
         'lg2': '1321px', 
         }
     }
-    }
+    },
 }
 
 const toggleBtn = document.getElementById('menu-toggle');

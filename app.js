@@ -39,7 +39,7 @@ const userSpecificRoutes = require('./routes/user/user');
 const resetPasswordRoutes = require('./routes/user/reset');
 const userCartRoutes = require('./routes/user/cart');
 const userCheckoutRoutes = require('./routes/user/checkout');
-
+const userOrderRoutes = require('./routes/user/order');
 
 
 
@@ -96,7 +96,8 @@ app.use('/logout', userLogoutRoutes);
 app.use('/user', ensureLoggedIn, checkBlocked, userSpecificRoutes);
 app.use('/reset', resetPasswordRoutes);
 app.use('/cart', ensureLoggedIn, checkBlocked, userCartRoutes);
-app.use('/checkout', ensureLoggedIn, checkBlocked, userCheckoutRoutes)
+app.use('/checkout', ensureLoggedIn, checkBlocked, userCheckoutRoutes);
+app.use('/order', ensureLoggedIn, checkBlocked, userOrderRoutes);
 
 
 

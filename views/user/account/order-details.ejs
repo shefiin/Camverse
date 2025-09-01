@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="font-family:'Open Sans', sans-serif;">
+
+    <%- include('../partials/userNavbar') %>
+
+    <section class="min-h-screen px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8 space-y-4">
+        <h1 class="text-2xl md:text-3xl text-teal-600 ml-10 mt-10">My Orders</h1>
+
+        <div class="flex justify-between mt-10 p-10">
+            <button class="bg-gray-800 px-4 py-2 hover:bg-gray-900 transition text-white font-extralight">
+                Go to Orders
+            </button>
+            <button class="bg-teal-600 px-4 py-2 hover:bg-teal-700 transition text-white font-extralight">
+                <i class="fa-solid fa-file-invoice"></i>
+                Download Inoice
+            </button>
+        </div>
+
+        <div class="order-card shadow-md block space-y-3 md:flex  justify-between items-center bg-white p-6 px-10 mb-4 hover:shadow-lg transition ml-10 mr-10">
+            <div class="flex-col">
+                <p class="text-xs md:text-sm text-gray-500">Order ID:</p>
+                <p class="tex-sm text-gray-800 md:text-xl"> <%= orderID %> </p>
+            </div>
+            <div class="flex-col">
+                <p class="text-xs md:text-sm text-gray-500">Date</p>
+                <p class="tex-sm text-gray-800 md:text-lg"> <%= date %> </p>
+            </div>
+            <div class="flex-col">
+                <% if(order.status === 'Placed') { %>
+                    <div class="bg-gray-100 py-1 px-2 rounded-full text-gray-400">
+                      <p class="font-normal text-xs md:text-sm">
+                        <i class="fa-solid fa-hourglass-end p-1"></i>
+                        Placed
+                      </p>
+                    </div>                                     
+                  <% } else if(order.status === 'Shipped') { %>
+                    <div class="bg-blue-200 py-1 px-2 text-center rounded-full text-gray-800">
+                      <p class="font-normal text-xs md:text-sm">
+                        <i class="fa-solid fa-truck-fast"></i>
+                        Shipped
+                      </p>
+                    </div>
+                  <% } else if(order.status === 'Out for delivery') { %>  
+                    <div class="bg-green-100 py-1 px-2 rounded-full text-gray-700">
+                      <p class="font-normal text-xs md:text-sm">
+                        <i class="fa-regular fa-circle-check"></i>
+                        Out for delivery
+                      </p>
+                    </div>
+                  <% } else if(order.status === 'Delivered') { %>  
+                    <div class="bg-green-100 py-1 px-2 rounded-full text-gray-700">
+                      <p class="font-normal text-xs md:text-sm">
+                        <i class="fa-regular fa-circle-check"></i>
+                        Delivered
+                      </p>
+                    </div>
+                  <% } else if(order.status === 'Cancelled') { %>  
+                    <div class="bg-red-200 py-1 px-2 text-center rounded-full text-gray-700">
+                      <p class="font-normal text-xs md:text-sm">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                        Cancelled
+                      </p>
+                    </div>
+                <% } %>    
+            </div>
+            <button class="bg-red-50 hover:bg-red-100 transition px-2 py-1 rounded-lg text-red-600 text-sm md:text-base">
+                <i class="fa-solid fa-circle-xmark"></i>
+                Cancel Order
+            </button>
+        </div>
+
+
+        <div class="shadow-md bg-white hover:shadow-lg transition ml-10 mr-10 p-6 mb-4">
+            <h2 class="text-lg font-semibold mb-6">Ordered Products</h2>
+          
+            <% order.products.forEach(p => { %>
+              <div class="order-card flex justify-between items-center bg-white p-3 border-b">
+                
+                <!-- Product Info -->
+                <div class="product-item flex items-center gap-3">
+                  <% if (p.productId && p.productId.images && p.productId.images.length > 0) { %>
+                    <img src="<%= p.productId.images[0].url %>" 
+                         alt="<%= p.productId.name %>" 
+                         class="w-20 h-20 object-contain">
+                  <% } else { %>
+                    <img src="/images/placeholder.png" 
+                         alt="No image available" 
+                         class="w-20 h-20 object-contain">
+                  <% } %>
+          
+                  <div>
+                    <p class="text-gray-800 font-medium"><%= p.productId?.name || "Unknown Product" %></p>
+                    <p class="text-sm text-gray-500">Qty: <%= p.quantity %></p>
+                    <p class="text-sm text-gray-500">Price: ₹<%= p.price %></p>
+                    <p class="text-sm text-gray-700 font-semibold">Total: ₹<%= p.quantity * p.price %></p>
+                  </div>
+                </div>
+          
+                <!-- Cancel Button -->
+                <% if(order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
+                  <form action="/orders/<%= order._id %>/cancel/<%= p.productId._id %>" method="POST">
+                    <button type="submit" class="bg-red-50 hover:bg-red-100 transition px-3 py-1 rounded-lg text-red-600 text-sm">
+                      <i class="fa-solid fa-circle-xmark"></i> Cancel Product
+                    </button>
+                  </form>
+                <% } %>
+              </div>
+            <% }) %>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6 max-w-8xl mx-auto items-stretch ml-10 mr-10">
+
+            <div class="md:col-span-1 bg-white shadow p-6 space-y-6">
+
+                <h2 class="text-lg font-semibold mb-6">Order status</h2>
+            
+                <div class="space-y-4 max-w-[300px]"> <!-- parent controls width -->
+                    <div class="flex items-center gap-2 w-full">
+                        <div class="rounded-full w-4 h-4 bg-green-200 flex justify-center items-center">
+                            <div class="rounded-full w-2 h-2 bg-green-500"></div>
+                        </div>
+                        <div class="flex-1 border-l-2  px-2 pr-6 py-1 border-green-400 bg-green-50">
+                            <p class="text-sm text-gray-500">Placed</p>
+                            <p class="text-xs text-gray-400">Sat, 30 Aug 2025, 23:21</p>
+                        </div>
+                    </div>
+            
+                    <div class="flex items-center gap-2 w-full">
+                        <div class="rounded-full w-4 h-4 bg-gray-200 flex justify-center items-center">
+                            <div class="rounded-full w-2 h-2 bg-gray-400"></div>
+                        </div>
+                        <div class="flex-1 border-l-2  px-2 pr-6 py-1 border-gray-400 bg-gray-50">
+                            <p class="text-sm text-gray-500">Shipped</p>
+                            <p class="text-xs text-gray-400">Pending...</p>
+                        </div>
+                    </div>
+            
+                    <div class="flex items-center gap-2 w-full">
+                        <div class="rounded-full w-4 h-4 bg-gray-200 flex justify-center items-center">
+                            <div class="rounded-full w-2 h-2 bg-gray-400"></div>
+                        </div>
+                        <div class="flex-1 border-l-2  px-2 pr-6 py-1 border-gray-400 bg-gray-50">
+                            <p class="text-sm text-gray-500">Delivered</p>
+                            <p class="text-xs text-gray-400">Pending...</p>
+                        </div>
+                    </div>
+                </div>
+            
+            </div>
+            
+
+            <div class="md:col-span-1 bg-white shadow p-6 space-y-6">              
+                <h2 class="text-lg font-semibold mb-6">Shipping Details</h2>
+                <div class="text-xs md:text-sm text-gray-500 font-extralight space-y-1">
+                    <p> <%= address.fullName %> </p>
+                    <p> <%= address.house %> </p>
+                    <p> <%= address.area %> </p>
+                    <p> <%= address.city %> </p>
+                    <p> <%= address.state %> - <%= address.pincode %> </p>
+                    <p class="font-medium text-gray-600"> Mobile: <span class="font-extralight"><%= address.mobile %></span> </p>                    
+                </div>
+            </div> 
+
+            <div class="md:col-span-1 bg-white shadow p-6 space-y-6">
+                
+                <h2 class="text-lg font-semibold mb-6">Payment Information</h2>
+                <div class="text-xs md:text-sm text-gray-500 font-extralight space-y-1">
+                    <div>
+                        <p class="text-gray-500 text-sm">Payment Method</p>
+                        <p class="text-gray-800 text-base font-medium"> <%= paymentMethod %> </p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Delivery Status</p>
+                        <p class="text-gray-800 text-base font-medium"> <%= paymentMethod %> </p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Payment Status</p>
+                        <p class="text-gray-800 text-base font-medium"> <%= paymentMethod %> </p>
+                    </div>                   
+                </div>
+            </div>    
+        </div>
+
+
+
+
+          
+
+
+
+    </section>    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <%- include('../partials/mobileFilter') %>
+
+    <%- include('../partials/userFooter') %>
+
+    <script src="/js/user/homePage.js"></script>
+    <script src="/js/user/checkout.js"></script>
+
+
+</body>
+</html>     
+

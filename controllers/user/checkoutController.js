@@ -25,7 +25,10 @@ const RenderCheckout = async (req, res) => {
             });
 
         let total = 0;
-        let totalQuantity = 0
+        let totalQuantity = 0;
+        let totalMRP = 0;
+        let totalDiscount = 0;
+
         if(cart) {
             cart.items = cart.items.filter(item => {
                 if(!item.product) return false;
@@ -39,9 +42,16 @@ const RenderCheckout = async (req, res) => {
 
             total = cart.items.reduce((sum, item) => {
                 return sum + (item.product.price * item.quantity);
-            }, 0);
+            },0);
 
             totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+
+            totalMRP = cart.items.reduce((sum, item) => {
+                const mrp = item.product.mrp || item.product.price;
+                return sum + (mrp * item.quantity)
+            },0);
+
+            totalDiscount = totalMRP - total;
         }  
         
         res.render('user/account/checkout', {
@@ -51,7 +61,9 @@ const RenderCheckout = async (req, res) => {
             categories,
             cart,
             total,
-            totalQuantity
+            totalQuantity,
+            totalMRP,
+            totalDiscount
         });
 
     } catch(error){

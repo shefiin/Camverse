@@ -16,7 +16,6 @@ const addressSchema = new mongoose.Schema({
   }, { timestamps: true });
   
 
-
 const userSchema = new mongoose.Schema({
     authType: {
       type: String,  

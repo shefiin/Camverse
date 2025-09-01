@@ -10,15 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <style>
-      .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;        
-        -webkit-box-orient: vertical; 
-        overflow: hidden;             
-        text-overflow: ellipsis;      
-      }
-    </style>
     
 </head>
 <body style="font-family:'Open Sans', sans-serif;">
@@ -35,7 +26,7 @@
           <div class="grid grid-cols-2 md2:grid-cols-3 lg2:grid-cols-4 gap-4">
 
             <% products.forEach(product => { %>
-              <div class="relative p-4 shadow-lg rounded-lg px-6 space-y-4 transition group cursor-pointer">
+              <div class="relative p-5 shadow-lg px-6 space-y-4 transition group cursor-pointer">
             
                 <button class="absolute top-2 right-2 text-gray-200 hover:text-gray-300 text-2xl wishlist-btn">
                   <i class="fa-solid fa-heart"></i>
@@ -53,19 +44,19 @@
                 <hr>
             
                 <div>
-                  <a href="/product/<%= product._id %>" class="block text-lg font-semibold text-gray-600 group-hover:underline line-clamp-2 truncate max-w-[300px]">
+                  <a href="/product/<%= product._id %>" class="block text-lg  text-gray-600  truncate max-w-[300px]">
                     <%= product.name %>
                   </a>
 
                   <div class="flex items-center gap-1 text-xs">
                     <!-- 4 full stars -->
-                    <i class="fa-solid fa-star text-yellow-500"></i>
-                    <i class="fa-solid fa-star text-yellow-500"></i>
-                    <i class="fa-solid fa-star text-yellow-500"></i>
-                    <i class="fa-solid fa-star text-yellow-500"></i>
+                    <i class="fa-solid fa-star text-gray-400"></i>
+                    <i class="fa-solid fa-star text-gray-400"></i>
+                    <i class="fa-solid fa-star text-gray-400"></i>
+                    <i class="fa-solid fa-star text-gray-400"></i>
                   
                     <!-- half star -->
-                    <i class="fa-solid fa-star-half-stroke text-yellow-500"></i>
+                    <i class="fa-solid fa-star-half-stroke text-gray-400"></i>
                   
                     <!-- rating number -->
                     <span class="ml-1 text-sm text-green-600">4.5</span>

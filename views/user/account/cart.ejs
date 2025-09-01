@@ -88,22 +88,30 @@
               </div>
           
               <!-- Summary -->
-              <div class="bg-white shadow p-6 h-fit">
+              <div class="bg-white shadow p-6 h-fit font-extralight">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Order Summary <span class="font-extralight">(<%= totalQuantity %> Items)</span></h2>
                 <% if(cart && cart.items.length > 0) { %>
-                    <div class="flex justify-between text-gray-600 mb-2">
-                    <span>Subtotal</span>
-                    <span>₹<%= total.toLocaleString() %></span>
-                    </div>
-                    <div class="flex justify-between text-gray-600 mb-2">
+
+                  <div class="flex justify-between text-gray-600 mb-2">
+                    <span>Total MRP</span>
+                    <span>₹<%= totalMRP.toLocaleString() %></span>
+                  </div>
+            
+                  <div class="flex justify-between text-gray-600 mb-2">
+                    <span>Total Discount</span>
+                    <span class="text-green-600">- ₹<%= totalDiscount.toLocaleString() %></span>
+                  </div>
+
+                  <div class="flex justify-between text-gray-600 mb-2">
                     <span>Shipping</span>
                     <span>Free</span>
-                    </div>
-                    <hr class="my-3">
-                    <div class="flex justify-between font-bold text-gray-800 text-lg mb-6">
+                  </div>
+                  <hr class="my-3">
+                  <div class="flex justify-between font-bold text-gray-800 text-lg mb-6">
                     <span>Total</span>
                     <span>₹<%= total.toLocaleString() %></span>
-                    </div>
+                  </div>
+                  
                     <a href="/checkout" 
                     class="block text-center bg-teal-600 text-white font-semibold py-2 hover:bg-teal-700">
                     Proceed to Checkout

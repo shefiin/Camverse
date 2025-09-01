@@ -24,7 +24,10 @@ const renderCart = async (req, res) => {
             });
 
         let total = 0;
-        let totalQuantity = 0
+        let totalQuantity = 0;
+        let totalMRP = 0;
+        let totalDiscount = 0;
+
         if(cart) {
             cart.items = cart.items.filter(item => {
                 if(!item.product) return false;
@@ -41,6 +44,14 @@ const renderCart = async (req, res) => {
             }, 0);
 
             totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+
+            totalMRP = cart.items.reduce((sum, item) => {
+                const mrp = item.product.mrp || item.product.price;
+                return sum + (mrp * item.quantity)
+            },0);
+
+            totalDiscount = totalMRP - total;
+
         }    
     
     
@@ -50,7 +61,9 @@ const renderCart = async (req, res) => {
             categories,
             cart,
             total,
-            totalQuantity
+            totalQuantity,
+            totalMRP,
+            totalDiscount
         })
     } catch(error){
         console.error(error);

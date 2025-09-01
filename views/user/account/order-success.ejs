@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="font-family:'Open Sans', sans-serif;">
+
+    <%- include('../partials/userNavbar') %>
+
+    <div class="bg-white p-10 w-full max-w-xl mt-20 mb-20 mx-auto">
+      <div class="mx-auto space-y-2 pt-10">
+          <div class="w-28 h-28 mx-auto mb-4">
+            <img src="/images/bb637789-bee8-4150-9e45-573f936ede97.jpg" alt="success">
+          </div>
+          <h1 class="text-2xl md:text-3xl text-blue-500 font-semibold text-center">Order Placed Successfully!!</h1>
+          <p class="font-extralight text-center"><span class="text-xl">🎉</span> Thank you for your purchase. Your order has been received and is being processed.</p>
+          <div class="bg-gray-50 w-full text-center p-5">
+            <h2 class="font-semibold mb-2">Order details</h2>
+
+            <div class="font-extralight mb-8">
+                <p>Order ID: <%= orderID %></p>
+                <p>Date: <%= date %></p>
+                <p>Payment Method: <%= paymentMethod %></p>
+                <p>Total Amount: ₹<%= totalAmount.toLocaleString() %></p>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <a href="/order/details/<%= order._id %>" class="px-2 md:px-4 py-2 bg-gray-800 hover:bg-gray-900 transition text-xs md:text-sm flex items-center gap-1 text-white">
+                    <i class="fa-solid fa-receipt"></i> View Order Datails
+                </a>
+                <a href="#" class="px-2 md:px-4 py-2 bg-teal-600 hover:bg-teal-700 transition text-xs md:text-sm flex items-center gap-1 text-white">
+                    <i class="fa-solid fa-bag-shopping"></i> Continue Shopping
+                </a>
+            </div>
+          </div>
+      </div>
+    </div>
+
+
+    <%- include('../partials/mobileFilter') %>
+
+    <%- include('../partials/userFooter') %>
+
+    <script src="/js/user/homePage.js"></script>
+    <script src="/js/user/checkout.js"></script>
+
+
+</body>
+</html>         

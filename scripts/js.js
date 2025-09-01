@@ -477,3 +477,25 @@ bcrypt.hash('Test1234', 10).then(console.log);
 // }
 
 // checkPassword();
+
+
+
+
+
+{/* <div class="flex justify-between text-gray-600 mb-2 font-extralight">
+<span>Total MRP</span>
+<span>₹<%= totalMRP.toLocaleString() %>.00</span>
+</div>
+<div class="flex justify-between text-gray-600 mb-2 font-extralight">
+<span>Discount</span>
+<span class="text-green-400">- ₹<%= totalDiscount.toLocaleString() %>.00</span>
+</div> */}
+
+
+totalMRP = cart.items.reduce((sum, item) => {
+return sum + (item.product.mrp * item.quantity);
+});
+
+totalDiscount = cart.items.reduce((sum, item) => {
+return sum + (((item.product.mrp - item.product.price)))
+})

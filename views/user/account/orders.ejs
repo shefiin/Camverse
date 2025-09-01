@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="font-family:'Open Sans', sans-serif;">
+
+    <%- include('../partials/userNavbar') %>
+
+    <section class="min-h-screen px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
+        <h1 class="text-2xl md:text-3xl text-teal-600 ml-10 mt-10">My Orders</h1>
+
+
+        <div class="px-6 py-10 lg:px-12 lg:py-10">
+          
+            <div class="w-full bg-gray-50 p-10">
+                <% if (orders.length === 0) { %>
+                  <h1 class="font-extralight text-gray-500 text-lg md:text-xl">You have no orders yet.</h1>
+                <% } else { %>
+                  <% orders.forEach(order => { %>
+                    <a href="/order/details/<%= order._id %>" class="block">
+                      <div class="order-card shadow-md flex-col bg-white p-6 mb-4 hover:shadow-lg transition">
+              
+                        <div class="flex justify-between">
+                          <div class="flex mb-5">
+                            <% if(order.status === 'Placed') { %>
+                              <div class="bg-gray-100 py-1 px-2 rounded-full text-gray-400">
+                                <p class="font-normal text-xs md:text-sm">
+                                  <i class="fa-solid fa-hourglass-end p-1"></i>
+                                  placed
+                                </p>
+                              </div>                                     
+                            <% } else if(order.status === 'Shipped') { %>
+                              <div class="bg-blue-200 py-1 px-2 rounded-full text-gray-700">
+                                <p class="font-normal text-xs md:text-sm">
+                                  <i class="fa-solid fa-truck-fast"></i>
+                                  Shipped
+                                </p>
+                              </div>
+                            <% } else if(order.status === 'Out for delivery') { %>  
+                              <div class="bg-green-100 py-1 px-2 rounded-full text-gray-700">
+                                <p class="font-normal text-xs md:text-sm">
+                                  <i class="fa-regular fa-circle-check"></i>
+                                  Out for Delivery
+                                </p>
+                              </div>
+                            <% } else if(order.status === 'Delivered') { %>  
+                              <div class="bg-green-100 py-1 px-2 rounded-full text-gray-700">
+                                <p class="font-normal text-xs md:text-sm">
+                                  <i class="fa-regular fa-circle-check"></i>
+                                  Delivered
+                                </p>
+                              </div>
+                            <% } else if(order.status === 'Cancelled') { %>  
+                              <div class="bg-red-200 py-1 px-2 rounded-full text-gray-700">
+                                <p class="font-normal text-xs md:text-sm">
+                                  <i class="fa-solid fa-circle-xmark"></i>
+                                  Cancelled
+                                </p>
+                              </div>
+                            <% } %>
+                          </div>
+              
+                          <div>
+                            <p class="font-semibold text-gray-500 text-xs md:text-sm">
+                              Order ID: 
+                              <span class="font-extralight text-xs md:text-sm text-gray-500"><%= order.orderId %></span>
+                            </p>
+                            <p class="font-semibold text-gray-500 text-xs md:text-sm">
+                              Order Date: 
+                              <span class="font-extralight text-xs md:text-sm text-gray-500">
+                                <%= order.orderDate.toDateString() %>
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                                  
+                        <div class="order-items flex flex-col gap-4">
+                          <% order.products.forEach(p => { %>
+                            <div class="product-item flex items-center gap-2">
+                              <img src="<%= p.productId.images[0].url %>" 
+                                   alt="<%= p.productId.name %>" 
+                                   class="w-24 h-24 object-contain mr-2">
+                              <div>
+                                <p class="font-semibold text-gray-800"><%= p.productId.brand.name %></p>
+                                <h2 class="text-sm md:text-base text-gray-500">
+                                  <%= p.productId.name %>
+                                </h2>
+                                <p class="font-extralight text-sm text-gray-400">
+                                  QTY: <%= p.quantity %>
+                                </p>
+                              </div>
+                            </div>
+                          <% }) %>
+                        </div>
+                                                  
+                      </div>
+                    </a>
+                  <% }) %>
+                <% } %>
+            </div>
+              
+          </div>
+          
+        
+        
+    </section>    
+
+
+    <%- include('../partials/mobileFilter') %>
+
+    <%- include('../partials/userFooter') %>
+
+    <script src="/js/user/homePage.js"></script>
+
+ 
+</body>
+</html> 
