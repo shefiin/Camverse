@@ -38,14 +38,14 @@
             </div>
             <div class="flex-col">
                 <% if(order.status === 'Placed') { %>
-                    <div class="bg-gray-100 py-1 px-2 rounded-full text-gray-400">
+                    <div class="bg-gray-100 py-1 px-2 rounded-full text-gray-600">
                       <p class="font-normal text-xs md:text-sm">
                         <i class="fa-solid fa-hourglass-end p-1"></i>
                         Placed
                       </p>
                     </div>                                     
                   <% } else if(order.status === 'Shipped') { %>
-                    <div class="bg-blue-200 py-1 px-2 text-center rounded-full text-gray-800">
+                    <div class="bg-blue-100 py-1 px-2 text-center rounded-full text-gray-800">
                       <p class="font-normal text-xs md:text-sm">
                         <i class="fa-solid fa-truck-fast"></i>
                         Shipped
@@ -66,18 +66,39 @@
                       </p>
                     </div>
                   <% } else if(order.status === 'Cancelled') { %>  
-                    <div class="bg-red-200 py-1 px-2 text-center rounded-full text-gray-700">
+                    <div class="bg-red-100 py-1 px-2 text-center rounded-full text-red-600">
                       <p class="font-normal text-xs md:text-sm">
-                        <i class="fa-solid fa-circle-xmark"></i>
+                        <i class="fa-regular fa-circle-xmark"></i>
                         Cancelled
+                      </p>
+                    </div>
+                  <% } else if(order.status === 'Returned') { %>  
+                    <div class="bg-orange-100 py-1 px-2 text-center rounded-full text-orange-600">
+                      <p class="font-normal text-xs md:text-sm">
+                        <i class="fa fa-truck"></i>
+                        Returned
                       </p>
                     </div>
                 <% } %>    
             </div>
-            <button class="bg-red-50 hover:bg-red-100 transition px-2 py-1 rounded-lg text-red-600 text-sm md:text-base">
-                <i class="fa-solid fa-circle-xmark"></i>
-                Cancel Order
-            </button>
+
+            <% 
+              const deliveredProducts = order.products.filter(pr => pr.status === 'Delivered');
+            %>
+
+            <% if(order.status === 'Placed') { %>
+              <form action="/order/cancel/<%= order._id %>?_method=PATCH" method="POST">
+                <button type="submit" class="bg-red-50 hover:bg-red-100 transition px-2 py-1 text-red-600 text-sm md:text-base">
+                  <i class="fa-regular fa-circle-xmark"></i> Cancel Order
+                </button>
+              </form>
+              <% } else if(order.status === 'Delivered' && deliveredProducts.length > 1) { %> 
+                <form action="/order/return/<%= order._id %>?_method=PATCH" method="POST">
+                  <button type="submit" class="bg-orange-50 hover:bg-orange-100 transition px-2 py-1 text-orange-600 text-sm md:text-base">
+                    <i class="fa-solid fa-rotate-left"></i> Return Order
+                  </button>
+                </form>
+              <% } %> 
         </div>
 
 
@@ -92,7 +113,13 @@
                   <% if (p.productId && p.productId.images && p.productId.images.length > 0) { %>
                     <img src="<%= p.productId.images[0].url %>" 
                          alt="<%= p.productId.name %>" 
-                         class="w-20 h-20 object-contain">
+                         class="w-20 h-20 object-contain 
+                         <%= p.status === 'Cancelled' || 
+                         order.status === 'Cancelled' || 
+                         order.status === "Returned"  ||
+                         p.status === 'Returned' ? 
+                         'opacity-60 grayscale' : '' %>">
+                         
                   <% } else { %>
                     <img src="/images/placeholder.png" 
                          alt="No image available" 
@@ -103,20 +130,43 @@
                     <p class="text-gray-800 font-medium"><%= p.productId?.name || "Unknown Product" %></p>
                     <p class="text-sm text-gray-500">Qty: <%= p.quantity %></p>
                     <p class="text-sm text-gray-500">Price: ₹<%= p.price %></p>
-                    <p class="text-sm text-gray-700 font-semibold">Total: ₹<%= p.quantity * p.price %></p>
+                    <p class="text-sm text-gray-700 font-semibold mb-2">Total: ₹<%= p.quantity * p.price %></p>
+                    <% if(p.status === 'Cancelled' && order.status !== 'Cancelled') { %>                    
+                      <p class="font-normal text-xs md:text-sm text-red-500">                      
+                        Cancelled
+                      </p>
+                    <% } else if(p.status === 'Returned' && order.status !== 'Cancelled') { %> 
+                      <p class="font-normal text-xs md:text-sm text-orange-500">                      
+                        Returned <i class="fa-regular fa-circle-check"></i>
+                      </p>
+                    <% } else if(p.status === 'Return in process' && order.status !== 'Cancelled') { %> 
+                      <p class="font-normal text-xs md:text-sm text-orange-400">                      
+                        <i class="fa-solid fa-hourglass-end"></i> Return in process...
+                      </p>
+                    <% } %>
                   </div>
                 </div>
           
                 <!-- Cancel Button -->
-                <% if(order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
-                  <form action="/orders/<%= order._id %>/cancel/<%= p.productId._id %>" method="POST">
-                    <button type="submit" class="bg-red-50 hover:bg-red-100 transition px-3 py-1 rounded-lg text-red-600 text-sm">
-                      <i class="fa-solid fa-circle-xmark"></i> Cancel Product
+                <% 
+                  const activeProducts = order.products.filter(pr => pr.status === 'Placed');
+                %>
+
+                <% if(order.status === 'Placed' && activeProducts.length > 1 && p.status === 'Placed') { %>
+                  <form action="/order/<%= order._id %>/cancel/<%= p.productId._id %>?_method=PATCH" method="POST">
+                    <button type="submit" class="bg-red-50 hover:bg-red-100 transition px-3 py-1 text-red-600 text-sm">
+                      <i class="fa-regular fa-circle-xmark"></i> Cancel this Product
                     </button>
                   </form>
+                <% } else if(order.status === 'Delivered' && p.status !== 'Cancelled' && p.status !== 'Returned' && p.status !== 'Return in process') { %> 
+                  <form action="/order/<%= order._id %>/return/<%= p.productId._id %>?_method=PATCH" method="POST">
+                    <button type="submit" class="bg-orange-50 hover:bg-orange-100 transition px-3 py-1 text-orange-600 text-sm">
+                      <i class="fa-solid fa-rotate-left"></i> Return this Product
+                    </button>
+                  </form> 
                 <% } %>
               </div>
-            <% }) %>
+            <% }) %> 
         </div>
 
         <div class="grid md:grid-cols-3 gap-6 max-w-8xl mx-auto items-stretch ml-10 mr-10">
@@ -125,38 +175,73 @@
 
                 <h2 class="text-lg font-semibold mb-6">Order status</h2>
             
-                <div class="space-y-4 max-w-[300px]"> <!-- parent controls width -->
-                    <div class="flex items-center gap-2 w-full">
-                        <div class="rounded-full w-4 h-4 bg-green-200 flex justify-center items-center">
-                            <div class="rounded-full w-2 h-2 bg-green-500"></div>
+                <div class="space-y-4 max-w-[300px]">
+                  <% 
+                    let steps = [
+                      { name: "Placed", key: "placedAt" },
+                      { name: "Shipped", key: "shippedAt" },
+                      { name: "Out for delivery", key: "outForDeliveryAt" },
+                      { name: "Delivered", key: "deliveredAt" }
+                    ]; 
+                
+                    if (order.status === "Cancelled") {
+                      steps.push({ name: "Cancelled", key: "cancelledAt" });
+                    } else if (order.status === 'Returned'){
+                      steps.push({ name: 'Returned', key: 'returnedAt' });
+                    }
+                  %>
+                
+                    <% steps.forEach(step => { 
+                      const stepDate = order[step.key];
+                      const isCurrent = (order.status === step.name);
+                      const isCancelled = (step.name === "Cancelled");
+                      const isReturned = (step.name === "Returned");
+                    %>
+                      <div class="flex items-center gap-2 w-full">
+                        
+                      
+                        <div class="rounded-full w-4 h-4 
+                                    <%= isCancelled && isCurrent 
+                                          ? 'bg-red-200' 
+                                          : (isReturned && isCurrent 
+                                              ? 'bg-orange-200' 
+                                              : (isCurrent ? 'bg-green-200' : 'bg-gray-200')) %> 
+                                    flex justify-center items-center">
+                          <div class="rounded-full w-2 h-2 
+                                      <%= isCancelled && isCurrent 
+                                            ? 'bg-red-500' 
+                                            : (isReturned && isCurrent 
+                                                ? 'bg-orange-500' 
+                                                : (isCurrent ? 'bg-green-500' : 'bg-gray-400')) %>">
+                          </div>
                         </div>
-                        <div class="flex-1 border-l-2  px-2 pr-6 py-1 border-green-400 bg-green-50">
-                            <p class="text-sm text-gray-500">Placed</p>
-                            <p class="text-xs text-gray-400">Sat, 30 Aug 2025, 23:21</p>
+                    
+                        
+                        <div class="flex-1 border-l-2 px-2 pr-6 py-1 rounded-lg
+                                    <%= isCancelled && isCurrent 
+                                          ? 'border-red-400 bg-red-50' 
+                                          : (isReturned && isCurrent 
+                                              ? 'border-orange-400 bg-orange-50' 
+                                              : (isCurrent ? 'border-green-400 bg-green-50' : 'border-gray-400 bg-gray-50')) %>">
+                          <p class="text-sm 
+                                    <%= isCancelled 
+                                          ? 'text-red-600' 
+                                          : (isReturned ? 'text-orange-600' : 'text-gray-600') %>">
+                            <%= step.name %>
+                          </p>
+                          <p class="text-xs text-gray-400">
+                            <%= stepDate 
+                              ? stepDate.toLocaleString('en-IN') 
+                              : ((order.status === 'Cancelled' || order.status === 'Returned') ? '-----------' : 'Pending...') 
+                            %> 
+                          </p>
                         </div>
-                    </div>
-            
-                    <div class="flex items-center gap-2 w-full">
-                        <div class="rounded-full w-4 h-4 bg-gray-200 flex justify-center items-center">
-                            <div class="rounded-full w-2 h-2 bg-gray-400"></div>
-                        </div>
-                        <div class="flex-1 border-l-2  px-2 pr-6 py-1 border-gray-400 bg-gray-50">
-                            <p class="text-sm text-gray-500">Shipped</p>
-                            <p class="text-xs text-gray-400">Pending...</p>
-                        </div>
-                    </div>
-            
-                    <div class="flex items-center gap-2 w-full">
-                        <div class="rounded-full w-4 h-4 bg-gray-200 flex justify-center items-center">
-                            <div class="rounded-full w-2 h-2 bg-gray-400"></div>
-                        </div>
-                        <div class="flex-1 border-l-2  px-2 pr-6 py-1 border-gray-400 bg-gray-50">
-                            <p class="text-sm text-gray-500">Delivered</p>
-                            <p class="text-xs text-gray-400">Pending...</p>
-                        </div>
-                    </div>
+                      </div>
+                  <% }) %>
+              
                 </div>
-            
+                
+                          
             </div>
             
 
@@ -175,45 +260,20 @@
             <div class="md:col-span-1 bg-white shadow p-6 space-y-6">
                 
                 <h2 class="text-lg font-semibold mb-6">Payment Information</h2>
-                <div class="text-xs md:text-sm text-gray-500 font-extralight space-y-1">
+                <div class="text-xs md:text-sm text-gray-500 font-extralight space-y-3">
                     <div>
-                        <p class="text-gray-500 text-sm">Payment Method</p>
-                        <p class="text-gray-800 text-base font-medium"> <%= paymentMethod %> </p>
+                        <p class="text-gray-800 text-base font-medium">Payment Method</p>
+                        <p class="text-gray-500 text-sm"> <%= paymentMethod %> </p>
                     </div>
                     <div>
-                        <p class="text-gray-500 text-sm">Delivery Status</p>
-                        <p class="text-gray-800 text-base font-medium"> <%= paymentMethod %> </p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Payment Status</p>
-                        <p class="text-gray-800 text-base font-medium"> <%= paymentMethod %> </p>
+                        <p class="text-gray-800 text-base font-medium">Payment Status</p>
+                        <p class="text-gray-500 text-sm"> <%= paymentStatus %> </p>
                     </div>                   
                 </div>
             </div>    
         </div>
 
-
-
-
-          
-
-
-
     </section>    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     <%- include('../partials/mobileFilter') %>

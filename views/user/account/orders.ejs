@@ -31,49 +31,56 @@
                         <div class="flex justify-between">
                           <div class="flex mb-5">
                             <% if(order.status === 'Placed') { %>
-                              <div class="bg-gray-100 py-1 px-2 rounded-full text-gray-400">
-                                <p class="font-normal text-xs md:text-sm">
-                                  <i class="fa-solid fa-hourglass-end p-1"></i>
-                                  placed
+                              <div class="py-1 px-2 rounded-full text-gray-500">
+                                <p class="font-normal text-sm md:text-base">
+                                  <i class="fa-solid fa-hourglass-end"></i>
+                                  Placed
                                 </p>
                               </div>                                     
                             <% } else if(order.status === 'Shipped') { %>
-                              <div class="bg-blue-200 py-1 px-2 rounded-full text-gray-700">
-                                <p class="font-normal text-xs md:text-sm">
+                              <div class="py-1 px-2 rounded-full text-blue-500">
+                                <p class="font-normal text-sm md:text-base">
                                   <i class="fa-solid fa-truck-fast"></i>
                                   Shipped
                                 </p>
                               </div>
                             <% } else if(order.status === 'Out for delivery') { %>  
-                              <div class="bg-green-100 py-1 px-2 rounded-full text-gray-700">
-                                <p class="font-normal text-xs md:text-sm">
-                                  <i class="fa-regular fa-circle-check"></i>
+                              <div class="py-1 px-2 rounded-full text-green-600">
+                                <p class="font-normal text-sm md:text-base">
+                                  <i class="fa-solid fa-spinner"></i>
                                   Out for Delivery
                                 </p>
                               </div>
                             <% } else if(order.status === 'Delivered') { %>  
-                              <div class="bg-green-100 py-1 px-2 rounded-full text-gray-700">
-                                <p class="font-normal text-xs md:text-sm">
+                              <div class="py-1 px-2 rounded-full text-green-600">
+                                <p class="font-normal text-sm md:text-base">
                                   <i class="fa-regular fa-circle-check"></i>
                                   Delivered
                                 </p>
                               </div>
                             <% } else if(order.status === 'Cancelled') { %>  
-                              <div class="bg-red-200 py-1 px-2 rounded-full text-gray-700">
-                                <p class="font-normal text-xs md:text-sm">
-                                  <i class="fa-solid fa-circle-xmark"></i>
+                              <div class="py-1 px-2 rounded-full text-red-500">
+                                <p class="font-normal text-sm md:text-base">
+                                  <i class="fa-regular fa-circle-xmark"></i>
                                   Cancelled
                                 </p>
                               </div>
+                              <% } else if(order.status === 'Returned') { %>  
+                                <div class="py-1 px-2 text-center rounded-full text-orange-500">
+                                  <p class="font-normal text-xs md:text-sm">
+                                    <i class="fa fa-truck"></i>
+                                    Returned
+                                  </p>
+                                </div>
                             <% } %>
                           </div>
               
                           <div>
-                            <p class="font-semibold text-gray-500 text-xs md:text-sm">
+                            <p class="font-semibold text-teal-600 text-xs md:text-sm">
                               Order ID: 
                               <span class="font-extralight text-xs md:text-sm text-gray-500"><%= order.orderId %></span>
                             </p>
-                            <p class="font-semibold text-gray-500 text-xs md:text-sm">
+                            <p class="font-semibold text-teal-600 text-xs md:text-sm">
                               Order Date: 
                               <span class="font-extralight text-xs md:text-sm text-gray-500">
                                 <%= order.orderDate.toDateString() %>
@@ -85,20 +92,28 @@
                         <div class="order-items flex flex-col gap-4">
                           <% order.products.forEach(p => { %>
                             <div class="product-item flex items-center gap-2">
-                              <img src="<%= p.productId.images[0].url %>" 
-                                   alt="<%= p.productId.name %>" 
-                                   class="w-24 h-24 object-contain mr-2">
+                              <img 
+                                src="<%= p.productId.images[0].url %>" 
+                                alt="<%= p.productId.name %>" 
+                                class="w-24 h-24 object-contain mr-2 <%= 
+                                  (p.status === 'Cancelled' || order.status === 'Cancelled' || order.status === 'Returned' || p.status === 'Returned') 
+                                    ? 'opacity-60 grayscale' 
+                                    : '' 
+                                %>">
+                              
                               <div>
                                 <p class="font-semibold text-gray-800"><%= p.productId.brand.name %></p>
-                                <h2 class="text-sm md:text-base text-gray-500">
-                                  <%= p.productId.name %>
-                                </h2>
-                                <p class="font-extralight text-sm text-gray-400">
-                                  QTY: <%= p.quantity %>
-                                </p>
+                                <h2 class="text-sm md:text-base text-gray-500"><%= p.productId.name %></h2>
+                                <p class="font-extralight text-sm text-gray-400">QTY: <%= p.quantity %></p>
+                          
+                                <% if (p.status === 'Cancelled' && order.status !== 'Cancelled') { %>                    
+                                  <p class="font-normal text-xs md:text-sm text-red-500">Cancelled</p>
+                                <% } else if (p.status === 'Returned' && order.status !== 'Cancelled') { %>                    
+                                  <p class="font-normal text-xs md:text-sm text-orange-500">Returned</p>
+                                <% } %>
                               </div>
                             </div>
-                          <% }) %>
+                          <% }) %>                          
                         </div>
                                                   
                       </div>

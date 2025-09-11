@@ -114,6 +114,9 @@
 .h-screen {
   height: 100vh;
 }
+.max-h-\[80vh\] {
+  max-height: 80vh;
+}
 .max-h-\[350px\] {
   max-height: 350px;
 }
@@ -144,11 +147,20 @@
 .w-\[300px\] {
   width: 300px;
 }
+.w-\[600px\] {
+  width: 600px;
+}
 .w-full {
   width: 100%;
 }
 .w-px {
   width: 1px;
+}
+.max-w-\[78px\] {
+  max-width: 78px;
+}
+.max-w-\[100px\] {
+  max-width: 100px;
 }
 .max-w-\[150px\] {
   max-width: 150px;
@@ -162,8 +174,14 @@
 .max-w-\[220px\] {
   max-width: 220px;
 }
+.max-w-\[300\] {
+  max-width: 300;
+}
 .max-w-\[300px\] {
   max-width: 300px;
+}
+.max-w-\[500\] {
+  max-width: 500;
 }
 .max-w-\[500px\] {
   max-width: 500px;
@@ -262,6 +280,9 @@
     border-bottom-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
   }
 }
+.self-start {
+  align-self: flex-start;
+}
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -302,25 +323,9 @@
   border-bottom-style: var(--tw-border-style);
   border-bottom-width: 1px;
 }
-.border-l {
-  border-left-style: var(--tw-border-style);
-  border-left-width: 1px;
-}
-.border-l-1 {
-  border-left-style: var(--tw-border-style);
-  border-left-width: 1px;
-}
 .border-l-2 {
   border-left-style: var(--tw-border-style);
   border-left-width: 2px;
-}
-.border-l-3 {
-  border-left-style: var(--tw-border-style);
-  border-left-width: 3px;
-}
-.border-l-4 {
-  border-left-style: var(--tw-border-style);
-  border-left-width: 4px;
 }
 .border-dashed {
   --tw-border-style: dashed;
@@ -370,11 +375,20 @@
 .text-left {
   text-align: left;
 }
+.text-right {
+  text-align: right;
+}
+.align-top {
+  vertical-align: top;
+}
 .whitespace-nowrap {
   white-space: nowrap;
 }
 .whitespace-pre-line {
   white-space: pre-line;
+}
+.text-\[\#0074e7\] {
+  color: #0074e7;
 }
 .text-transparent {
   color: transparent;
@@ -394,12 +408,19 @@
 .opacity-50 {
   opacity: 50%;
 }
+.opacity-60 {
+  opacity: 60%;
+}
 .opacity-100 {
   opacity: 100%;
 }
 .ring-2 {
   --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
   box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+}
+.grayscale {
+  --tw-grayscale: grayscale(100%);
+  filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
 }
 .filter {
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);

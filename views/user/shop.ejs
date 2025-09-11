@@ -50,13 +50,13 @@
 
                   <div class="flex items-center gap-1 text-xs">
                     <!-- 4 full stars -->
-                    <i class="fa-solid fa-star text-gray-400"></i>
-                    <i class="fa-solid fa-star text-gray-400"></i>
-                    <i class="fa-solid fa-star text-gray-400"></i>
-                    <i class="fa-solid fa-star text-gray-400"></i>
+                    <i class="fa-solid fa-star text-zinc-300"></i>
+                    <i class="fa-solid fa-star text-zinc-300"></i>
+                    <i class="fa-solid fa-star text-zinc-300"></i>
+                    <i class="fa-solid fa-star text-zinc-300"></i>
                   
                     <!-- half star -->
-                    <i class="fa-solid fa-star-half-stroke text-gray-400"></i>
+                    <i class="fa-solid fa-star-half-stroke text-zinc-300"></i>
                   
                     <!-- rating number -->
                     <span class="ml-1 text-sm text-green-600">4.5</span>
@@ -76,7 +76,7 @@
                     </div>
                   <% } %>
             
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 mb-1">
                     <p class="font-bold text-sm sm:text-base md:text-lg lg:text-xl text-gray-700">
                       ₹<%= product.price.toLocaleString() %>
                     </p>
@@ -84,11 +84,28 @@
                       <span class="text-xs sm:text-sm md:text-base text-gray-400 line-through">
                         ₹<%= product.mrp.toLocaleString() %>
                       </span>
-                      <p class="text-xs sm:text-sm text-green-600">
-                        <%= Math.round(((product.mrp - product.price) / product.mrp) * 100) %>% Off
+                      <p class="text-xs py-1 px-2 font-extralight bg-green-50 rounded-full text-green-600">
+                        <%= Math.round(((product.mrp - product.price) / product.mrp) * 100) %>% OFF
                       </p>
                     <% } %>
                   </div>
+
+                  <% if (product.stock == 0) { %>
+                    <div class="text-red-500 max-w-[100px]">
+                      <p class="font-normal text-xs">
+                        <i class="fa-regular fa-circle-xmark"></i>
+                        Out of Stock
+                      </p>
+                    </div>
+                  <% } else if (product.stock > 0) {%>
+                    <div class="text-[#0074e7] max-w-[78px]">
+                      <p class="font-normal text-xs">
+                        <i class="fa-regular fa-circle-check"></i>
+                        In Stock
+                      </p>
+                    </div>                    
+                  <% } %>
+                    
                 </div>
               </div>
             <% }) %>

@@ -28,7 +28,13 @@ const orderSchema = new mongoose.Schema({
             price: {
                 type: Number,
                 required: true
-            }
+            },
+            status: {
+                type: String,
+                enum: ["Placed", "Shipped", "Out for delivery", "Delivered", "Cancelled", "Return in process", "Returned"],
+                default: "Placed"
+            },
+            cancelledAt: Date
         }
     ],
 
@@ -51,7 +57,7 @@ const orderSchema = new mongoose.Schema({
 
     paymentMethod: {
         type: String,
-        enum: ['COD', 'Online'],
+        enum: ['Cash on delivery', 'Online'],
         required: true
     },
 
@@ -62,7 +68,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Placed", "Shipped", "Out for delivery", "Delivered", "Cancelled"],
+        enum: ["Placed", "Shipped", "Out for delivery", "Delivered", "Cancelled", "Returned"],
         default: "Placed"
       },
       placedAt: { type: Date, default: Date.now },
@@ -70,6 +76,7 @@ const orderSchema = new mongoose.Schema({
       outForDeliveryAt: Date,
       deliveredAt: Date,
       cancelledAt: Date,
+      returnedAt: Date,
     
     orderDate: {
         type: Date,

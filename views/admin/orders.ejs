@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="font-family: 'Kanit', sans-serif;">
+    
+    <%- include('partials/adminNavbar') %>
+
+    <div class="flex pt-[80px]">
+        <%- include('partials/adminSidebar') %>
+
+        <main class="md:ml-56 flex-1 p-6 w-full relative">
+            <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mb-10">Order Management</h1>
+
+          <!-- Search + Button -->
+          <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center space-x-1">
+                
+                <div class="relative w-64 md:w-96">
+                    <form
+                    action="/admin/orders"
+                    method="GET"
+                    class="relative flex items-center"
+                  >
+                    <input
+                      type="text"
+                      name="search"
+                      value="<%= typeof search !== 'undefined' ? search : '' %>"
+                      placeholder="Search products..."
+                      class="pl-3 py-2 border border-gray-300 rounded-md px-4 w-64 md:w-96 focus:outline-none focus:ring focus:border-none focus:ring-blue-200"
+                    >
+                
+                    <button
+                      type="submit"
+                      class="absolute inset-y-0 right-0 m-1 p-3 rounded flex items-center bg-gray-200 text-gray-600 hover:text-blue-600">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                
+                  </form>
+                </div>
+                <% if (search) { %>
+                    <a
+                      href="/admin/orders"
+                      class="text-sm text-gray-500 hover:text-gray-600 bg-gray-200 hover:bg-gray-300 px-1 py-3 rounded-md"
+                      title="Clear Search"
+                    >
+                      Clear
+                    </a>
+                  <% } %>
+            </div>
+
+            <a href="/admin/products/add" 
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow">
+                <i class="fa-solid fa-plus"></i>
+                Add Product
+            </a>
+          </div>
+
+          <div class="space-y-6">
+            <% orders.forEach((order) => { %>
+              <div class="w-full bg-gray-900 text-gray-100 p-6 rounded-2xl shadow">
+                <!-- Header -->
+                <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+                  <div>
+                    <h3 class="font-semibold text-lg">Order ID: <%= order.orderId %></h3>
+                    <p class="text-sm text-gray-400">
+                      <%= order.orderDate 
+                          ? order.orderDate.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) 
+                          : 'N/A' %>
+                    </p>
+                  </div>
+                  <div>
+                    <% if (order.status === 'Placed') { %>
+                      <span class="px-4 py-1 rounded-full text-yellow-400 bg-yellow-900/40 text-sm">Placed</span>
+                    <% } else if (order.status === 'Shipped') { %>
+                      <span class="px-4 py-1 rounded-full text-blue-400 bg-blue-900/40 text-sm">Shipped</span>
+                    <% } else if (order.status === 'Delivered') { %>
+                      <span class="px-4 py-1 rounded-full text-green-400 bg-green-900/40 text-sm">Delivered</span>
+                    <% } else if (order.status === 'Cancelled') { %>
+                      <span class="px-4 py-1 rounded-full text-red-400 bg-red-900/40 text-sm">Cancelled</span>
+                    <% } else if (order.status === 'Returned') { %>
+                      <span class="px-4 py-1 rounded-full text-orange-400 bg-orange-900/40 text-sm">Returned</span>
+                    <% } %>
+                  </div>
+                </div>
+          
+                <!-- Two column layout -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  
+                  <!-- Left: Customer + Products -->
+                  <div>
+                    <!-- Customer -->
+                    <p class="mb-4"><span class="font-medium">Customer:</span> <%= order.user.name %></p>
+          
+                    <!-- Products -->
+                    <div class="space-y-3 mb-4">
+                      <% order.products.forEach(p => { %>
+                        <div class="flex items-center gap-3">
+                          <% if (p.productId && p.productId.images?.length) { %>
+                            <img src="<%= p.productId.images[0].url %>" alt="<%= p.productId.name %>"
+                                class="w-16 h-16 object-contain rounded bg-white
+                                <%= p.status === 'Cancelled' || 
+                                order.status === 'Cancelled' || 
+                                order.status === "Returned"  ||
+                                p.status === 'Returned' ? 
+                                'opacity-60 grayscale' : '' %>">
+                          <% } else { %>
+                            <img src="/images/no-image.png" alt="No Image"
+                                class="w-16 h-16 object-contain rounded border">
+                          <% } %>
+                          <div>
+                            <p class="font-medium max-w-[500px] truncate"><%= p.productId ? p.productId.name : "Unknown Product" %></p>
+                            <p class="text-sm text-gray-400">Price: <%= p.price.toLocaleString() %></p>
+                            <p class="text-sm text-gray-400">Qty: <%= p.quantity %></p>
+                            <% if(p.status === 'Cancelled' && order.status !== 'Cancelled') { %>
+                              <p class="text-sm text-red-500">Cancelled</p>
+                            <% } else if(p.status === 'Returned' && order.status !== 'Returned') { %>
+                              <p class="text-sm text-orange-500">Returned</p>
+                            <% } %> 
+                          </div>
+                        </div>
+                      <% }) %>
+                    </div>
+                    <p class="font-semibold text-lg mb-4">Total: ₹<%= order.totalAmount.toLocaleString() %></p>
+                  </div>
+          
+                  <!-- Right: Shipping Address -->
+                  <div class="bg-gray-800 p-4 rounded-xl self-start">
+                    <h4 class="font-semibold mb-3 text-gray-400">Shipping Address</h4>
+                    <p><%= order.shippingAddress?.fullName %></p>
+                    <p><%= order.shippingAddress?.house %></p>
+                    <p><%= order.shippingAddress?.area %></p>
+                    <p><%= order.shippingAddress?.landmark %> 
+                    <p><%= order.shippingAddress?.city %> - <%= order.shippingAddress?.state %></p> 
+                    <p class="text-base mt-2">Phone: <%= order.shippingAddress?.mobile %></p>
+                  </div>
+                </div>
+          
+                <!-- Footer -->
+                <div class="flex justify-between items-center mt-6">
+                  <div class="flex gap-3">
+                    <a href="/admin/orders/edit/<%= order._id %>" 
+                      class="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg text-sm">
+                      Manage
+                    </a>
+                    <a href="/admin/orders/delete/<%= order._id %>" 
+                      class="px-4 py-2 bg-red-700 hover:bg-red-800 rounded-lg text-sm">
+                      Cancel
+                    </a>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        
+        
+        
+
+          <%- include('partials/pagination') %>
+        </main>
+  </div>
+</body>
+</html>

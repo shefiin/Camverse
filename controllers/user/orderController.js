@@ -36,7 +36,9 @@ const placeOrder = async (req, res) => {
             products: cart.items.map(i => ({
                 productId: i.product._id,
                 quantity: i.quantity,
-                price: i.product.price
+                price: i.product.price,
+                status: "Placed",
+                placedAt: new Date()
             })),
             shippingAddress: {
                 fullName: address.fullName,
@@ -50,9 +52,20 @@ const placeOrder = async (req, res) => {
             },
             totalAmount: total,
             paymentMethod: payment,
-            paymentStatus: payment === 'COD' ? 'Pending' : 'Completed',
+            paymentStatus: payment === 'Cash on delivery' ? 'Pending' : 'Completed',
             createdAt: new Date()
         });
+
+
+        for(const item of cart.items){
+            const product = item.product;
+            if(product.stock < item.quantity){
+                return res.status(400).send(`Not enough stock for ${product.name}`)
+            }
+            product.stock -= item.quantity;
+            await product.save();
+        }
+
 
         await order.save();
 
@@ -60,8 +73,8 @@ const placeOrder = async (req, res) => {
         cart.items = [];
         await cart.save();
 
-        if(payment === 'COD') {
-            return res.redirect('/order/order-success')
+        if(payment === 'Cash on delivery') {
+            return res.redirect(`/order/order-success/${order._id}`)
         } else {
             return res.redirect('/payment')
         }
@@ -76,7 +89,12 @@ const placeOrder = async (req, res) => {
 const orderSuccess = async (req, res) => {
     try {
         const userId = req.session.userId;
-        const order = await Order.findOne({ user: userId });
+        const orderId = req.params.id;
+        const order = await Order.findById(orderId);
+
+        if (!order || order.user.toString() !== userId.toString()) {
+            return res.status(404).send('Order not found');
+        }
 
         const user = await User.findById(userId);
         const brands = await Brand.find({isDeleted : false });
@@ -180,7 +198,10 @@ const orderDetails = async (req, res) => {
             date: formattedDate,
             address: order.shippingAddress,
             paymentMethod: order.paymentMethod,
-            totalAmount: order.totalAmount
+            status: order.status,
+            paymentStatus: order.paymentStatus,
+            totalAmount: order.totalAmount,
+            statusTimestamps: order.statusTimestamps
         });
 
     } catch(error){
@@ -192,6 +213,151 @@ const orderDetails = async (req, res) => {
 
 
 
+const cancelOrder = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const userId = req.session.userId;
+    
+        const order = await Order.findById(orderId);
+        if(!order) return res.status(400).send('order not found');
+    
+        if(order.status === 'Delivered' || order.status === 'Cancelled'){
+            return res.status(400).send('This order cannot be cancelled');
+        }
+    
+        for(const item of order.products){
+            await Product.findByIdAndUpdate(item.productId, {
+                $inc: { stock: item.quantity }
+            });
+        }
+    
+        order.status = 'Cancelled';
+        order.cancelledAt = new Date();
+        await order.save();
+    
+        res.redirect(`/order/details/${orderId}`);
+
+    } catch(error){
+        console.log(error);
+        res.status(400).send('Something went wrong while cancelling order');
+    }
+}; 
+
+
+const cancelProduct = async (req, res) => {
+    try {
+      const { orderId, productId } = req.params; // orderId = CAMV-xxxxxx
+      const userId = req.session.userId;
+  
+      const order = await Order.findOne({ _id: orderId, user: userId });      
+      if (!order) return res.status(400).send("Order not found");
+  
+      if (order.status === "Delivered" || order.status === "Cancelled") {
+        return res.status(400).send("Order cannot be modified");
+      }
+  
+      const product = order.products.find(
+        (p) => p.productId.toString() === productId
+      );
+  
+      if (!product) return res.status(400).send("Product not found in order");
+  
+      await Product.findByIdAndUpdate(productId, {
+        $inc: { stock: product.quantity }
+      });
+  
+      product.status = "Cancelled";
+      order.markModified("products");
+      await order.save();
+  
+      res.redirect(`/order/details/${orderId}`); // ✅ redirect using custom ID
+    } catch (err) {
+      console.error(err);
+      res
+        .status(500)
+        .send("Something went wrong while cancelling product");
+    }
+};
+
+
+const returnOrder = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const userId = req.session.userId;
+
+
+        const order = await Order.findOne({ _id: orderId, user: userId });
+        if (!order) return res.status(400).send("Order not found");
+
+
+        if (order.status !== "Delivered" || order.status === "Cancelled") {
+            return res.status(400).send("Order cannot be modified");
+        }
+
+        order.status = 'Returned';
+        order.returnedAt = new Date();
+
+        for(let item of order.products) {
+            item.status = "Returned";
+            if(item.productId) {
+                item.productId.stock += item.quantity;
+            }
+        }
+
+        await order.save();
+        res.redirect(`/order/details/${orderId}`);
+
+    } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .send("Something went wrong while returning order");
+      }
+};
+
+
+
+const returnProduct = async (req, res) => {
+    try {
+        const {orderId, productId } = req.params;
+        const userId = req.session.userId;
+
+        const order = await Order.findOne({ _id: orderId, user: userId });
+        if(!order) return res.status(400).send('order not found');
+
+        if (order.status !== "Delivered" || order.status === "Cancelled") {
+            return res.status(400).send("Order cannot be modified");
+        }
+
+        const product = order.products.find(
+            (p) => p.productId.toString() === productId
+        );
+
+        if (!product) return res.status(400).send("Product not found in order");
+
+        await Product.findByIdAndUpdate(productId, {
+            $inc: { stock: product.quantity }
+        });
+
+        product.status = "Return in process";
+        order.markModified("products");
+        await order.save();
+        
+        res.redirect(`/order/details/${orderId}`);
+
+    } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .send("Something went wrong while returning product");
+      }
+}
+  
+
+
+
+
+
 
 
 
@@ -199,5 +365,9 @@ module.exports = {
     placeOrder,
     orderSuccess,
     orderDetails,
-    orders
+    orders,
+    cancelOrder,
+    cancelProduct,
+    returnOrder,
+    returnProduct
 }
