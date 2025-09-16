@@ -20,98 +20,98 @@
         <h1 class="text-2xl md:text-2xl font-semibold text-gray-800 mb-16">Shop your favorite cameras</h1>
 
         <%- include('partials/userFilter') %>
-        
+
 
         <div class="w-full md:w-5/6 md:pl-6 mt-20">
-          <div class="grid grid-cols-2 md2:grid-cols-3 lg2:grid-cols-4 gap-4">
+          <% if (products.length === 0) { %>
+            <div class="flex flex-col items-center justify-center py-20 text-center">
+              <h2 class="text-2xl font-semibold mb-2">No products found</h2>
+              <p class="text-gray-600">Try adjusting your filters or search terms.</p>
+            </div>
+          <% } else { %>
 
-            <% products.forEach(product => { %>
-              <div class="relative p-5 shadow-lg px-6 space-y-4 transition group cursor-pointer">
+            <div class="grid grid-cols-2 md2:grid-cols-3 lg2:grid-cols-4 gap-4">
             
-                <button class="absolute top-2 right-2 text-gray-200 hover:text-gray-300 text-2xl wishlist-btn">
-                  <i class="fa-solid fa-heart"></i>
-                </button>
+                <% products.forEach(product => { %>
+                  <div class="relative p-5 shadow-lg px-6 space-y-4 transition group cursor-pointer">
             
-                
-                <a href="/product/<%= product._id %>" class="block">
-                  <img 
-                    src="<%= product.images && product.images.length ? product.images[0].url : '/images/no-image.png' %>"
-                    alt="<%= product.name %>" 
-                    class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
-                  />
-                </a>
+                    <button class="absolute top-2 right-2 text-gray-200 hover:text-gray-300 text-2xl wishlist-btn">
+                      <i class="fa-solid fa-heart"></i>
+                    </button>
             
-                <hr>
+                    <a href="/product/<%= product._id %>" class="block">
+                      <img
+                        src="<%= product.images && product.images.length ? product.images[0].url : '/images/no-image.png' %>"
+                        alt="<%= product.name %>"
+                        class="w-full max-w-[190px] aspect-square object-contain rounded-md mx-auto transform transition duration-300 group-hover:scale-110"
+                      />
+                    </a>
             
-                <div>
-                  <a href="/product/<%= product._id %>" class="block text-lg  text-gray-600  truncate max-w-[300px]">
-                    <%= product.name %>
-                  </a>
-
-                  <div class="flex items-center gap-1 text-xs">
-                    <!-- 4 full stars -->
-                    <i class="fa-solid fa-star text-zinc-300"></i>
-                    <i class="fa-solid fa-star text-zinc-300"></i>
-                    <i class="fa-solid fa-star text-zinc-300"></i>
-                    <i class="fa-solid fa-star text-zinc-300"></i>
-                  
-                    <!-- half star -->
-                    <i class="fa-solid fa-star-half-stroke text-zinc-300"></i>
-                  
-                    <!-- rating number -->
-                    <span class="ml-1 text-sm text-green-600">4.5</span>
-                  </div>
+                    <hr>
             
-                  <% if (product.rating) { %>
-                    <div class="text-yellow-500 text-sm mb-2">
-                        <% for (let i = 1; i <= 5; i++) { %>
+                    <div>
+                      <a href="/product/<%= product._id %>" class="block text-lg text-gray-600 truncate max-w-[300px]">
+                        <%= product.name %>
+                      </a>
+            
+                      <div class="flex items-center gap-1 text-xs">
+                        <i class="fa-solid fa-star text-zinc-300"></i>
+                        <i class="fa-solid fa-star text-zinc-300"></i>
+                        <i class="fa-solid fa-star text-zinc-300"></i>
+                        <i class="fa-solid fa-star text-zinc-300"></i>
+                        <i class="fa-solid fa-star-half-stroke text-zinc-300"></i>
+                        <span class="ml-1 text-sm text-green-600">4.5</span>
+                      </div>
+            
+                      <% if (product.rating) { %>
+                        <div class="text-yellow-500 text-sm mb-2">
+                          <% for (let i = 1; i <= 5; i++) { %>
                             <% if (i <= Math.floor(product.rating)) { %>
-                                <i class="fa-solid fa-star"></i>
+                              <i class="fa-solid fa-star"></i>
                             <% } else if (i - product.rating < 1) { %>
-                                <i class="fa-solid fa-star-half-stroke"></i>
+                              <i class="fa-solid fa-star-half-stroke"></i>
                             <% } else { %>
-                                <i class="fa-regular fa-star"></i>
+                              <i class="fa-regular fa-star"></i>
                             <% } %>
+                          <% } %>
+                        </div>
+                      <% } %>
+            
+                      <div class="flex items-center gap-1 md:gap-2 mb-1">
+                        <p class="font-bold text-sm sm:text-base md:text-lg lg:text-xl text-gray-700">
+                          ₹<%= product.price.toLocaleString() %>
+                        </p>
+                        <% if (product.mrp && product.mrp > product.price) { %>
+                          <span class="text-xs sm:text-sm md:text-base text-gray-400 line-through">
+                            ₹<%= product.mrp.toLocaleString() %>
+                          </span>
+                          <p class="text-xs py-1 px-2 font-normal bg-green-50 rounded-full text-green-600">
+                            <%= Math.round(((product.mrp - product.price) / product.mrp) * 100) %>% OFF
+                          </p>
                         <% } %>
-                    </div>
-                  <% } %>
+                      </div>
             
-                  <div class="flex items-center gap-2 mb-1">
-                    <p class="font-bold text-sm sm:text-base md:text-lg lg:text-xl text-gray-700">
-                      ₹<%= product.price.toLocaleString() %>
-                    </p>
-                    <% if (product.mrp && product.mrp > product.price) { %>
-                      <span class="text-xs sm:text-sm md:text-base text-gray-400 line-through">
-                        ₹<%= product.mrp.toLocaleString() %>
-                      </span>
-                      <p class="text-xs py-1 px-2 font-extralight bg-green-50 rounded-full text-green-600">
-                        <%= Math.round(((product.mrp - product.price) / product.mrp) * 100) %>% OFF
-                      </p>
-                    <% } %>
+                      <% if (product.stock == 0) { %>
+                        <div class="text-red-500 max-w-[100px]">
+                          <p class="font-normal text-xs">
+                            <i class="fa-regular fa-circle-xmark"></i>
+                            Out of Stock
+                          </p>
+                        </div>
+                      <% } else if (product.stock > 0) { %>
+                        <div class="text-[#0074e7] max-w-[78px]">
+                          <p class="font-normal text-xs">
+                            <i class="fa-regular fa-circle-check"></i>
+                            In Stock
+                          </p>
+                        </div>
+                      <% } %>
+                    </div>
                   </div>
-
-                  <% if (product.stock == 0) { %>
-                    <div class="text-red-500 max-w-[100px]">
-                      <p class="font-normal text-xs">
-                        <i class="fa-regular fa-circle-xmark"></i>
-                        Out of Stock
-                      </p>
-                    </div>
-                  <% } else if (product.stock > 0) {%>
-                    <div class="text-[#0074e7] max-w-[78px]">
-                      <p class="font-normal text-xs">
-                        <i class="fa-regular fa-circle-check"></i>
-                        In Stock
-                      </p>
-                    </div>                    
-                  <% } %>
-                    
-                </div>
-              </div>
-            <% }) %>
+                <% }) %>
+              <% } %>
             
-   
-          </div>
+            </div>
           
           <%- include('partials/pagination') %>
           
@@ -125,6 +125,7 @@
 
 
     <script src="/js/user/shopPage.js"></script>
+
     
 </body>
 </html>

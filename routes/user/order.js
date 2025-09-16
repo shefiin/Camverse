@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const {verifyPayment} = require('../../controllers/user/paymentController')
 const { placeOrder, 
         orderSuccess, 
         orderDetails, 
@@ -10,7 +11,11 @@ const { placeOrder,
         returnProduct } = require('../../controllers/user/orderController');
 
 
+
+
 router.post('/', placeOrder);
+
+router.post("/verify", verifyPayment);
 
 router.get('/order-success/:id', orderSuccess);
 

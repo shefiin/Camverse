@@ -24,6 +24,9 @@
 .top-full {
   top: 100%;
 }
+.left-1\/2 {
+  left: calc(1/2 * 100%);
+}
 .z-0 {
   z-index: 0;
 }
@@ -41,6 +44,9 @@
 }
 .mx-auto {
   margin-inline: auto;
+}
+.my-auto {
+  margin-block: auto;
 }
 .mt-auto {
   margin-top: auto;
@@ -147,9 +153,6 @@
 .w-\[300px\] {
   width: 300px;
 }
-.w-\[600px\] {
-  width: 600px;
-}
 .w-full {
   width: 100%;
 }
@@ -174,14 +177,8 @@
 .max-w-\[220px\] {
   max-width: 220px;
 }
-.max-w-\[300\] {
-  max-width: 300;
-}
 .max-w-\[300px\] {
   max-width: 300px;
-}
-.max-w-\[500\] {
-  max-width: 500;
 }
 .max-w-\[500px\] {
   max-width: 500px;
@@ -207,9 +204,35 @@
 .flex-grow {
   flex-grow: 1;
 }
+.origin-top {
+  transform-origin: top;
+}
+.-translate-x-1\/2 {
+  --tw-translate-x: calc(calc(1/2 * 100%) * -1);
+  translate: var(--tw-translate-x) var(--tw-translate-y);
+}
 .-translate-y-1\/2 {
   --tw-translate-y: calc(calc(1/2 * 100%) * -1);
   translate: var(--tw-translate-x) var(--tw-translate-y);
+}
+.scale-50 {
+  --tw-scale-x: 50%;
+  --tw-scale-y: 50%;
+  --tw-scale-z: 50%;
+  scale: var(--tw-scale-x) var(--tw-scale-y);
+}
+.scale-90 {
+  --tw-scale-x: 90%;
+  --tw-scale-y: 90%;
+  --tw-scale-z: 90%;
+  scale: var(--tw-scale-x) var(--tw-scale-y);
+}
+.scale-y-0 {
+  --tw-scale-y: 0%;
+  scale: var(--tw-scale-x) var(--tw-scale-y);
+}
+.rotate-180 {
+  rotate: 180deg;
 }
 .transform {
   transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
@@ -375,12 +398,6 @@
 .text-left {
   text-align: left;
 }
-.text-right {
-  text-align: right;
-}
-.align-top {
-  vertical-align: top;
-}
 .whitespace-nowrap {
   white-space: nowrap;
 }
@@ -440,6 +457,16 @@
   transition-timing-function: var(--tw-ease, ease);
   transition-duration: var(--tw-duration, 0s);
 }
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: var(--tw-ease, ease);
+  transition-duration: var(--tw-duration, 0s);
+}
+.transition-transform {
+  transition-property: transform, translate, scale, rotate;
+  transition-timing-function: var(--tw-ease, ease);
+  transition-duration: var(--tw-duration, 0s);
+}
 .duration-200 {
   --tw-duration: 200ms;
   transition-duration: 200ms;
@@ -447,6 +474,10 @@
 .duration-300 {
   --tw-duration: 300ms;
   transition-duration: 300ms;
+}
+.duration-500 {
+  --tw-duration: 500ms;
+  transition-duration: 500ms;
 }
 .group-hover\:block {
   &:is(:where(.group):hover *) {
@@ -565,6 +596,21 @@
   syntax: "*";
   inherits: false;
   initial-value: 0;
+}
+@property --tw-scale-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-scale-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-scale-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
 }
 @property --tw-rotate-x {
   syntax: "*";
@@ -718,27 +764,15 @@
   syntax: "*";
   inherits: false;
 }
-@property --tw-scale-x {
-  syntax: "*";
-  inherits: false;
-  initial-value: 1;
-}
-@property --tw-scale-y {
-  syntax: "*";
-  inherits: false;
-  initial-value: 1;
-}
-@property --tw-scale-z {
-  syntax: "*";
-  inherits: false;
-  initial-value: 1;
-}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
       --tw-translate-x: 0;
       --tw-translate-y: 0;
       --tw-translate-z: 0;
+      --tw-scale-x: 1;
+      --tw-scale-y: 1;
+      --tw-scale-z: 1;
       --tw-rotate-x: initial;
       --tw-rotate-y: initial;
       --tw-rotate-z: initial;
@@ -774,9 +808,6 @@
       --tw-drop-shadow-alpha: 100%;
       --tw-drop-shadow-size: initial;
       --tw-duration: initial;
-      --tw-scale-x: 1;
-      --tw-scale-y: 1;
-      --tw-scale-z: 1;
     }
   }
 }

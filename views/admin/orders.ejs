@@ -20,49 +20,25 @@
         <main class="md:ml-56 flex-1 p-6 w-full relative">
             <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mb-10">Order Management</h1>
 
-          <!-- Search + Button -->
-          <div class="flex justify-between items-center mb-6">
-            <div class="flex items-center space-x-1">
-                
-                <div class="relative w-64 md:w-96">
-                    <form
-                    action="/admin/orders"
-                    method="GET"
-                    class="relative flex items-center"
-                  >
-                    <input
-                      type="text"
-                      name="search"
-                      value="<%= typeof search !== 'undefined' ? search : '' %>"
-                      placeholder="Search products..."
-                      class="pl-3 py-2 border border-gray-300 rounded-md px-4 w-64 md:w-96 focus:outline-none focus:ring focus:border-none focus:ring-blue-200"
-                    >
-                
-                    <button
-                      type="submit"
-                      class="absolute inset-y-0 right-0 m-1 p-3 rounded flex items-center bg-gray-200 text-gray-600 hover:text-blue-600">
-                      <i class="fa-solid fa-magnifying-glass"></i>
-                    </button>
-                
-                  </form>
-                </div>
-                <% if (search) { %>
-                    <a
-                      href="/admin/orders"
-                      class="text-sm text-gray-500 hover:text-gray-600 bg-gray-200 hover:bg-gray-300 px-1 py-3 rounded-md"
-                      title="Clear Search"
-                    >
-                      Clear
-                    </a>
-                  <% } %>
-            </div>
-
-            <a href="/admin/products/add" 
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow">
-                <i class="fa-solid fa-plus"></i>
-                Add Product
-            </a>
-          </div>
+            <form method="GET" action="/admin/orders" class="flex gap-2 mb-4">
+              <!-- Search -->
+              <input type="text" name="search" placeholder="Search orders..."
+                  value="<%= search %>" class="border px-2 py-1 rounded">
+          
+              <!-- Filter -->
+              <select name="status" class="border p-1 rounded">
+                  <option value="">All Status</option>
+                  <option value="Pending" <%= statusFilter === 'Pending' ? 'selected' : '' %>>Placed</option>
+                  <option value="Shipped" <%= statusFilter === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                  <option value="Delivered" <%= statusFilter === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                  <option value="Cancelled" <%= statusFilter === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+              </select>
+                  
+              <!-- Buttons -->
+              <button type="submit" class="bg-teal-600 text-white px-4 py-1 rounded">Apply</button>
+              <a href="/admin/orders" class="bg-gray-400 text-white px-4 py-1 rounded">Clear</a>
+          </form>
+          
 
           <div class="space-y-6">
             <% orders.forEach((order) => { %>
@@ -150,10 +126,6 @@
                     <a href="/admin/orders/edit/<%= order._id %>" 
                       class="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg text-sm">
                       Manage
-                    </a>
-                    <a href="/admin/orders/delete/<%= order._id %>" 
-                      class="px-4 py-2 bg-red-700 hover:bg-red-800 rounded-lg text-sm">
-                      Cancel
                     </a>
                   </div>
                 </div>

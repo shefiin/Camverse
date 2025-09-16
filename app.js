@@ -41,7 +41,7 @@ const resetPasswordRoutes = require('./routes/user/reset');
 const userCartRoutes = require('./routes/user/cart');
 const userCheckoutRoutes = require('./routes/user/checkout');
 const userOrderRoutes = require('./routes/user/order');
-
+const userWishlistRoutes = require('./routes/user/wishlist');
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/camverse')
@@ -100,6 +100,7 @@ app.use('/reset', resetPasswordRoutes);
 app.use('/cart', ensureLoggedIn, checkBlocked, userCartRoutes);
 app.use('/checkout', ensureLoggedIn, checkBlocked, userCheckoutRoutes);
 app.use('/order', ensureLoggedIn, checkBlocked, userOrderRoutes);
+app.use('/wishlist', ensureLoggedIn, checkBlocked, userWishlistRoutes);
 
 
 

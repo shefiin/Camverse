@@ -35,13 +35,13 @@ const register = async (req, res) => {
             });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // const hashedPassword = await bcrypt.hash(password, 10);
         const otp = generateOTP();
 
         req.session.tempUser = {
             name,
             email,
-            password: hashedPassword
+            password
         };
 
         req.session.otp = otp;

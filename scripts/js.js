@@ -461,8 +461,8 @@ const { json } = require('body-parser');
 //   .then(match => console.log('Password match:', match))
 //   .catch(err => console.error(err));
 
-const bcrypt = require('bcrypt');
-bcrypt.hash('Test1234', 10).then(console.log);
+// const bcrypt = require('bcrypt');
+// bcrypt.hash('Test1234', 10).then(console.log);
 
 
 // const bcrypt = require('bcrypt');
@@ -492,10 +492,22 @@ bcrypt.hash('Test1234', 10).then(console.log);
 </div> */}
 
 
-totalMRP = cart.items.reduce((sum, item) => {
-return sum + (item.product.mrp * item.quantity);
-});
+// totalMRP = cart.items.reduce((sum, item) => {
+// return sum + (item.product.mrp * item.quantity);
+// });
 
-totalDiscount = cart.items.reduce((sum, item) => {
-return sum + (((item.product.mrp - item.product.price)))
+// totalDiscount = cart.items.reduce((sum, item) => {
+// return sum + (((item.product.mrp - item.product.price)))
+// })
+
+
+
+const customOrder = ["Mango", "Apple", "Orange", "Banana"];
+
+const fruits = ["Banana", "Apple", "Mango", "Orange"];
+
+fruits.sort((a, b) => {
+  return customOrder.indexOf(a) - customOrder.indexOf(b);
 })
+
+console.log(fruits);

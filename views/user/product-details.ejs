@@ -68,7 +68,7 @@
 
         <div id="login-toggle" class="flex items-center space-x-6 text-gray-700 ml-10">
 
-            <a href="#" class="hover:text-black flex items-center space-x-1">
+            <a href="/cart" class="hover:text-black flex items-center space-x-1">
               <i class="fa fa-cart-shopping text-xl tablet:text-2xl"></i>  
             </a>
 
@@ -87,10 +87,10 @@
                           <li><a href="/user/account" class="block px-4 py-2 hover:bg-gray-100">
                             <i class="fa-solid fa-user mr-2"></i>My Account
                           </a></li>
-                          <li><a href="/user/orders" class="block px-4 py-2 hover:bg-gray-100">
+                          <li><a href="/order/details" class="block px-4 py-2 hover:bg-gray-100">
                             <i class="fa-solid fa-bag-shopping mr-2"></i>Orders
                           </a></li>
-                          <li><a href="/user/wishlist" class="block px-4 py-2 hover:bg-gray-100">
+                          <li><a href="/wishlist" class="block px-4 py-2 hover:bg-gray-100">
                             <i class="fa-solid fa-heart mr-2"></i>Wishlist
                           </a></li>
                           <li><a href="/logout" class="block px-4 py-2 hover:bg-gray-100 text-red-600 hover:text-red-800">
@@ -181,6 +181,7 @@
 
 
     <div class="flex flex-col md:flex-row gap-10 mb-10">
+
       
       <div class="flex flex-col items-center space-y-6 md:w-1/6 mt-6">
         
@@ -241,20 +242,24 @@
             <input type="hidden" name="quantity" value="1">
             <button 
               type="submit"
-              class="bg-yellow-400 text-white px-10 py-3 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              class="bg-yellow-400 text-white px-10 py-3 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed w-full"
               <%= product.stock === 0 ? "disabled" : "" %>>
               <i class="fa-solid fa-cart-shopping"></i>
               ADD TO CART
             </button>
           </form>
-          
-          <a href="/wishlist/add"
-            class="bg-red-500 text-center text-white px-6 py-3 hover:bg-red-600 gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            <%= product.stock === 0 ? "disabled" : "" %>>
-            <i class="fa-solid fa-heart"></i>
-            ADD TO WISHLIST
-          </a>
 
+          <form action="/wishlist/add" method="POST" class="inline">
+            <input type="hidden" name="productId" value="<%= product._id %>">
+            <input type="hidden" name="redirectTo" value="/product/<%= product._id %>">
+            <button 
+              type="submit"
+              class="bg-red-500 text-white px-6 py-3 hover:bg-red-600 w-full">
+              <i class="fa-solid fa-heart"></i>
+              ADD TO WISHLIST
+            </button>
+          </form>
+        
         </div>
         
       </div>
@@ -373,6 +378,43 @@
         </div>
       <% }) %>
     </div>
+
+
+    <div id="toast" 
+      class="fixed bottom-5 left-1/2 transform -translate-x-1/2 
+              bg-black text-white px-4 py-3 shadow-lg 
+              opacity-0 translate-y-10 transition-all duration-500">
+    </div>
+
+    <script>
+      // Helper to show toast
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.innerText = message;
+        toast.classList.remove('opacity-0', 'translate-y-10');
+        toast.classList.add('opacity-100', 'translate-y-0');
+
+        setTimeout(() => {
+          toast.classList.remove('opacity-100', 'translate-y-0');
+          toast.classList.add('opacity-0', 'translate-y-10');
+        }, 3000); // auto-hide in 3s
+      }
+
+      // Check query params
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("status") === "added") {
+        showToast("✅ Product added to wishlist");
+      }
+      if (params.get("status") === "exists") {
+        showToast("⚠️ Product already in wishlist");
+      }
+      if (params.get("cartStatus") === "added") {
+        showToast("✅ Product added to cart");
+      }
+      if (params.get("cartStatus") === "exists") {
+        showToast("⚠️ Product already in cart");
+      }
+    </script>
     
   </div>
   

@@ -2,7 +2,7 @@ const User = require('../../models/user');
 const Brand = require('../../models/brand');
 const Category = require('../../models/category');
 const sendOTP = require('../../utils/sendEmail');
-const user = require('../../models/user');
+const Wallet = require('../../models/wallet');
 
 
 const userAccount = async (req, res) => {
@@ -647,6 +647,33 @@ const changeAddress = async (req, res) => {
 }
 
 
+//Wallet
+
+const renderWallet = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const user = await User.findById(userId);
+        const wallet = await Wallet.findOne({user: userId})
+        
+
+        const brands = await Brand.find();
+        const categories = await Category.find();
+
+        res.render('user/account/wallet', {
+            wallet,
+            user,
+            brands,
+            categories
+        })
+    } catch(error){
+        console.log(error);
+        res.status(400).send('some error while rendering the wallet');
+    }
+}
+
+
+
+
 
 
 
@@ -672,5 +699,6 @@ module.exports = {
     deleteAddress,
     editAddressPage,
     editAddress,
-    changeAddress
+    changeAddress,
+    renderWallet
 }

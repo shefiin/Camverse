@@ -57,7 +57,7 @@
             <p class="text-gray-600 mt-2 max-w-xl mx-auto">
               <%= category.description %>
             </p>
-            <a href="/shop/category/<%= category._id %>" 
+            <a href="/shop?category=<%= category._id %>" 
                class="inline-block mt-4 text-black px-6 py-2 rounded-3xl transition-colors duration-200" 
                style="background-color: #ffd500;" 
                onmouseover="this.style.backgroundColor='#DCB800'" 
@@ -78,7 +78,7 @@
 
         <div class="flex justify-center items-center gap-6 overflow-x-auto px-4 md:px-16">
           <% brands.forEach(brand => { %>
-            <a href="/shop/brand/<%= brand._id %>">
+            <a href="/shop?brand=<%= brand._id %>">
               <img src="<%= brand.image[0].url %>" alt="<%= brand.name %>">
             </a>
           <% }) %>

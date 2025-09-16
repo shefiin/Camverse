@@ -31,8 +31,17 @@ const orderSchema = new mongoose.Schema({
             },
             status: {
                 type: String,
-                enum: ["Placed", "Shipped", "Out for delivery", "Delivered", "Cancelled", "Return in process", "Returned"],
-                default: "Placed"
+                enum: ["Pending", 
+                       "Placed", 
+                       "Shipped", 
+                       "Out for delivery", 
+                       "Delivered", 
+                       "Cancelled", 
+                       "Return in process", 
+                       "Returned"
+                    ],
+
+                default: "Pending"
             },
             cancelledAt: Date
         }
@@ -57,21 +66,28 @@ const orderSchema = new mongoose.Schema({
 
     paymentMethod: {
         type: String,
-        enum: ['Cash on delivery', 'Online'],
+        enum: ['Cash on delivery', 'Online', 'Wallet'],
         required: true
     },
 
     paymentStatus: {
         type: String,
-        enum: ['Pending', 'Completed', 'Failed'],
-        default: 'pending'  
+        enum: ['Pending', 'Paid', 'Failed'],
+        default: 'Pending'  
     },
     status: {
         type: String,
-        enum: ["Placed", "Shipped", "Out for delivery", "Delivered", "Cancelled", "Returned"],
+        enum: ["Placed", 
+               "Shipped", 
+               "Out for delivery", 
+               "Delivered", 
+               "Cancelled", 
+               "Returned"
+            ],
+            
         default: "Placed"
       },
-      placedAt: { type: Date, default: Date.now },
+    placedAt: { type: Date, default: Date.now },
       shippedAt: Date,
       outForDeliveryAt: Date,
       deliveredAt: Date,

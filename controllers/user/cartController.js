@@ -3,7 +3,8 @@ const Brand = require('../../models/brand');
 const Category = require('../../models/category');
 const Cart = require('../../models/cart');
 const Product = require('../../models/product');
-
+const Wishlist = require('../../models/wishlist')
+ 
 
 
 const renderCart = async (req, res) => {
@@ -74,8 +75,11 @@ const renderCart = async (req, res) => {
 
 const addToCart = async(req, res) => {
     try {
+        
         const userId = req.session.userId;
         const { productId, quantity } = req.body;
+        const redirectTo = req.body.redirectTo || `/product/${productId}`;
+        
 
         if(!productId) return res.status(400).send('Product ID is required');
 
@@ -89,12 +93,23 @@ const addToCart = async(req, res) => {
             cart = new Cart({ user: userId, items: [] });
         }    
 
+        let wishlist = await Wishlist.findOne({user: userId});
+
+        if(wishlist){
+            const existInWishlistIndex = wishlist.items.findIndex(
+                item => item.product.toString() === productId
+            );
+            wishlist.items.splice(existInWishlistIndex, 1)
+            await wishlist.save();
+        }
+
+
         const existingItemIndex = cart.items.findIndex(
             item => item.product.toString() === productId
         );
 
         if(existingItemIndex > -1) {
-            cart.items[existingItemIndex].quantity += Number(quantity) || 1;
+            return res.redirect(`${redirectTo}?cartStatus=exists`);
         } else {
             cart.items.push({
                 product: productId,
@@ -104,8 +119,7 @@ const addToCart = async(req, res) => {
 
         await cart.save();
 
-        res.redirect('/cart');
-
+        res.redirect(`${redirectTo}?cartStatus=added`);
 
     } catch(error){
         console.error(error);

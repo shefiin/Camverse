@@ -5,11 +5,12 @@ const Cart = require('../../models/cart');
 const Product = require('../../models/product');
 const Order = require('../../models/order');
 const urlencodedser = require('../../models/user');
+const { createRazorpayOrder } = require('../user/paymentController');
 
 
 
 
-const placeOrder = async (req, res) => {
+const createCodOrder = async (req, res) => {
     try {
         const userId = req.session.userId;
         const user = await User.findById(userId)
@@ -17,7 +18,8 @@ const placeOrder = async (req, res) => {
         const address = user.addresses.id(req.body.addressId);
 
 
-        const cart = await Cart.findOne({ user: userId }).populate('items.product');
+        const cart = await Cart.findOne({ user: userId })
+            .populate('items.product');
 
         if(!cart || cart.items.length === 0) {
             return res.status(400).send('Cart is empty');
@@ -84,6 +86,18 @@ const placeOrder = async (req, res) => {
     }
 };
 
+
+
+const placeOrder = async (req, res) => {
+    const { payment } = req.body;
+  
+    if (payment === "Cash on delivery") {
+      return await createCodOrder(req, res);
+    } else if (payment === "online") {
+      // Call Razorpay order creation
+      return await createRazorpayOrder(req, res);
+    }
+};
 
 
 const orderSuccess = async (req, res) => {
@@ -218,7 +232,9 @@ const cancelOrder = async (req, res) => {
         const orderId = req.params.id;
         const userId = req.session.userId;
     
-        const order = await Order.findById(orderId);
+        const order = await Order.findById(orderId)
+            .populate('products');
+
         if(!order) return res.status(400).send('order not found');
     
         if(order.status === 'Delivered' || order.status === 'Cancelled'){
@@ -229,8 +245,10 @@ const cancelOrder = async (req, res) => {
             await Product.findByIdAndUpdate(item.productId, {
                 $inc: { stock: item.quantity }
             });
+
+            item.status = 'Cancelled';
         }
-    
+
         order.status = 'Cancelled';
         order.cancelledAt = new Date();
         await order.save();
@@ -294,14 +312,8 @@ const returnOrder = async (req, res) => {
             return res.status(400).send("Order cannot be modified");
         }
 
-        order.status = 'Returned';
-        order.returnedAt = new Date();
-
         for(let item of order.products) {
-            item.status = "Returned";
-            if(item.productId) {
-                item.productId.stock += item.quantity;
-            }
+            item.status = "Return in process";
         }
 
         await order.save();
@@ -335,12 +347,7 @@ const returnProduct = async (req, res) => {
 
         if (!product) return res.status(400).send("Product not found in order");
 
-        await Product.findByIdAndUpdate(productId, {
-            $inc: { stock: product.quantity }
-        });
-
         product.status = "Return in process";
-        order.markModified("products");
         await order.save();
         
         res.redirect(`/order/details/${orderId}`);
@@ -363,6 +370,7 @@ const returnProduct = async (req, res) => {
 
 module.exports = { 
     placeOrder,
+    createCodOrder,
     orderSuccess,
     orderDetails,
     orders,

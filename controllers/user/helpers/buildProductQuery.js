@@ -1,5 +1,6 @@
 const Brand = require('../../../models/brand');
 const Category = require('../../../models/category');
+const { param } = require('../../../routes/admin/categories');
 
 async function buildProductQuery(params) {
     let andConditions = [];

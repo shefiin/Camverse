@@ -17,85 +17,99 @@
     <div class="flex pt-[80px]">
         <%- include('partials/adminSidebar') %>
 
-        <main class="md:ml-56 flex-1 p-6 w-full relative">
-            <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mt-10 ml-20">Order Management</h1>
+        <main class="md:ml-56 flex-1 p-1 md:p-6 w-full relative">
+            <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mt-10 mb-10 ml-20">Order Management</h1>
 
-            <section class="min-h-screen px-6 py-10 lg:px-12 lg:py-10 md-px-10 mt-8 space-y-4">
+            
 
-                <div class="flex justify-end mr-10">
-                    <% if (order.products.some(p => p.status === 'Return in process')) { %>
-                      <button
-                        id="returns-btn"
-                        class="border bg-orange-100 hover:bg-orange-200 border-orange-400 text-orange-500 rounded-lg py-1 px-3"
-                        data-orderid="<%= order._id %>">
-                        View Returns
-                      </button>
-                    <% } %>
-                  </div>
-                  
-
-                  <div id="returns-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
-                    <div class="order-card bg-white rounded-xl shadow-lg p-6 max-h-[80vh] overflow-y-auto w-full max-w-3xl">
-                  
-                      <h2 class="text-xl font-semibold mb-6 text-gray-800">Return Requests</h2>
-                  
-                      <div class="space-y-6 divide-y divide-gray-300">
-                        <% order.products.forEach(p => { %>
-                          <% if (p.status === 'Return in process') { %>
-                            <div class="pt-4 flex items-start gap-4">
-                              <!-- Product Image -->
-                              <% if (p.productId && p.productId.images && p.productId.images.length > 0) { %>
-                                <img src="<%= p.productId.images[0].url %>" 
-                                     alt="<%= p.productId.name %>" 
-                                     class="w-20 h-20 p-1 object-contain bg-white rounded">
-                              <% } else { %>
-                                <img src="/images/placeholder.png" 
-                                     alt="No image available" 
-                                     class="w-20 h-20 object-contain rounded">
-                              <% } %>
-                  
-                              <!-- Product Info + Form -->
-                              <div class="flex-1">
-                                <p class="text-gray-800 font-medium"><%= p.productId?.name || "Unknown Product" %></p>
-                                <p class="text-sm text-gray-500">Qty: <%= p.quantity %></p>
-                                <p class="text-sm text-gray-500">Price: ₹ <%= p.price.toLocaleString() %></p>
-                                <p class="text-base text-gray-800 font-semibold mb-3">
-                                  Total: ₹ <%= (p.quantity * p.price).toLocaleString() %>
-                                </p>
-                  
-                                <!-- Return Reason -->
-                                <div class="border border-gray-300 rounded p-3 bg-gray-50 mb-3">
-                                  <p class="text-sm text-gray-600">
-                                    Reason: <%= p.returnReason || "No reason provided" %>
-                                  </p>
-                                </div>
-                  
-                                <!-- Accept / Reject Form -->
-                                <form action="/admin/orders/return/<%= p._id %>" method="POST" class="flex gap-3">
-                                  <button type="submit" name="action" value="accept"
-                                          class="px-4 py-1 bg-teal-600 text-white rounded-lg hover:bg-teal-700">
-                                    Accept
-                                  </button>
-                                  <button type="submit" name="action" value="reject"
-                                          class="px-4 py-1 bg-red-700 text-white rounded-lg hover:bg-red-800">
-                                    Reject
-                                  </button>
-                                </form>
-                              </div>
+            <!-- Button -->
+            <div class="flex justify-end mr-10 mb-3">
+                <% if (order.products.some(p => p.status === 'Return in process')) { %>
+                <button
+                    id="returns-btn"
+                    class="border bg-orange-100 hover:bg-orange-200 border-orange-400 text-orange-500 rounded-lg py-1 px-3"
+                    data-orderid="<%= order._id %>">
+                    View Returns
+                </button>
+                <% } %>
+            </div>
+            
+            <!-- Modal -->
+            <div id="returns-modal" 
+                class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+                <div id="returns-card"
+                    class="order-card bg-white rounded-xl shadow-lg p-6 max-h-[80vh] overflow-y-auto w-full max-w-3xl transform scale-90 opacity-0 transition-all duration-300">
+                <h2 class="text-xl font-semibold mb-6 text-gray-800">Return Requests</h2>
+                
+                <div class="space-y-6 divide-y divide-gray-300">
+                    <% order.products.forEach(p => { %>
+                    <% if (p.status === 'Return in process') { %>
+                        <div class="pt-4 flex items-start gap-4">
+                        <!-- Product Image -->
+                        <% if (p.productId && p.productId.images && p.productId.images.length > 0) { %>
+                            <img src="<%= p.productId.images[0].url %>" 
+                                alt="<%= p.productId.name %>" 
+                                class="w-20 h-20 p-1 object-contain bg-white rounded">
+                        <% } else { %>
+                            <img src="/images/placeholder.png" 
+                                alt="No image available" 
+                                class="w-20 h-20 object-contain rounded">
+                        <% } %>
+            
+                        <!-- Product Info + Form -->
+                        <div class="flex-1">
+                            <p class="text-gray-800 font-medium"><%= p.productId?.name || "Unknown Product" %></p>
+                            <p class="text-sm text-gray-500">Qty: <%= p.quantity %></p>
+                            <p class="text-sm text-gray-500">Price: ₹ <%= p.price.toLocaleString() %></p>
+                            <p class="text-base text-gray-800 font-semibold mb-3">
+                            Total: ₹ <%= (p.quantity * p.price).toLocaleString() %>
+                            </p>
+            
+                            <!-- Return Reason -->
+                            <div class="border border-gray-300 rounded p-3 bg-gray-50 mb-3">
+                            <p class="text-sm text-gray-600">
+                                Reason: <%= p.returnReason || "No reason provided" %>
+                            </p>
                             </div>
-                          <% } %>
-                        <% }) %>
-                      </div>
-                  
-                      <!-- Close Button -->
-                      <div class="flex justify-end mt-6">
-                        <button id="close-returns" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">
-                          Close
-                        </button>
-                      </div>
-                  
-                    </div>
-                  </div>
+            
+                            <!-- Accept / Reject Form -->
+                            <form action="/admin/orders/<%= order.id %>/return/<%= p._id %>?_method=PATCH" method="POST" class="flex gap-3">
+                            <button type="submit" name="action" value="accept"
+                                    class="px-4 py-1 bg-teal-600 text-white rounded-lg hover:bg-teal-700">
+                                Accept
+                            </button>
+                            <button type="submit" name="action" value="reject"
+                                    class="px-4 py-1 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                                Reject
+                            </button>
+                            </form>
+                        </div>
+                        </div>
+                    <% } %>
+                    <% }) %>
+                </div>
+                </div>
+            </div>
+            
+            <script>
+                const btn = document.getElementById("returns-btn");
+                const modal = document.getElementById("returns-modal");
+                const card = document.getElementById("returns-card");
+            
+                btn?.addEventListener("click", () => {
+                modal.classList.remove("opacity-0", "pointer-events-none");
+                card.classList.remove("scale-50", "opacity-0");
+                });
+            
+                // Close modal when clicking outside
+                modal.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    modal.classList.add("opacity-0", "pointer-events-none");
+                    card.classList.add("scale-50", "opacity-0");
+                }
+                });
+            </script>
+  
                   
                 
                 
@@ -133,7 +147,7 @@
                           <% } else if(order.status === 'Delivered') { %>  
                             <div class="bg-green-100 py-1 px-2 rounded-full text-gray-700">
                               <p class="font-normal text-xs md:text-sm">
-                                <i class="fa-regular fa-circle-check"></i>
+                                <i class="fa-solid fa-box-open"></i>
                                 Delivered
                               </p>
                             </div>
@@ -158,19 +172,63 @@
                       const deliveredProducts = order.products.filter(pr => pr.status === 'Delivered');
                     %>
         
-                    <% if(order.status === 'Placed') { %>
-                      <form action="/order/cancel/<%= order._id %>?_method=PATCH" method="POST">
-                        <button type="submit" class="bg-red-50 hover:bg-red-100 transition px-2 py-1 text-red-600 text-sm md:text-base">
-                          <i class="fa-regular fa-circle-xmark"></i> Cancel Order
+                    <form action="/admin/orders/status/update/<%= order._id %>?_method=PATCH" method="POST" class="relative inline-block mb-6">
+                        <!-- Trigger button -->
+                        <button 
+                        type="button" 
+                        onclick="toggleDropdown('<%= order._id %>')" 
+                        class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
+                        >
+                        Update Status
+                        <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200" id="arrow-<%= order._id %>"></i>
                         </button>
-                      </form>
-                      <% } else if(order.status === 'Delivered' && deliveredProducts.length > 1) { %> 
-                        <form action="/order/return/<%= order._id %>?_method=PATCH" method="POST">
-                          <button type="submit" class="bg-orange-50 hover:bg-orange-100 transition px-2 py-1 text-orange-600 text-sm md:text-base">
-                            <i class="fa-solid fa-rotate-left"></i> Return Order
-                          </button>
-                        </form>
-                      <% } %> 
+                    
+                        <!-- Dropdown -->
+                        <div 
+                        id="dropdown-<%= order._id %>" 
+                        class="absolute right-0 mt-2 w-56 bg-white border rounded-lg shadow-lg z-50 p-4 transform scale-y-0 origin-top transition-transform duration-200"
+                        >
+                        <div class="space-y-2 text-gray-900">
+                            <label class="flex items-center">
+                            <input type="radio" name="status" value="Placed" <%= order.status === 'Placed' ? 'checked' : '' %> class="mr-2">
+                            Placed
+                            </label>
+                            <label class="flex items-center">
+                            <input type="radio" name="status" value="Shipped" <%= order.status === 'Shipped' ? 'checked' : '' %> class="mr-2">
+                            Shipped
+                            </label>
+                            <label class="flex items-center">
+                            <input type="radio" name="status" value="Out for delivery" <%= order.status === 'Out for Delivery' ? 'checked' : '' %> class="mr-2">
+                            Out for Delivery
+                            </label>
+                            <label class="flex items-center">
+                            <input type="radio" name="status" value="Delivered" <%= order.status === 'Delivered' ? 'checked' : '' %> class="mr-2">
+                            Delivered
+                            </label>
+                            <label class="flex items-center text-red-600">
+                            <input type="radio" name="status" value="Cancelled" <%= order.status === 'Cancelled' ? 'checked' : '' %> class="mr-2">
+                            Cancelled
+                            </label>
+                        </div>
+                    
+                        <!-- Update button -->
+                        <div class="mt-4 text-center">
+                            <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 w-full rounded-md">
+                            Update
+                            </button>
+                        </div>
+                        </div>
+                    </form>
+                    
+                    <script>
+                        function toggleDropdown(id) {
+                        const dropdown = document.getElementById(`dropdown-${id}`);
+                        const arrow = document.getElementById(`arrow-${id}`);
+                        dropdown.classList.toggle("scale-y-0");
+                        arrow.classList.toggle("rotate-180");
+                        }
+                    </script>                            
+                    
                 </div>
         
         
@@ -334,7 +392,7 @@
                     </div>    
                 </div>
         
-            </section>  
+            
 
 
 

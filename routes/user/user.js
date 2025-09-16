@@ -20,7 +20,8 @@ const { userAccount,
         deleteAddress,
         editAddressPage,
         editAddress, 
-        changeAddress} = require('../../controllers/user/userController');
+        changeAddress,
+        renderWallet} = require('../../controllers/user/userController');
 
 
 router.get('/account', userAccount)
@@ -77,6 +78,12 @@ router.get('/address/edit/:id', editAddressPage);
 router.patch('/address/edit/:id', editAddress);
 
 router.patch('/address/change', changeAddress)
+
+
+//Wallet
+
+router.get('/wallet', renderWallet)
+
 
 
 module.exports = router;

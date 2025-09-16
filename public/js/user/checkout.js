@@ -1,3 +1,5 @@
+const { handler } = require("@tailwindcss/line-clamp");
+const Razorpay = require("razorpay");
 
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('addressModal');
@@ -178,6 +180,64 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === changeModal) {
         changeModal.classList.add('hidden');
     }
+    });
+
+
+    const checkoutForm = document.getElementById("checkoutForm");
+
+    checkoutForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(checkoutForm);
+      const paymentMethod = formData.get("payment");
+
+      if(paymentMethod === "Cash on delivery") {
+        checkoutForm.submit();
+      } else if (paymentMethod === "online") {
+        const response = await fetch('/order', {
+          method: "POST",
+          body: formData
+        });
+        const data = await response.json();
+
+        if(!data.success) {
+          alert("Error creating Razorpay order");
+          return;
+        }
+
+        const options = {
+          key: data.key,
+          amount: data.amount,
+          currency: data.currency,
+          name: "Camverse",
+          description: "Order Payment",
+          order_id: data.razorpayOrderId,
+          handler: async function(response) {
+            const verifyRes = await fetch("/order/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+              })                      
+            });
+
+            const result = await verifyRes.json();
+
+            if(result.success) {
+              window.location.href = `/order/order-sucess/${result.orderId}`;
+            } else {
+              alert("Payment verification failed: " + result.message);
+            }
+          },
+          theme: { color: "#14b8a6"},
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+      }
+      
     });
 
 });
