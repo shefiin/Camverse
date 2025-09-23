@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Management</title>
+    <title>User Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -72,9 +72,10 @@
                             <thead class="bg-gray-800 text-gray-100 text-sm md:text-base">
                                 <tr>
                                     <th class="px-4 py-3">No</th>
+                                    <th class="px-4 py-3">Image</th>
                                     <th class="px-4 py-3">User Name</th>
                                     <th class="px-4 py-3">Email</th>
-                                    <th class="px-4 py-3">Address</th>
+                                    <th class="px-4 py-3">Mobile</th>
                                     <th class="px-4 py-3">Status</th>
                                     <th class="px-4 text-center py-3">Actions</th>
                                 </tr>
@@ -83,9 +84,26 @@
                               <% users.forEach((user, index) => { %>
                                 <tr class="hover:bg-gray-800">
                                   <td class="px-4 py-2"><%= skip + index + 1 %></td>
+                                  <td class="px-4 py-2">
+                                    <% if (user.profileImage) { %>
+                                      <img src="<%= user.profileImage %>" 
+                                           alt="<%= user.name %>" 
+                                           class="object-contain rounded-full w-14 h-14">
+                                    <% } else { %>
+                                      <div class="w-14 h-14 p-1 bg-gray-500 rounded-full text-center">
+                                        <i class="fa-solid fa-user text-3xl mt-2"></i>
+                                      </div>
+                                    <% } %>
+                                  </td>                                  
                                   <td class="px-4 py-2"><%= user.name %></td>
                                   <td class="px-4 py-2"><%= user.email %></td>
-                                  <td class="px-4 py-2"><%= user.address %></td>
+                                  <td class="px-4 py-2">
+                                    <% if (user.addresses && user.addresses.length > 0) { %>
+                                      <%= user.addresses[0].mobile %>
+                                    <% } else { %>
+                                      N/A
+                                    <% } %>
+                                  </td>
                                   <td class="px-4 py-2">
                                     <% if (user.status === 'Active') { %>
                                         <span class="text-green-400 font-medium">Active</span>

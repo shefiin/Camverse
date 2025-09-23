@@ -43,6 +43,8 @@ const orderSchema = new mongoose.Schema({
 
                 default: "Pending"
             },
+            cancelReason: { type: String },
+            returnReason: { type: String },
             cancelledAt: Date
         }
     ],
@@ -57,6 +59,21 @@ const orderSchema = new mongoose.Schema({
         landmark: String,
         city: String,
         state: String,        
+    },
+
+    totalQuantity: {
+        type: Number,
+        required: true
+    },
+
+    grossAmount: {
+        type: Number,
+        required: true
+    },
+
+    totalDiscount: {
+        type: Number,
+        required: true
     },
 
     totalAmount: {
@@ -86,7 +103,9 @@ const orderSchema = new mongoose.Schema({
             ],
             
         default: "Placed"
-      },
+    },
+    cancelReason: { type: String },
+    returnReason: { type: String },
     placedAt: { type: Date, default: Date.now },
       shippedAt: Date,
       outForDeliveryAt: Date,

@@ -6,7 +6,7 @@ const Product = require('../../models/product');
 const Order = require('../../models/order');
 const urlencodedser = require('../../models/user');
 const { createRazorpayOrder } = require('../user/paymentController');
-
+const PDFDocument = require("pdfkit");
 
 
 
@@ -25,9 +25,17 @@ const createCodOrder = async (req, res) => {
             return res.status(400).send('Cart is empty');
         }
 
-        const total = cart.items.reduce((sum, item) => {
+        const quantity = cart.items.length;
+
+        const grossAmount = cart.items.reduce((sum, item) => {
+            return sum + item.product.mrp * item.quantity;
+        }, 0);
+
+        const offerAmount = cart.items.reduce((sum, item) => {
             return sum + item.product.price * item.quantity;
         }, 0);
+
+        const discount = grossAmount - offerAmount;
 
         const timestamp = Date.now();
         const orderId = 'CAMV-' + timestamp.toString().slice(-6);
@@ -52,7 +60,10 @@ const createCodOrder = async (req, res) => {
                 city: address.city,
                 state: address.city
             },
-            totalAmount: total,
+            totalQuantity: quantity,
+            grossAmount: grossAmount,
+            totalDiscount: discount,
+            totalAmount: offerAmount,
             paymentMethod: payment,
             paymentStatus: payment === 'Cash on delivery' ? 'Pending' : 'Completed',
             createdAt: new Date()
@@ -231,6 +242,9 @@ const cancelOrder = async (req, res) => {
     try {
         const orderId = req.params.id;
         const userId = req.session.userId;
+        const { reason, customReason } = req.body;
+
+        const finalReason = reason === "Other" ? customReason : reason;
     
         const order = await Order.findById(orderId)
             .populate('products');
@@ -251,9 +265,10 @@ const cancelOrder = async (req, res) => {
 
         order.status = 'Cancelled';
         order.cancelledAt = new Date();
+        order.cancelReason = finalReason;
         await order.save();
     
-        res.redirect(`/order/details/${orderId}`);
+        res.redirect(`/order/details/${orderId}?status=cancelled`);
 
     } catch(error){
         console.log(error);
@@ -266,6 +281,10 @@ const cancelProduct = async (req, res) => {
     try {
       const { orderId, productId } = req.params; // orderId = CAMV-xxxxxx
       const userId = req.session.userId;
+      const { reason2, productCustomReason } = req.body;
+
+      const finalReason = reason2 === "Other" ? productCustomReason : reason2;
+    
   
       const order = await Order.findOne({ _id: orderId, user: userId });      
       if (!order) return res.status(400).send("Order not found");
@@ -285,6 +304,7 @@ const cancelProduct = async (req, res) => {
       });
   
       product.status = "Cancelled";
+      product.cancelReason = finalReason;
       order.markModified("products");
       await order.save();
   
@@ -302,7 +322,9 @@ const returnOrder = async (req, res) => {
     try {
         const orderId = req.params.id;
         const userId = req.session.userId;
+        const { reason, customReason } = req.body;
 
+        const finalReason = reason === "Other" ? customReason : reason;
 
         const order = await Order.findOne({ _id: orderId, user: userId });
         if (!order) return res.status(400).send("Order not found");
@@ -314,6 +336,7 @@ const returnOrder = async (req, res) => {
 
         for(let item of order.products) {
             item.status = "Return in process";
+            item.returnReason = finalReason;
         }
 
         await order.save();
@@ -333,6 +356,9 @@ const returnProduct = async (req, res) => {
     try {
         const {orderId, productId } = req.params;
         const userId = req.session.userId;
+        const { reason2, productCustomReason } = req.body;
+
+        const finalReason = reason2 === "Other" ? productCustomReason : reason2;
 
         const order = await Order.findOne({ _id: orderId, user: userId });
         if(!order) return res.status(400).send('order not found');
@@ -348,6 +374,7 @@ const returnProduct = async (req, res) => {
         if (!product) return res.status(400).send("Product not found in order");
 
         product.status = "Return in process";
+        product.returnReason = finalReason;
         await order.save();
         
         res.redirect(`/order/details/${orderId}`);
@@ -359,12 +386,141 @@ const returnProduct = async (req, res) => {
           .send("Something went wrong while returning product");
       }
 }
+
+
+
+const getInvoice = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const userId = req.session.userId;
+
+    const user = await User.findById(userId);
+    const order = await Order.findById(orderId)
+      .populate("user")
+      .populate("products.productId"); // populate product details
+
+    const doc = new PDFDocument({ margin: 50 });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=invoice-${orderId}.pdf`
+    );
+
+    doc.pipe(res);
+
+    // ===== HEADER =====
+    doc.fontSize(20).text("INVOICE", { align: "center", underline: true });
+    doc.moveDown(1);
+
+    // ===== META INFO =====
+    doc.fontSize(12);
+    doc.text(`Invoice #: ${order.orderId}`);
+    doc.text(`Date: ${order.orderDate.toDateString()}`);
+    doc.text(`Status: ${order.status}`);
+
+    doc.moveDown(1);
+    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown(1);
+
+    // ===== BILL TO / FROM =====
+    const startY = doc.y;
+    doc.fontSize(14).text("Bill To:", 50, startY, { underline: true });
+    doc.fontSize(12);
+    doc.text(order.user.name, 50);
+    doc.text(order.shippingAddress.house, 50);
+    doc.text(order.shippingAddress.area, 50);
+    doc.text(order.shippingAddress.city, 50);
+    doc.text(
+      `${order.shippingAddress.state} - ${order.shippingAddress.pincode}`,
+      50
+    );
+    doc.text(order.shippingAddress.mobile, 50);
+
+    doc.fontSize(14).text("Bill From:", 300, startY, { underline: true });
+    doc.fontSize(12);
+    doc.text("Camverse Pvt Ltd", 300);
+    doc.text("123, E-commerce Street", 300);
+    doc.text("Bangalore, India", 300);
+    doc.text("support@camverse.com", 300);
+
+    doc.moveDown(2);
+    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown(1);
+
+    // ===== PRODUCTS LIST =====
+    doc.fontSize(14).text("Products", 50, doc.y);
+    doc.moveDown(0.5);
+
+    order.products.forEach((item, index) => {
+      doc.fontSize(12).text(
+        `${index + 1}. ${item.productId.name}`, // product name
+        60,
+        doc.y
+      );
+    });
+
+    doc.moveDown(1);
+    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown(1);
+
+    // ===== PRODUCTS TABLE =====
+    doc.fontSize(12).text("No", 50, doc.y);
+    doc.text("Qty", 200, doc.y);
+    doc.text("Price", 350, doc.y);
+    doc.text("Total", 450, doc.y);
+
+    doc.moveTo(50, doc.y + 15).lineTo(550, doc.y + 15).stroke();
+
+    let y = doc.y + 25;
+
+    order.products.forEach((item, index) => {
+      doc.text(index + 1, 50, y); // numbering
+      doc.text(item.quantity.toString(), 200, y);
+      doc.text(item.price.toFixed(2), 350, y);
+      doc.text((item.quantity * item.price).toFixed(2), 450, y);
+      y += 20;
+    });
+
+    doc.moveDown(2);
+    doc.moveTo(50, y).lineTo(550, y).stroke();
+    doc.moveDown(1);
+
+    // ===== TOTALS =====
+    doc.fontSize(12);
+    doc.text(`Total Quantity: ${order.totalQuantity}`, { align: "right" });
+    doc.text(`Gross Amount: ${order.grossAmount.toFixed(2)}`, {
+      align: "right",
+    });
+    doc.text(`Discount: ${order.totalDiscount.toFixed(2)}`, {
+      align: "right",
+    });
+
+    doc.moveDown(0.5);
+    doc.fontSize(14).text(`Total Amount: ${order.totalAmount.toFixed(2)}`, {
+      align: "right",
+      underline: true,
+    });
+
+    doc.moveDown(3);
+    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown(1);
+
+    // ===== FOOTER =====
+    doc.fontSize(10).text("Thank you for shopping with Camverse!", {
+      align: "center",
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Some error while generating invoice");
+  }
+};
+
+
+
   
-
-
-
-
-
 
 
 
@@ -377,5 +533,6 @@ module.exports = {
     cancelOrder,
     cancelProduct,
     returnOrder,
-    returnProduct
+    returnProduct,
+    getInvoice
 }

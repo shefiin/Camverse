@@ -1,10 +1,17 @@
 const bcrypt = require('bcrypt');
 const User = require('../../models/user');
 const sendOTP = require('../../utils/sendEmail');
-
+const crypto = require('crypto');
 
 const renderRegisterPage = (req, res) => {
-    res.render('user/register', { error: null, formData: {} });
+    if (req.query.ref) {
+        req.session.referral = req.query.ref;
+        req.session.save();
+    }
+    res.render('user/register', {
+        error: null, formData: {},
+        referral: req.session.referral || ''
+    });
 };
 
 
@@ -14,8 +21,8 @@ const generateOTP = () => {
 
 
 const register = async (req, res) => {
-    try {
-        const { name, email, password, confirmPassword } = req.body;
+    try {       
+        const { name, email, password, confirmPassword, linkReferral, manualReferral } = req.body;
 
         if (!name || !email || !password || !confirmPassword) {
             return res.send('All fields are required');
@@ -38,20 +45,40 @@ const register = async (req, res) => {
         // const hashedPassword = await bcrypt.hash(password, 10);
         const otp = generateOTP();
 
+
+        function generateReferralToken(){
+            const prefix = "CAMRF";
+
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            return `${prefix}${randomNum}`;
+        }
+
+        const referralToken = generateReferralToken();
+
+        const referralUsed = linkReferral || manualReferral || null;
+
         req.session.tempUser = {
             name,
             email,
-            password
+            password,
+            referralToken,
+            referralUsed
         };
+        
+        console.log(req.session);
+        
 
         req.session.otp = otp;
         req.session.otpExpiry = Date.now() + 5 * 60 * 1000;
         req.session.resendAllowedAt = Date.now() + 30 * 1000;
 
-        await sendOTP(email, otp);
-        res.redirect('/register/verify-otp');
+        if (req.body.referral) {
+            req.session.referral = req.body.referral;
+        }
 
+        await sendOTP(email, otp);
             
+        res.redirect('/register/verify-otp');
 
     } catch (err) {
         console.error(err);

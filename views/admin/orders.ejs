@@ -74,7 +74,11 @@
                   <!-- Left: Customer + Products -->
                   <div>
                     <!-- Customer -->
-                    <p class="mb-4"><span class="font-medium">Customer:</span> <%= order.user.name %></p>
+                    <p class="mb-4">
+                      <span class="font-medium">Customer:</span>
+                      <%= order.user ? order.user.name : 'Deleted User' %>
+                    </p>
+                    
           
                     <!-- Products -->
                     <div class="space-y-3 mb-4">
@@ -93,7 +97,7 @@
                                 class="w-16 h-16 object-contain rounded border">
                           <% } %>
                           <div>
-                            <p class="font-medium max-w-[500px] truncate"><%= p.productId ? p.productId.name : "Unknown Product" %></p>
+                            <p class="font-medium"><%= p.productId ? p.productId.name : "Unknown Product" %></p>
                             <p class="text-sm text-gray-400">Price: <%= p.price.toLocaleString() %></p>
                             <p class="text-sm text-gray-400">Qty: <%= p.quantity %></p>
                             <% if(p.status === 'Cancelled' && order.status !== 'Cancelled') { %>

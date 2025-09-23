@@ -138,7 +138,7 @@ const updateOrderStatus = async (req, res) => {
                 break;
             case "Delivered":
                 order.deliveredAt = now;
-                order.paymentStatus = 'Completed'
+                order.paymentStatus = 'Paid'
                 break;
             case "Cancelled":
                 order.cancelledAt = now;

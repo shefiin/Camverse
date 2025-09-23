@@ -3,17 +3,18 @@ const Brand = require('../../models/brand');
 const Category = require('../../models/category');
 const sendOTP = require('../../utils/sendEmail');
 const Wallet = require('../../models/wallet');
+const user = require('../../models/user');
 
 
 const userAccount = async (req, res) => {
     try {
-        const users = await User.findById(req.session.userId);
+        const user = await User.findById(req.session.userId);
         const brands = await Brand.find();
         const categories = await Category.find();
 
 
         res.render('user/user-account', {
-            users,
+            user,
             categories,
             brands,
         })
@@ -27,14 +28,25 @@ const userAccount = async (req, res) => {
 
 const userProfile = async (req, res) => {
     try {
-        const users = await User.findById(req.session.userId);
+        const user = await User.findById(req.session.userId);
         const brands = await Brand.find();
         const categories = await Category.find();
 
+        const referralToken = user.referralToken;
+        const referralLink = `http://localhost:3000/register?ref=${referralToken}`;
+
+        const message = `Join me on Camverse! Use my referral code ${referralToken} to sign up and get exclusive discounts! ${referralLink}`;
+
+        const encodedMessage = encodeURIComponent(message);
+
         res.render('user/user-profile', {
-            users,
+            user,
             brands,
-            categories
+            categories,
+            whatsappLink: `https://wa.me/?text=${encodedMessage}`,
+            instagramLink: `https://wa.me/?text=${encodedMessage}`,
+            twitterLink: `https://twitter.com/intent/tweet?text=${encodedMessage}`,
+            facebookLink: `https://www.facebook.com/sharer/sharer.php?u=${referralLink}`
         })
     } catch (error) {
         console.error('something went wrong', error);

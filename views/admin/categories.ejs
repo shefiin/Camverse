@@ -120,6 +120,7 @@
                             <thead class="bg-gray-800 text-gray-100 text-sm md:text-base">
                                 <tr>
                                     <th class="px-4 py-3">NO</th>
+                                    <th class="px-4 py-3">Image</th>
                                     <th class="px-4 py-3">Category</th>
                                     <th class="px-4 py-3">Description</th>                                    
                                     <th class="px-4 py-3">Status</th>
@@ -136,6 +137,17 @@
                                     <% categories.forEach((category, index) => { %>
                                         <tr>
                                             <td class="px-4 py-3"><%= (currentPage - 1) * 5 + index + 1 %></td>
+                                            <td class="px-4 py-2">
+                                              <% if (category.image && category.image.length > 0) { %>
+                                                <img src="<%= category.image[0].url %>" 
+                                                     alt="<%= category.name %>" 
+                                                     class="w-20 h-14 object-contain rounded bg-white">
+                                              <% } else { %>
+                                                <img src="/images/placeholder.png" 
+                                                     alt="No image available" 
+                                                     class="w-16 h-16 object-contain rounded">
+                                              <% } %>
+                                            </td>
                                             <td class="px-4 py-3"><%= category.name %></td>
                                             <td class="px-4 py-3"><%= category.description %></td>
                                             <td class="px-4 py-3">

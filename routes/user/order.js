@@ -8,7 +8,8 @@ const { placeOrder,
         cancelOrder, 
         cancelProduct, 
         returnOrder, 
-        returnProduct } = require('../../controllers/user/orderController');
+        returnProduct, 
+        getInvoice} = require('../../controllers/user/orderController');
 
 
 
@@ -30,6 +31,8 @@ router.patch('/:orderId/cancel/:productId', cancelProduct);
 router.patch('/return/:id', returnOrder)
 
 router.patch('/:orderId/return/:productId', returnProduct);
+
+router.get('/invoice/:id', getInvoice);
 
 
 

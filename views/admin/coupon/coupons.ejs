@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupon management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .coupon {
+            background-color: #dfe0e2;
+            position: relative;
+            overflow: hidden;
+        }
+        .coupon::before,
+        .coupon::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .coupon::before {
+            left: -15px;
+        }
+        .coupon::after {
+            right: -15px;
+        }
+        .dashed-border {
+            border: 2px dashed white;
+        }
+    </style>
+</head>
+<body style="font-family:'Open Sans', sans-serif;">
+
+    <%- include('../partials/adminNavbar') %>
+
+    <div class="flex pt-[80px] min-h-screen">
+        <%- include('../partials/adminSidebar') %>
+
+        <main class="md:ml-56 flex-1 p-6 w-full">
+            <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mb-20">Coupon Management</h1>
+
+
+            <button  
+                id="open-coupon-modal"
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i>
+                ADD COUPON
+            </button>
+          
+
+            <div class="bg-black rounded-xl shadow p-4 mt-6">
+                <h2 class="text-white text-lg font-semibold mb-4">Products</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-left text-sm text-gray-100">
+                            <thead class="bg-gray-800 text-gray-100 text-sm md:text-base">
+                                <tr>
+                                    <th class="px-4 py-3">No.</th>
+                                    <th class="px-4 py-3">Coupon</th>
+                                    <th class="px-4 py-3">Description</th>
+                                    <th class="px-4 py-3 text-center">Type</th>
+                                    <th class="px-4 py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700">
+                                <% coupons.forEach((coupon, index) => { %>
+                                  <tr class="hover:bg-gray-800 divide-x divide-gray-700">
+                                    <td class="px-4 py-2"><%= skip + index + 1 %></td>
+                                    <td class="px-4 py-2">
+                                      <button 
+                                        class="coupon-btn"
+                                        data-id="<%= coupon._id %>">
+                                          <div class="coupon max-w-[250px] p-2 rounded-lg shadow-lg text-gray-500 text-center">
+                                            <div class="dashed-border p-2 border-2 border-dashed border-gray-400 rounded-md">
+                                              <p class="text-base md:text-lg lg:text-xl">
+                                                <span class="font-mono font-bold"><%= coupon.name %></span>
+                                              </p>
+                                            </div>
+                                          </div>
+                                      </button>
+                                    </td>
+                                    <td class="px-4 py-2 max-w-[200px] truncate"> <%= coupon.description %> </td>
+                                    <td class="px-4 py-2 text-center"> <%= coupon.discountType %> </td>
+                                    <td class="px-4 py-3 flex items-center gap-4">      
+                                      <div class="flex flex-col items-center gap-2">
+                                        <button 
+                                          class="addOffer-btn text-white bg-blue-500 px-2 py-1 text-xs rounded-md hover:bg-blue-600"
+                                          data-id="<%= coupon._id %>">
+                                          Edit Coupon
+                                        </button>
+                                        <button
+                                          type="button"
+                                          class="ml-2 text-xs p-1 bg-red-500 hover:bg-red-600 rounded-md deleteBtn"
+                                          data-id="<%= coupon._id %>"
+                                          title="Delete">
+                                          Delete Coupon
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                <% }); %>
+                            </tbody>
+                                                         
+                        </table>
+                    </div>
+            </div>
+              
+              <%- include('../partials/pagination') %>              
+
+        </main>
+        <%- include('addCoupon') %>
+      
+
+
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById('menu-toggle');
+        const menu = document.getElementById('sidebar');
+
+        menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        })
+
+
+        document.querySelectorAll(".coupon-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const couponId = btn.dataset.id; // ✅ get coupon id from button
+                console.log("Selected Coupon ID:", couponId);
+
+                const closeBtn = document.getElementById("close-coupon-details");
+                const modal = document.getElementById("coupon-mod");
+                const card = document.getElementById("coupon-det");
+
+                // open modal
+                modal.classList.remove("opacity-0", "pointer-events-none");
+                card.classList.remove("scale-90", "opacity-0");
+                card.classList.add("scale-100", "opacity-100");
+
+                // close modal (button)
+                closeBtn.addEventListener("click", () => {
+                modal.classList.add("opacity-0", "pointer-events-none");
+                card.classList.add("scale-90", "opacity-0");
+                card.classList.remove("scale-100", "opacity-100");
+                });
+
+                // close modal (background click)
+                modal.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    modal.classList.add("opacity-0", "pointer-events-none");
+                    card.classList.add("scale-90", "opacity-0");
+                    card.classList.remove("scale-100", "opacity-100");
+                }
+                });
+            });
+        });
+
+    </script>
+
+</body>
+</html>
+
+
+
+

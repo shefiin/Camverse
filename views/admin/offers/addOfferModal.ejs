@@ -1,0 +1,127 @@
+<div id="offer-modal-<%= product._id %>" 
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div id="offer-card-<%= product._id %>"
+      class="order-card bg-white rounded-xl shadow-lg p-6 max-h-[80vh] overflow-y-auto w-full max-w-3xl transform scale-90 opacity-0 transition-all duration-300">
+      
+      <h2 id="modal-title" class="text-xl font-semibold mb-6 text-gray-800">Add Offer</h2>
+
+      <!-- Product Info -->
+      <div class="flex items-center gap-4 mb-4">
+        <% if (product.images && product.images.length > 0) { %>
+          <img src="<%= product.images[0].url %>" alt="<%= product.name %>" class="w-24 h-24 object-contain bg-white border rounded bg-gray-100 p-2">
+        <% } else { %>
+          <img src="/images/placeholder.png" alt="No image" class="w-24 h-24 object-contain rounded bg-gray-100 p-2">
+        <% } %>
+        <h3 class="text-xl font-semibold"><%= product.name %></h3>
+      </div>
+  
+
+      <!-- Offer Form -->
+      <form id="offer-form" action="/admin/offers/add/<%= product._id %>?_method=PATCH" method="POST" class="space-y-6">
+        <!-- Offer Type -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Offer Type</label>
+          <div class="flex items-center gap-4">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="offerType" value="percentage" 
+                class="text-teal-600" required
+                <%= product.individualOffer && product.individualOffer.discountType === "PERCENTAGE" ? "checked" : "" %>>
+              <span>Percentage</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="offerType" value="flat" 
+              class="text-teal-600"
+              <%= product.individualOffer && product.individualOffer.discountType === "FLAT" ? "checked" : "" %>>
+              <span>Flat Amount</span>
+            </label>
+          </div>
+        </div>
+        
+  
+        <!-- Offer Value -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Offer Value</label>
+          <input type="number" name="offerValue" 
+                 value="<%= product.individualOffer ? product.individualOffer.discountValue : '' %>"
+                 class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-teal-500" 
+                 placeholder="Enter percentage or amount" required>
+        </div>
+  
+        <!-- Date Range -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">From</label>
+            <input type="date" name="startDate" 
+                   value="<%= product.individualOffer && product.individualOffer.startDate ? product.individualOffer.startDate.toISOString().split('T')[0] : '' %>"
+                   class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-teal-500" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">To</label>
+            <input type="date" name="endDate" 
+                   value="<%= product.individualOffer && product.individualOffer.endDate ? product.individualOffer.endDate.toISOString().split('T')[0] : '' %>"
+                   class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-teal-500" required>
+          </div>
+        </div>
+  
+        <!-- Buttons -->
+        <div class="flex justify-end gap-4 mt-6">
+            <button type="button" 
+            class="close-modal px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+            data-id="<%= product._id %>">
+                Cancel
+            </button>
+          <button type="submit"
+                  class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700">Save Offer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <script>
+    // Open modal
+    document.querySelectorAll(".addOffer-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const productId = btn.dataset.id;
+        const modal = document.getElementById(`offer-modal-${productId}`);
+        const card = document.getElementById(`offer-card-${productId}`);
+  
+        if (modal && card) {
+          modal.classList.remove("opacity-0", "pointer-events-none");
+          card.classList.remove("scale-90", "opacity-0");
+          card.classList.add("scale-100", "opacity-100");
+        }
+      });
+    });
+  
+    // Close modal
+    document.querySelectorAll(".close-modal").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const productId = btn.dataset.id;
+        const modal = document.getElementById(`offer-modal-${productId}`);
+        const card = document.getElementById(`offer-card-${productId}`);
+  
+        if (modal && card) {
+          modal.classList.add("opacity-0", "pointer-events-none");
+          card.classList.add("scale-90", "opacity-0");
+          card.classList.remove("scale-100", "opacity-100");
+        }
+      });
+    });
+  
+    // Close modal on clicking background
+    document.querySelectorAll("[id^='offer-modal-']").forEach(modal => {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          const productId = modal.id.replace("offer-modal-", "");
+          const card = document.getElementById(`offer-card-${productId}`);
+  
+          modal.classList.add("opacity-0", "pointer-events-none");
+          card.classList.add("scale-90", "opacity-0");
+          card.classList.remove("scale-100", "opacity-100");
+        }
+      });
+    });
+  </script>
+  
+  

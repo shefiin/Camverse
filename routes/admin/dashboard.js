@@ -5,4 +5,6 @@ const { checkAdminAuth } = require('../../middlewares/admin/authMiddleware');
 
 router.get('/', checkAdminAuth, renderDashboard);
 
+
+
 module.exports = router;

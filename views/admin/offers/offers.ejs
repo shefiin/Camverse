@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="font-family:'Open Sans', sans-serif;">
+
+    <%- include('../partials/adminNavbar') %>
+
+    <div class="flex pt-[80px]">
+        <%- include('../partials/adminSidebar') %>
+
+        <main class="md:ml-56 flex-1 p-6 w-full">
+            <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mb-20">Offer Management</h1>
+
+            <div class="grid gap-6 sm:grid-cols-2">
+                <!-- Card 1 -->
+                <a href="/admin/offers/product" 
+                   class="group block bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition">
+                  <img src="/images/6543.jpg" 
+                       alt="Product Offers" 
+                       class="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300">
+                  <div class="p-4">
+                    <h2 class="text-lg font-semibold text-gray-800">Product Offers</h2>
+                    <p class="text-sm text-gray-500">Manage discounts applied to specific products.</p>
+                  </div>
+                </a>
+            
+                <!-- Card 2 -->
+                <a href="/admin/offers/category" 
+                   class="group block bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition">
+                  <img src="/images/sdiscount_shopping.jpg" 
+                       alt="Category Offers" 
+                       class="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300">
+                  <div class="p-4">
+                    <h2 class="text-lg font-semibold text-gray-800">Category Offers</h2>
+                    <p class="text-sm text-gray-500">Create and manage offers for whole categories.</p>
+                  </div>
+                </a>
+
+        </main>
+
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById('menu-toggle');
+        const menu = document.getElementById('sidebar');
+
+        menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        })
+    </script>
+    
+    
+
+</body>
+</html>
+            

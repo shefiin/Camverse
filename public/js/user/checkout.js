@@ -182,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     });
 
-
     const checkoutForm = document.getElementById("checkoutForm");
 
     checkoutForm.addEventListener("submit", async function (e) {

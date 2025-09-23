@@ -14,78 +14,139 @@
 
     <%- include('partials/userNavbar') %>
 
-    <section class="px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
-        <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-10">My Account</h1>
-
-        <div id="successMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
-            <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
-              <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: Michroma, sans-serif;">Camverse</h2>
-              <div class="w-full flex items-center justify-center py-4 px-4 text-6xl text-green-600">
-                <i class="fa-regular fa-circle-check"></i>
+    <section class="px-4 min-h-screen md:px-8 lg:px-12 py-12 md:py-20 mt-8">
+        <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 my-10 mb-20 text-center">
+          My Profile
+        </h1>
+      
+        <!-- Success Modal -->
+        <div id="successMessage"
+             class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
+          <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
+            <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: Michroma, sans-serif;">Camverse</h2>
+            <div class="w-full flex items-center justify-center py-4 px-4 text-6xl text-green-600">
+              <i class="fa-regular fa-circle-check"></i>
+            </div>
+            <h1 class="flex items-center justify-center text-2xl font-extralight mb-2" style="font-family: 'Kanit', sans-serif;">
+              Profile updated successfully
+            </h1>
+          </div>
+        </div>
+      
+        <!-- Cards Grid -->
+        <div class="container grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          <!-- Profile Card -->
+          <div class="bg-white p-8 shadow-lg flex flex-col h-full">
+            <div class="flex items-center space-x-6">
+              <% if(user.profileImage) { %>
+                <img src="<%= user.profileImage %>" alt="Profile Picture"
+                     class="w-20 h-20 rounded-full object-cover" />
+              <% } else { %>
+                <i class="fa-solid fa-circle-user text-7xl text-gray-200"></i>
+              <% } %>
+              <div>
+                <h2 class="text-2xl font-medium"><%= user.name %></h2>
+                <p class="text-gray-500"><%= user.email %></p>
               </div>
-              <h1 class="flex items-center justify-center text-2xl font-extralight mb-2" style="font-family: 'Kanit', sans-serif;">Profile updated successfully</h1>
             </div>
-        </div>
-
-        <div class="container mx-auto px-6 py-10">
-            <h1 class="text-2xl mb-6">My Profile</h1>
-        
-            <div class="bg-white p-8 shadow-lg max-w-3xl mb-10">
-                <div class="flex items-center space-x-6">
-                    <% if(user.profileImage) { %>
-                        <img src="<%= user.profileImage %>" 
-                        alt="Profile Picture"
-                        class="w-20 h-20 rounded-full object-cover" />
-                    <% } else { %>
-                        <i class="fa-solid fa-circle-user text-7xl text-gray-200"></i>
-                    <% } %>
-                    
-                    <div>
-                        <h2 class="text-2xl font-medium"><%= user.name %></h2>
-                        <p class="text-gray-500"><%= user.email %></p>
-                    </div>
-                </div>
-            
-                <hr class="my-6">
-            
-                <p>
-                    <strong class="font-semibold">Phone:</strong>
-                    <span class="font-extralight text-gray-500"><%= user.phone || 'Not provided' %></span>
-                </p>                  
-                <p>
-                    <strong class="font-semibold">Gender:</strong>
-                    <span class="font-extralight text-gray-500"><%= user.gender || 'Not specified' %></span>
-                </p>                 
-                <p>
-                    <strong class="font-semibold">Date of Birth:</strong>
-                    <span class="font-extralight text-gray-500">
-                        <%= user.dateOfBirth ? user.dateOfBirth.toDateString() : 'Not provided' %>
-                    </span>
-                </p>
-                <p>
-                    <strong class="font-semibold">Joined:</strong>
-                    <span class="font-extralight text-gray-500"><%= user.createdAt.toDateString() %></span>
-                </p>
-            
-                <a href="/user/profile/edit/<%= user._id %>" class="mt-6 inline-block bg-teal-600 text-white px-5 py-2.5 hover:bg-teal-700">
-                    Edit Profile
-                </a>
+      
+            <hr class="my-6">
+      
+            <p><strong class="font-semibold">Phone:</strong>
+              <span class="font-extralight text-gray-500"><%= user.phone || 'Not provided' %></span>
+            </p>
+            <p><strong class="font-semibold">Gender:</strong>
+              <span class="font-extralight text-gray-500"><%= user.gender || 'Not specified' %></span>
+            </p>
+            <p><strong class="font-semibold">Date of Birth:</strong>
+              <span class="font-extralight text-gray-500"><%= user.dateOfBirth ? user.dateOfBirth.toDateString() : 'Not provided' %></span>
+            </p>
+            <p><strong class="font-semibold">Joined:</strong>
+              <span class="font-extralight text-gray-500"><%= user.createdAt.toDateString() %></span>
+            </p>
+      
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-6 gap-4">
+              <a href="/user/profile/edit/<%= user._id %>"
+                 class="bg-teal-600 text-white px-5 py-2.5 hover:bg-teal-700 text-center">
+                Edit Profile
+              </a>
+              <a href="/reset" class="text-teal-600 font-extralight text-center sm:text-right">
+                Change Password >
+              </a>
             </div>
-
-
-            <a href="/user/profile/change-password" 
-                class="block bg-white p-8 shadow-lg max-w-3xl mb-6">
-                <div class="flex items-center justify-between">
-                    <p class="font-extralight">Password</p>
-                    <p class="text-teal-600 font-extralight">Change Password ></p>
+          </div>
+      
+          <!-- Referral Card -->
+          <div class="bg-white p-8 shadow-lg flex flex-col h-full">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-2">Refer & Earn</h2>
+            <p class="text-gray-500 text-sm mb-6 font-extralight">
+              Share your referral code with friends. You get ₹500 and your friend gets ₹200 in wallet credits.
+            </p>
+      
+            <!-- Referral Code -->
+            <label class="block text-gray-700 mb-2 text-sm font-medium">Your Referral Code</label>
+            <div class="flex items-center">
+              <input type="text" value="<%= user.referralToken %>" readonly
+                     class="flex-1 px-4 py-2 border font-mono border-gray-200 bg-gray-50 text-xl text-gray-800 
+                            focus:outline-none focus:ring-0 focus:border-gray-200">
+                <button onclick="navigator.clipboard.writeText('<%= user.referralToken %>')"
+                        class="bg-black text-white px-4 py-3 text-lg flex items-center gap-2 
+                                hover:bg-gray-500 transform transition active:scale-90">
+                    <i class="fa-solid fa-copy"></i>
+                </button>
+                        
+            </div>
+      
+            <!-- Share Buttons -->
+            <div class="flex flex-wrap gap-4 mt-6 mb-6">
+              <button id="copyLinkBtn" 
+                class="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white hover:bg-teal-700">
+                <i class="fa-solid fa-link"></i> <span id="copyText">Copy Link</span>
+              </button>
+                            
+              <a href="<%= whatsappLink %>"
+                 target="_blank" class="hover:text-[#25D366]">
+                <i class="fa-brands fa-square-whatsapp text-4xl"></i>
+              </a>
+              <a href="<%= twitterLink %>"
+                 target="_blank" class="hover:text-[#1DA1F2]">
+                <i class="fa-brands fa-square-x-twitter text-4xl"></i>
+              </a>
+              <a href="https://www.instagram.com/?url=Join%20me%20using%20referral%20code%20<%= user.referralToken %>"
+                 target="_blank" class="group">
+                <i class="fa-brands fa-square-instagram text-4xl
+                          group-hover:bg-gradient-to-tr group-hover:from-yellow-400 group-hover:via-pink-500 group-hover:to-purple-600
+                          group-hover:bg-clip-text group-hover:text-transparent"></i>
+              </a>
+              <a href="<%= facebookLink %>"
+                 target="_blank" class="hover:text-[#1877F2]">
+                <i class="fa-brands fa-square-facebook text-4xl"></i>
+              </a>
+            </div>
+            <% if(user.totalReferrals) { %>
+              <div class="bg-gray-50 border flex justify-between items-center px-3 py-2">
+                <div>
+                  <p class="text-base font-semibold">Total Referrals</p>
+                  <p class="font-extralight">
+                    <%= user.totalReferrals %> successful referral<%= user.totalReferrals === 1 ? '' : 's' %>
+                  </p>                  
                 </div>
-            </a>
-         
+                <div class="text-center">
+                  <p class="font-extralight">
+                    Total Earned
+                  </p>
+                  <p class="font-bold text-2xl">
+                    ₹<%= user.referralEarnings %>
+                  </p>
+                </div>
+              </div>
+            <% } %>
 
-            
+          </div>
         </div>
-        
-    </section>    
+      </section>
+       
 
     <%- include('partials/mobileFilter') %>
 
@@ -107,6 +168,19 @@
             window.history.replaceState({}, document.title, newUrl);
             }, 2000);
         }
+
+        document.getElementById("copyLinkBtn").addEventListener("click", () => {
+            const link = "localhost:3000/register?ref=<%= user.referralToken %>"; 
+            navigator.clipboard.writeText(link).then(() => {
+            const copyText = document.getElementById("copyText");
+            copyText.textContent = "Copied!";
+        
+            // Reset back to original text after 2 seconds
+            setTimeout(() => {
+                copyText.textContent = "Copy Link";
+            }, 2000);
+            });
+        });
 
     </script>
  

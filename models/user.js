@@ -43,6 +43,15 @@ const userSchema = new mongoose.Schema({
         enum: ['Male', 'Female'],
         default: null
     },
+    referralToken: { type: String, unique: true },
+    referralEarnings: {
+        type: Number,
+        default: 0
+    },
+    totalReferrals: {
+        type: Number,
+        default: 0
+    },
     dateOfBirth: {
         type: Date,
         default: null
@@ -80,7 +89,7 @@ const userSchema = new mongoose.Schema({
 
     profileImage: {
         type: String,
-        default: '<i class="fa fa-user"></i>'
+        default: null
     },
     isBlocked: {
         type: Boolean,

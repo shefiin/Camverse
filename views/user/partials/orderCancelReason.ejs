@@ -1,0 +1,184 @@
+<!-- Cancel Reason Modal -->
+<div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/3 p-6">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Cancel Order</h2>
+      <p class="text-sm text-gray-600 mb-1">Please select a reason for cancellation:</p>
+      <hr class="mb-4">
+      <form id="cancelForm" action="/order/cancel/<%= order._id %>?_method=PATCH" method="POST">
+        <!-- Options -->
+        <div class="space-y-2">
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason" value="Ordered by mistake" class="text-teal-600">
+            <span>Ordered by mistake</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason" value="Found a better price" class="text-teal-600">
+            <span>Found a better price</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason" value="Delivery time too long" class="text-teal-600">
+            <span>Delivery time too long</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason" value="Other" class="text-teal-600" id="reasonOther">
+            <span>Other</span>
+          </label>
+        </div>
+  
+        <!-- Custom Textarea -->
+        <textarea 
+          id="customReason"
+          name="customReason" 
+          rows="3" 
+          placeholder="Please specify your reason..." 
+          class="hidden mt-3 w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+        ></textarea>
+  
+        <!-- Buttons -->
+        <div class="mt-6 flex justify-center gap-3">
+          <button id="closeCancel" type="button" onclick="closeCancelModal()" class="px-4 w-full py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+            Close
+          </button>
+          <button type="submit" class="px-4 py-2 bg-red-600 text-white w-full rounded-md hover:bg-red-700">
+            Confirm Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Cancel Reason Modal -->
+<% order.products.forEach(p => { %>   
+  <div id="cancelProductModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/3 p-6">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Cancel Product</h2>
+      <p class="text-sm text-gray-600 mb-1">Please select a reason for cancellation:</p>
+      <hr class="mb-4">
+      <form id="cancelProductForm" action="/order/<%= order._id %>/cancel/<%= p.productId._id %>?_method=PATCH" method="POST">
+        <!-- Options -->
+        <div class="space-y-2">
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason2" value="Ordered by mistake" class="text-teal-600">
+            <span>Ordered by mistake</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason2" value="Found a better price" class="text-teal-600">
+            <span>Found a better price</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason2" value="Delivery time too long" class="text-teal-600">
+            <span>Delivery time too long</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason2" value="Other" class="text-teal-600" id="productReasonOther">
+            <span>Other</span>
+          </label>
+        </div>
+
+        <!-- Custom Textarea -->
+        <textarea 
+          id="productCustomReason"
+          name="customReason" 
+          rows="3" 
+          placeholder="Please specify your reason..." 
+          class="hidden mt-3 w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+        ></textarea>
+
+        <!-- Buttons -->
+        <div class="mt-6 flex justify-center gap-3">
+          <button id="closeProductCancel" type="button" onclick="closeProductCancelModal()" class="px-4 w-full py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+            Close
+          </button>
+          <button type="submit" class="px-4 py-2 bg-red-600 text-white w-full rounded-md hover:bg-red-700">
+            Confirm Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+<% }) %>
+
+
+
+<script>
+    const cancelOrder = document.getElementById("cancelOrder");
+    const cancelModal = document.getElementById("cancelModal");
+    const customReason = document.getElementById("customReason");
+    const reasonOther = document.getElementById("reasonOther");
+    const closeCancel = document.getElementById("closeCancel");
+
+    const cancelProduct = document.querySelectorAll(".cancelProduct");
+    const cancelProductModal = document.getElementById("cancelProductModal");
+    const productCustomReason = document.getElementById("productCustomReason");
+    const productReasonOther = document.getElementById("productReasonOther");
+    const closeProductCancel = document.getElementById("closeProductCancel");
+
+
+  
+    function openCancelModal(actionUrl) {
+      cancelModal.classList.remove("hidden");
+      cancelModal.classList.add("flex");
+    }
+  
+    function closeCancelModal() {
+      cancelModal.classList.add("hidden");
+      cancelModal.classList.remove("flex");
+    }
+
+    cancelOrder.addEventListener("click", () => {
+      openCancelModal();
+    })
+
+    closeCancel.addEventListener("click", () => {
+      closeCancelModal();
+    })
+
+    // Show textarea only if "Other" is selected
+    document.querySelectorAll("input[name='reason']").forEach(radio => {
+      radio.addEventListener("change", () => {
+        if (reasonOther.checked) {
+          customReason.classList.remove("hidden");
+        } else {
+          customReason.classList.add("hidden");
+          customReason.value = "";
+        }
+      });
+    });
+
+
+    function openProductCancelModal(actionUrl) {
+      cancelProductModal.classList.remove("hidden");
+      cancelProductModal.classList.add("flex");
+    }
+  
+    function closeProductCancelModal() {
+      cancelProductModal.classList.add("hidden");
+      cancelProductModal.classList.remove("flex");
+    }
+
+
+    cancelProduct.forEach(button => {
+        button.addEventListener("click", () => {
+          openProductCancelModal();
+        });
+    });
+
+    closeProductCancel.addEventListener("click", () => {
+      closeProductCancelModal();
+    })
+
+
+    document.querySelectorAll("input[name='reason1']").forEach(radio => {
+      radio.addEventListener("change", () => {
+        if (productReasonOther.checked) {
+          productCustomReason.classList.remove("hidden");
+        } else {
+          productCustomReason.classList.add("hidden");
+          productCustomReason.value = "";
+        }
+      });
+    });
+
+
+</script>

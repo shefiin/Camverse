@@ -11,6 +11,14 @@ const categorySchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    individualOffer: {
+        discountType: { type: String, enum: ["PERCENTAGE", "FLAT"], default: "PERCENTAGE" },
+        discountValue: { type: Number, default: 0 },
+        startDate: { type: Date },
+        endDate: { type: Date },
+        isActive: { type: Boolean, default: false }
+    },
+    offer: { type: mongoose.Schema.Types.ObjectId, ref: "Offer" },
     image: [
         {
             url:{

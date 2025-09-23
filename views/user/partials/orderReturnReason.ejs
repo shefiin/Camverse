@@ -1,0 +1,185 @@
+<!-- Cancel Reason Modal -->
+<div id="returnModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/3 p-6">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Return Order</h2>
+      <p class="text-sm text-gray-600 mb-1">Please select a reason for return:</p>
+      <hr class="mb-4">
+      <form id="returnForm" action="/order/return/<%= order._id %>?_method=PATCH" method="POST">
+        <!-- Options -->
+        <div class="space-y-2">
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason" value="Received wrong product" class="text-teal-600">
+            <span>Received wrong product</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason" value="Product is defective" class="text-teal-600">
+            <span>Product is defective</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason" value="Quality not as expected" class="text-teal-600">
+            <span>Quality not as expected</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason" value="Other" class="text-teal-600" id="reasonOther">
+            <span>Other</span>
+          </label>
+        </div>
+  
+        <!-- Custom Textarea -->
+        <textarea 
+          id="customReason"
+          name="customReason" 
+          rows="3" 
+          placeholder="Please specify your reason..." 
+          class="hidden mt-3 w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+        ></textarea>
+  
+        <!-- Buttons -->
+        <div class="mt-6 flex justify-center gap-3">
+          <button id="closeReturn" type="button" onclick="closeCancelModal()" class="px-4 w-full py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+            Close
+          </button>
+          <button type="submit" class="px-4 py-2 bg-orange-400 text-white w-full rounded-md hover:bg-orange-500">
+            Confirm Return
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Cancel Reason Modal -->
+<% order.products.forEach(p => { %>   
+  <div id="returnProductModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/3 p-6">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Return Product</h2>
+      <p class="text-sm text-gray-600 mb-1">Please select a reason for return:</p>
+      <hr class="mb-4">
+      <form id="returnProductForm" action="/order/<%= order._id %>/return/<%= p.productId._id %>?_method=PATCH" method="POST">
+        <!-- Options -->
+        <div class="space-y-2">
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason2" value="Received wrong product" class="text-teal-600">
+            <span>Received wrong product</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason2" value="Product is defective" class="text-teal-600">
+            <span>Product is defective</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason2" value="Delivery time too long" class="text-teal-600">
+            <span>Quality not as expected</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="reason2" value="Other" class="text-teal-600" id="productReasonOther">
+            <span>Other</span>
+          </label>
+        </div>
+
+        <!-- Custom Textarea -->
+        <textarea 
+          id="productCustomReason"
+          name="customReason" 
+          rows="3" 
+          placeholder="Please specify your reason..." 
+          class="hidden mt-3 w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+        ></textarea>
+
+        <!-- Buttons -->
+        <div class="mt-6 flex justify-center gap-3">
+          <button id="closeProductReturn" type="button" onclick="closeProductReturnModal()" class="px-4 w-full py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+            Close
+          </button>
+          <button type="submit" class="px-4 py-2 bg-orange-400 text-white w-full rounded-md hover:bg-orange-500">
+            Confirm Return
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+<% }) %>
+
+
+
+<script>
+    const returnOrder = document.getElementById("returnOrder");
+    const returnModal = document.getElementById("returnModal");
+    const customReason = document.getElementById("customReason");
+    const reasonOther = document.getElementById("reasonOther");
+    const closeReturn = document.getElementById("closeReturn");
+
+    const returnProduct = document.querySelectorAll(".returnProduct");
+    const returnProductModal = document.getElementById("returnProductModal");
+    const productCustomReason = document.getElementById("productCustomReason");
+    const productReasonOther = document.getElementById("productReasonOther");
+    const closeProductReturn = document.getElementById("closeProductReturn");
+
+
+  
+    function openReturnModal(actionUrl) {
+      returnModal.classList.remove("hidden");
+      returnModal.classList.add("flex");
+    }
+  
+    function closeReturnModal() {
+      returnModal.classList.add("hidden");
+      returnModal.classList.remove("flex");
+    }
+
+    returnOrder.addEventListener("click", () => {
+      openReturnModal();
+    })
+
+    closeReturn.addEventListener("click", () => {
+      closeReturnModal();
+    })
+
+    // Show textarea only if "Other" is selected
+    document.querySelectorAll("input[name='reason']").forEach(radio => {
+      radio.addEventListener("change", () => {
+        if (reasonOther.checked) {
+          customReason.classList.remove("hidden");
+        } else {
+          customReason.classList.add("hidden");
+          customReason.value = "";
+        }
+      });
+    });
+
+
+
+    function openProductReturnModal(actionUrl) {
+      returnProductModal.classList.remove("hidden");
+      returnProductModal.classList.add("flex");
+    }
+  
+    function closeProductReturnModal() {
+      returnProductModal.classList.add("hidden");
+      returnProductModal.classList.remove("flex");
+    }
+
+
+    returnProduct.forEach(button => {
+        button.addEventListener("click", () => {
+          openProductReturnModal();
+        });
+    });
+
+    closeProductReturn.addEventListener("click", () => {
+      closeProductReturnModal();
+    })
+
+
+    document.querySelectorAll("input[name='reason2']").forEach(radio => {
+      radio.addEventListener("change", () => {
+        if (productReasonOther.checked) {
+          productCustomReason.classList.remove("hidden");
+        } else {
+          productCustomReason.classList.add("hidden");
+          productCustomReason.value = "";
+        }
+      });
+    });
+
+
+</script>

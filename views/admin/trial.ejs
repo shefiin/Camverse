@@ -1,0 +1,41 @@
+<div class="bg-black rounded-xl p-4 mt-6">
+  <h2 class="text-white text-lg font-semibold mb-4">Top Sold Products</h2>
+      <div class="overflow-x-auto">
+          <table class="min-w-full text-left text-sm text-gray-100">
+              <thead class="bg-gray-800 text-gray-100 text-sm md:text-base">
+                  <tr>
+                      <th class="px-4 py-3">ID</th>
+                      <th class="px-4 py-3">Image</th>
+                      <th class="px-4 py-3">Product</th>
+                      <th class="px-4 py-3">Category</th>
+                      <th class="px-4 py-3">Price</th>
+                      <th class="px-4 py-3">Units Sold</th>
+                      <th class="px-4 py-3">Revenue</th>
+                  </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-700">
+                <% topProductsWithRevenue.forEach((product, index) => { %>
+                  <tr class="hover:bg-gray-800">
+                    <td class="px-4 py-2"><%= skip + index + 1 %></td>
+                    <td class="px-4 py-2">
+                      <% if (product.images && product.images.length > 0) { %>
+                        <img src="<%= product.images[0].url %>" 
+                             alt="<%= product.name %>" 
+                             class="w-14 h-14 p-1 object-contain rounded bg-white">
+                      <% } else { %>
+                        <img src="/images/placeholder.png" 
+                             alt="No image available" 
+                             class="w-16 h-16 object-contain rounded">
+                      <% } %>
+                    </td>
+                    <td class="px-4 py-2 max-w-[150px] truncate"><%= product.name %></td>
+                    <td class="px-4 py-2"><%= product.category.name %></td>
+                    <td class="px-4 py-2">₹<%= product.price.toLocaleString() %></td>
+                    <td class="px-4 py-2"><%= product.sold %></td>
+                    <td class="px-4 py-2"><%= product.revenue %></td>                                 
+                </tr>
+                <% }); %> 
+              </tbody>
+          </table>
+      </div>
+</div>
