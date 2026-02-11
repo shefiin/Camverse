@@ -84,9 +84,6 @@
 .inline-flex {
   display: inline-flex;
 }
-.table {
-  display: table;
-}
 .aspect-square {
   aspect-ratio: 1 / 1;
 }
@@ -207,9 +204,6 @@
 .max-w-full {
   max-width: 100%;
 }
-.min-w-\[200px\] {
-  min-width: 200px;
-}
 .min-w-full {
   min-width: 100%;
 }
@@ -299,9 +293,6 @@
 }
 .items-center {
   align-items: center;
-}
-.items-end {
-  align-items: flex-end;
 }
 .items-start {
   align-items: flex-start;
@@ -625,11 +616,6 @@
   &:focus {
     --tw-border-style: none;
     border-style: none;
-  }
-}
-.focus\:border-transparent {
-  &:focus {
-    border-color: transparent;
   }
 }
 .focus\:ring {
