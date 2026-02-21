@@ -3,10 +3,12 @@
       <div class="relative inline-block text-left">
         <button
             id="sortButton"
+            type="button"
             class="inline-flex items-center bg-white border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md focus:outline-none"
             style="border-color: #d1d5db;" 
             onfocus="this.style.borderColor='#00A69D'"
             onblur="this.style.borderColor='#d1d5db'"
+            onclick="document.getElementById('sortMenu').classList.toggle('hidden')"
         >
             SORT
             <i class="fas fa-chevron-down text-xs ml-2"></i>
@@ -109,7 +111,7 @@
             </div>
 
             <div class="mt-6">
-              <button type="submit" class="bg-green-500 hover:bg-green-600 text-white py-2 w-full">
+              <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white py-2 w-full">
                 Apply
               </button>
             </div>

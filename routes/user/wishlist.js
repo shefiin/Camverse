@@ -9,6 +9,8 @@ router.get('/', renderWishlist);
 
 router.post('/add', addToWishlist);
 
+router.post('/remove', removeFromWishlist);
+
 router.patch('/remove/:id', removeFromWishlist)
 
 

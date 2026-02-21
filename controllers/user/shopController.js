@@ -1,11 +1,13 @@
 const Brand = require('../../models/brand');
 const Category = require('../../models/category');
 const Product = require('../../models/product');
+const Wishlist = require('../../models/wishlist');
 const { buildProductQuery } = require('../user/helpers/buildProductQuery');
 
 const loadShopPage = async (req, res) => {
     try {
         const user = req.user || null;
+        const userId = req.session.userId || (req.session.user && req.session.user._id);
         const page = parseInt(req.query.page) || 1;
         const limit = 12;
 
@@ -49,6 +51,14 @@ const loadShopPage = async (req, res) => {
 
         const brands = await Brand.find({isDeleted: false});
         const categories = await Category.find({isDeleted: false});    
+        let wishlistProductIds = [];
+
+        if (userId) {
+            const wishlist = await Wishlist.findOne({ user: userId }).select('items.product');
+            wishlistProductIds = wishlist
+                ? wishlist.items.map((item) => item.product.toString())
+                : [];
+        }
 
         const priceRanges = [
             { label: '₹10K - 25K', min: 10000, max: 25000 },
@@ -70,6 +80,7 @@ const loadShopPage = async (req, res) => {
             limit,
             queryParams: req.query,
             priceRanges,
+            wishlistProductIds,
             
         });
 
@@ -84,6 +95,7 @@ const getProductsByCategory = async (req, res) => {
     try {
       const categoryId = req.params.id;
       const user = req.user || null;
+      const userId = req.session.userId || (req.session.user && req.session.user._id);
       const page = parseInt(req.query.page) || 1;
       const limit = 12;
   
@@ -95,6 +107,14 @@ const getProductsByCategory = async (req, res) => {
 
       const brands = await Brand.find();
       const categories = await Category.find();
+      let wishlistProductIds = [];
+
+      if (userId) {
+        const wishlist = await Wishlist.findOne({ user: userId }).select('items.product');
+        wishlistProductIds = wishlist
+          ? wishlist.items.map((item) => item.product.toString())
+          : [];
+      }
   
       let query = await buildProductQuery(req.query);
       query.category = categoryId;
@@ -149,7 +169,8 @@ const getProductsByCategory = async (req, res) => {
         limit,
         queryParams: req.query,
         priceRanges,
-        selectedCategory: categoryId 
+        selectedCategory: categoryId,
+        wishlistProductIds
       });
     } catch (error) {
       console.error('Error fetching products by category:', error);
@@ -162,6 +183,7 @@ const getProductsByCategory = async (req, res) => {
     try {
       const brandId = req.params.id;
       const user = req.user || null;
+      const userId = req.session.userId || (req.session.user && req.session.user._id);
       const page = parseInt(req.query.page) || 1;
       const limit = 12;
   
@@ -173,6 +195,14 @@ const getProductsByCategory = async (req, res) => {
   
       const brands = await Brand.find();
       const categories = await Category.find();
+      let wishlistProductIds = [];
+
+      if (userId) {
+        const wishlist = await Wishlist.findOne({ user: userId }).select('items.product');
+        wishlistProductIds = wishlist
+          ? wishlist.items.map((item) => item.product.toString())
+          : [];
+      }
   
       
       let query = await buildProductQuery(req.query);
@@ -227,7 +257,8 @@ const getProductsByCategory = async (req, res) => {
         limit,
         queryParams: req.query,
         priceRanges,
-        selectedBrand: brandId, 
+        selectedBrand: brandId,
+        wishlistProductIds
       });
     } catch (error) {
       console.error('Error fetching products by brand:', error);

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const {verifyPayment} = require('../../controllers/user/paymentController')
 const { placeOrder, 
         orderSuccess, 
         orderDetails, 
@@ -9,7 +8,8 @@ const { placeOrder,
         cancelProduct, 
         returnOrder, 
         returnProduct, 
-        getInvoice} = require('../../controllers/user/orderController');
+        getInvoice,
+        verifyPayment } = require('../../controllers/user/orderController');
 
 
 

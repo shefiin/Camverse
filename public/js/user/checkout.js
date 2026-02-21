@@ -1,7 +1,39 @@
-const { handler } = require("@tailwindcss/line-clamp");
-const Razorpay = require("razorpay");
-
 document.addEventListener('DOMContentLoaded', () => {
+
+    const parseApiResponse = async (response) => {
+      const contentType = response.headers.get("content-type") || "";
+      const raw = await response.text();
+
+      if (contentType.includes("application/json")) {
+        try {
+          return { data: JSON.parse(raw), raw };
+        } catch (err) {
+          return {
+            data: { success: false, message: "Invalid JSON response from server." },
+            raw
+          };
+        }
+      }
+
+      if (response.redirected && response.url.includes("/login")) {
+        return {
+          data: { success: false, message: "Your session expired. Please login and try again." },
+          raw
+        };
+      }
+
+      if (raw.trim().startsWith("<!DOCTYPE") || raw.trim().startsWith("<html")) {
+        return {
+          data: { success: false, message: "Server returned an HTML page instead of JSON." },
+          raw
+        };
+      }
+
+      return {
+        data: { success: false, message: "Unexpected response from server." },
+        raw
+      };
+    };
     const modal = document.getElementById('addressModal');
     const openBtn = document.getElementById('openModal');           // may be null
     const closeBtn = document.getElementById('closeModal');
@@ -10,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitButton = document.getElementById('submitButton');
   
     // ——— Helpers ———
-    const fields = {
+    const fields = form ? {
       name: form.querySelector('input[name="name"]'),
       phone: form.querySelector('input[name="phone"]'),
       pincode: form.querySelector('input[name="pincode"]'),
@@ -19,15 +51,15 @@ document.addEventListener('DOMContentLoaded', () => {
       landmark: form.querySelector('input[name="landmark"]'),
       town: form.querySelector('input[name="town"]'),
       state: form.querySelector('input[name="state"]'),
-    };
+    } : null;
   
     const phoneError = document.createElement('p');
     phoneError.className = 'text-red-500 text-sm mt-1 hidden';
-    fields.phone.insertAdjacentElement('afterend', phoneError);
-  
     const pinError = document.createElement('p');
     pinError.className = 'text-red-500 text-sm mt-1 hidden';
-    fields.pincode.insertAdjacentElement('afterend', pinError);
+
+    if (fields?.phone) fields.phone.insertAdjacentElement('afterend', phoneError);
+    if (fields?.pincode) fields.pincode.insertAdjacentElement('afterend', pinError);
   
     function resetValidation() {
       phoneError.classList.add('hidden');
@@ -39,6 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   
     function validateForm() {
+      if (!fields) return false;
+
       let valid =
         fields.name.value.trim() &&
         fields.phone.value.trim() &&
@@ -93,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
               changeModal.classList.add('hidden');
           }  
 
+          if (!form || !title || !submitButton || !modal) return;
           form.action = '/user/address/add';
           title.textContent = 'Add address';
           submitButton.textContent = 'Add address';
@@ -109,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const btn = e.target.closest('.editAddressBtn');
       if (!btn) return;
   
+      if (!form || !title || !submitButton || !modal || !fields) return;
       form.action = `/user/address/edit/${btn.dataset.id}?_method=PATCH`;
       title.textContent = 'Edit Address';
       submitButton.textContent = 'Save changes';
@@ -143,21 +179,23 @@ document.addEventListener('DOMContentLoaded', () => {
           message.classList.add('hidden');
           window.history.replaceState({}, document.title, window.location.pathname);
         }, 2000);
-      } else if (success === '3') {
-        const editSuccess = document.getElementById('editSuccess');
+      }
+    } else if (urlParams.get('success') === '3') {
+      const editSuccess = document.getElementById('editSuccess');
+      if (editSuccess) {
         editSuccess.classList.remove('hidden');
-
         setTimeout(() => {
-        editSuccess.classList.add('hidden');
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
-        }, 2000); 
-    } 
+          editSuccess.classList.add('hidden');
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }, 2000);
+      }
     }
   
     // ——— Live validation ———
-    Object.values(fields).forEach((input) => input.addEventListener('input', validateForm));
-    validateForm();
+    if (fields) {
+      Object.values(fields).forEach((input) => input?.addEventListener('input', validateForm));
+      validateForm();
+    }
 
 
 
@@ -167,76 +205,108 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('#changeAddressBtn').forEach(btn => {
     btn.addEventListener('click', () => {
-        changeModal.classList.remove('hidden');
+        changeModal?.classList.remove('hidden');
     });
     });
 
-    closeChangeModal.addEventListener('click', () => {
-    changeModal.classList.add('hidden');
+    closeChangeModal?.addEventListener('click', () => {
+      changeModal?.classList.add('hidden');
     });
 
     // Close modal when clicking outside
-    changeModal.addEventListener('click', (e) => {
-    if (e.target === changeModal) {
+    changeModal?.addEventListener('click', (e) => {
+      if (e.target === changeModal) {
         changeModal.classList.add('hidden');
-    }
+      }
     });
 
     const checkoutForm = document.getElementById("checkoutForm");
+    if (!checkoutForm) return;
 
     checkoutForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       const formData = new FormData(checkoutForm);
       const paymentMethod = formData.get("payment");
+      const addressId = formData.get("addressId");
+
+      if (!addressId) {
+        alert("Please select or add a delivery address.");
+        return;
+      }
 
       if(paymentMethod === "Cash on delivery") {
         checkoutForm.submit();
       } else if (paymentMethod === "online") {
-        const response = await fetch('/order', {
-          method: "POST",
-          body: formData
-        });
-        const data = await response.json();
+        try {
+          const response = await fetch('/order', {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify({
+              addressId,
+              payment: paymentMethod
+            })
+          });
+          const { data } = await parseApiResponse(response);
 
-        if(!data.success) {
-          alert("Error creating Razorpay order");
-          return;
+          if(!response.ok || !data.success) {
+            alert(data.message || "Error creating Razorpay order");
+            return;
+          }
+
+          const options = {
+            key: data.key,
+            amount: data.amount,
+            currency: data.currency,
+            name: "Camverse",
+            description: "Order Payment",
+            order_id: data.razorpayOrderId,
+            prefill: {
+              name: data.customer?.name || "",
+              email: data.customer?.email || "",
+              contact: data.customer?.contact || ""
+            },
+            handler: async function(responseData) {
+              const verifyRes = await fetch("/order/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpay_order_id: responseData.razorpay_order_id,
+                  razorpay_payment_id: responseData.razorpay_payment_id,
+                  razorpay_signature: responseData.razorpay_signature
+                })
+              });
+
+              const { data: result } = await parseApiResponse(verifyRes);
+
+              if(verifyRes.ok && result.success) {
+                window.location.href = `/order/order-success/${result.orderId}`;
+              } else {
+                alert("Payment verification failed: " + (result.message || "Unknown error"));
+              }
+            },
+            theme: { color: "#14b8a6"},
+          };
+
+          if (typeof window.Razorpay !== "function") {
+            alert("Razorpay SDK failed to load. Please refresh and try again.");
+            return;
+          }
+
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+        } catch (error) {
+          console.error("Online payment flow failed:", error);
+          alert("Could not start online payment. Please try again.");
         }
-
-        const options = {
-          key: data.key,
-          amount: data.amount,
-          currency: data.currency,
-          name: "Camverse",
-          description: "Order Payment",
-          order_id: data.razorpayOrderId,
-          handler: async function(response) {
-            const verifyRes = await fetch("/order/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature
-              })                      
-            });
-
-            const result = await verifyRes.json();
-
-            if(result.success) {
-              window.location.href = `/order/order-sucess/${result.orderId}`;
-            } else {
-              alert("Payment verification failed: " + result.message);
-            }
-          },
-          theme: { color: "#14b8a6"},
-        };
-
-        const rzp = new Razorpay(options);
-        rzp.open();
+      } else if (paymentMethod === "wallet") {
+        alert("Wallet checkout is not available right now.");
+      } else {
+        checkoutForm.submit();
       }
-      
     });
 
 });
@@ -247,7 +317,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   
-
-
-
-

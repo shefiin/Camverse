@@ -1,17 +1,17 @@
-<nav class="bg-white py-2 shadow-md fixed top-0 left-0 w-full z-50">
+<nav id="navbar" class="bg-black transition-all duration-300 py-2 shadow-md fixed top-0 left-0 w-full z-50">
     <div class="w-full px-12 py-4 flex items-center justify-between">
 
         <div class="flex-1">
-            <a href="/" class="text-xl tablet:text-2xl font-bold text-gray-800" style="font-family: 'Michroma', sans-serif;">Camverse</a>
+            <a href="/" class="text-xl tablet:text-2xl font-bold text-gray-400" style="font-family: 'Michroma', sans-serif;">Camverse</a>
         </div>
 
 
-        <ul class="hidden tablet:flex space-x-8 text-sm font-medium text-gray-700">
-            <li><a href="/" class="hover:underline">Home</a></li>
-            <li><a href="/shop" class="hover:underline">Shop</a></li>
+        <ul id="nav-links" class="hidden tablet:flex space-x-8 text-sm font-medium text-gray-400">
+            <li><a href="/" class="hover:underline hover:text-gray-300">Home</a></li>
+            <li><a href="/shop" class="hover:underline hover:text-gray-300">Shop</a></li>
 
             <li class="relative group">
-                <a href="" class="hover:underline">Brands</a>
+                <a href="" class="hover:underline hover:text-gray-300">Brands</a>
                 <ul class="absolute left-0 top-full bg-white shadow-md w-40 hidden group-hover:block z-50">
                     <% brands.forEach(brand => { %>
                         <li><a href="/shop/brand/<%= brand._id %>" class="block px-4 py-2 hover:bg-gray-100"><%= brand.name %></a></li>
@@ -19,26 +19,27 @@
                 </ul>
             </li>
             <li class="relative group">
-                <a href="" class="hover:underline">Categories</a>
+                <a href="" class="hover:underline hover:text-gray-300">Categories</a>
                 <ul class="absolute left-0 top-full bg-white shadow-md w-40 hidden group-hover:block z-50">
                     <% categories.forEach(category => { %>
                         <li><a href="/shop/category/<%= category._id %>"  class="block px-4 py-2 hover:bg-gray-100"><%= category.name %></a></li>
                     <% }) %>
                 </ul>
             </li>
-            <li><a href="" class="hover:underline">About</a></li>
+            <li><a href="" class="hover:underline hover:text-gray-300">About</a></li>
         </ul>
 
         <div class="relative ml-5 w-[150px] md:w-[200px] flex-shrink-0">
-            <form action="/search" method="GET" class="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
-              <input 
+            <form id="search-form" action="/search" method="GET" class="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-gray-900">
+              <input
+                id="search-input" 
                 type="text" 
                 name="search" 
                 value="<%= typeof search !== 'undefined' ? search : '' %>" 
                 placeholder="Search..." 
-                class="flex-grow min-w-0 px-2 py-1 text-sm focus:outline-none"
+                class="flex-grow min-w-0 px-2 py-1 text-sm focus:outline-none bg-gray-900 text-gray-300"
               />
-              <button type="submit" class="flex-shrink-0 px-2 text-gray-600 hover:text-black">
+              <button type="submit" class="flex-shrink-0 px-2 text-gray-600 hover:text-gray-300">
                 <i class="fas fa-search"></i>
               </button>
               <% if (typeof search !== 'undefined' && search.trim() !== '') { %>
@@ -50,13 +51,13 @@
           </div>
           
 
-        <div id="login-toggle" class="flex items-center space-x-6 text-gray-700 ml-10">
+        <div id="login-toggle" class="flex items-center space-x-6 text-gray-500 ml-10">
 
-            <a href="/cart" class="hover:text-black flex items-center space-x-1">
+            <a href="/cart" class="hover:text-gray-300 flex items-center space-x-1">
               <i class="fa fa-cart-shopping text-xl tablet:text-2xl"></i>  
             </a>
 
-            <div class="relative group hover:text-black flex items-center space-x-1">
+            <div class="relative group hover:text-gray-300 flex items-center space-x-1">
                 <a id="login-click" href="#" class="flex items-center space-x-1">
                     <i class="fa-solid fa-user text-xl tablet:text-2xl"></i>
                                       
@@ -141,5 +142,31 @@
     <li><a href="#">About</a></li>
   </ul>
 
+
+  <script>
+    const navbar = document.getElementById("navbar");
+  
+    window.addEventListener("scroll", () => {
+      if (window.scrollY >= 920) {
+        navbar.classList.remove("bg-black");
+        navbar.classList.add("bg-white", "shadow-lg");
+        nav-links.classList.remove("text-gray-400");
+        nav-links.classList.add("text-gray-700");
+        search-form.classList.remove("bg-gray-900");
+        search-form.classList.add("bg-white");
+        search-input.classList.remove("bg-gray-900");
+        search-input.classList.add("bg-white")
+      } else {
+        navbar.classList.remove("bg-white", "shadow-lg");
+        navbar.classList.add("bg-black");
+        nav-links.classList.remove("text-gray-700");
+        nav-links.classList.add("text-gray-400");
+        search-form.classList.remove("bg-white");
+        search-form.classList.add("bg-gray-900");
+        search-input.classList.remove("bg-white");
+        search-input.classList.add("bg-gray-900")
+      }
+    });
+  </script>
 
   

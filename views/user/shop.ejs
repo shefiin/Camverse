@@ -33,11 +33,21 @@
             <div class="grid grid-cols-2 md2:grid-cols-3 lg2:grid-cols-4 gap-4">
             
                 <% products.forEach(product => { %>
+                  <% const isInWishlist = wishlistProductIds && wishlistProductIds.includes(product._id.toString()); %>
                   <div class="relative p-5 shadow-lg px-6 space-y-4 transition group cursor-pointer">
-            
-                    <button class="absolute top-2 right-2 text-gray-200 hover:text-gray-300 text-2xl wishlist-btn">
-                      <i class="fa-solid fa-heart"></i>
-                    </button>
+
+                    <form action="/wishlist/add" method="POST" class="absolute top-2 right-2 z-10">
+                      <input type="hidden" name="productId" value="<%= product._id %>">
+                      <input type="hidden" name="redirectTo" value="/shop">
+                      <button
+                        class="text-2xl wishlist-btn <%= isInWishlist ? 'text-rose-500' : 'text-gray-200 hover:text-gray-300' %>"
+                        data-product-id="<%= product._id %>"
+                        aria-label="Toggle wishlist"
+                        type="submit"
+                      >
+                        <i class="fa-solid fa-heart"></i>
+                      </button>
+                    </form>
             
                     <a href="/product/<%= product._id %>" class="block">
                       <img
@@ -123,6 +133,9 @@
 
       <%- include('partials/userFooter') %>
 
+    <script>
+      window.IS_LOGGED_IN = <%= user ? 'true' : 'false' %>;
+    </script>
 
     <script src="/js/user/shopPage.js"></script>
 

@@ -2,7 +2,7 @@ const User = require('../../models/user');
 
 
 const ensureLoggedIn = (req, res, next) => {
-    if(req.session.user){
+    if(req.session.user || req.session.userId){
         return next();
     }
     res.redirect('/login?error=Please login first');
@@ -12,8 +12,9 @@ const ensureLoggedIn = (req, res, next) => {
 
 
 const checkBlocked = async (req, res, next) => {
-    if(req.session.user) {
-        const freshUser = await User.findById(req.session.user._id);
+    const sessionUserId = req.session.userId || (req.session.user && req.session.user._id);
+    if(sessionUserId) {
+        const freshUser = await User.findById(sessionUserId);
 
         if(!freshUser){
             req.session.destroy(() => {});
