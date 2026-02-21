@@ -66,6 +66,9 @@
                                     <th class="px-4 py-3">Coupon</th>
                                     <th class="px-4 py-3">Description</th>
                                     <th class="px-4 py-3 text-center">Type</th>
+                                    <th class="px-4 py-3 text-center">Min Purchase</th>
+                                    <th class="px-4 py-3 text-center">From</th>
+                                    <th class="px-4 py-3 text-center">To</th>
                                     <th class="px-4 py-3">Actions</th>
                                 </tr>
                             </thead>
@@ -76,7 +79,17 @@
                                     <td class="px-4 py-2">
                                       <button 
                                         class="coupon-btn"
-                                        data-id="<%= coupon._id %>">
+                                        data-id="<%= coupon._id %>"
+                                        data-name="<%= coupon.name %>"
+                                        data-description="<%= coupon.description %>"
+                                        data-discount-type="<%= coupon.discountType %>"
+                                        data-discount-value="<%= coupon.discountValue %>"
+                                        data-min-purchase="<%= coupon.minPurchase || 0 %>"
+                                        data-start-date="<%= coupon.startDate ? new Date(coupon.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' %>"
+                                        data-end-date="<%= coupon.endDate ? new Date(coupon.endDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' %>"
+                                        data-status="<%= coupon.status %>"
+                                        data-usage-limit="<%= coupon.usageLimit || 0 %>"
+                                        data-per-user-limit="<%= coupon.perUserLimit || 0 %>">
                                           <div class="coupon max-w-[250px] p-2 rounded-lg shadow-lg text-gray-500 text-center">
                                             <div class="dashed-border p-2 border-2 border-dashed border-gray-400 rounded-md">
                                               <p class="text-base md:text-lg lg:text-xl">
@@ -88,20 +101,35 @@
                                     </td>
                                     <td class="px-4 py-2 max-w-[200px] truncate"> <%= coupon.description %> </td>
                                     <td class="px-4 py-2 text-center"> <%= coupon.discountType %> </td>
+                                    <td class="px-4 py-2 text-center">₹<%= (coupon.minPurchase || 0).toLocaleString('en-IN') %></td>
+                                    <td class="px-4 py-2 text-center">
+                                      <%= coupon.startDate ? new Date(coupon.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' %>
+                                    </td>
+                                    <td class="px-4 py-2 text-center">
+                                      <%= coupon.endDate ? new Date(coupon.endDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' %>
+                                    </td>
                                     <td class="px-4 py-3 flex items-center gap-4">      
                                       <div class="flex flex-col items-center gap-2">
                                         <button 
-                                          class="addOffer-btn text-white bg-blue-500 px-2 py-1 text-xs rounded-md hover:bg-blue-600"
-                                          data-id="<%= coupon._id %>">
+                                          class="edit-coupon-btn text-white bg-blue-500 px-2 py-1 text-xs rounded-md hover:bg-blue-600"
+                                          data-id="<%= coupon._id %>"
+                                          data-name="<%= coupon.name %>"
+                                          data-description="<%= coupon.description %>"
+                                          data-discount-type="<%= coupon.discountType %>"
+                                          data-discount-value="<%= coupon.discountValue %>"
+                                          data-min-purchase="<%= coupon.minPurchase || 0 %>"
+                                          data-start-date="<%= coupon.startDate ? coupon.startDate.toISOString().split('T')[0] : '' %>"
+                                          data-end-date="<%= coupon.endDate ? coupon.endDate.toISOString().split('T')[0] : '' %>">
                                           Edit Coupon
                                         </button>
-                                        <button
-                                          type="button"
-                                          class="ml-2 text-xs p-1 bg-red-500 hover:bg-red-600 rounded-md deleteBtn"
-                                          data-id="<%= coupon._id %>"
-                                          title="Delete">
-                                          Delete Coupon
-                                        </button>
+                                        <form action="/admin/coupons/delete/<%= coupon._id %>?_method=PATCH" method="POST" class="coupon-delete-form">
+                                          <button
+                                            type="button"
+                                            class="ml-2 text-xs p-1 bg-red-500 hover:bg-red-600 rounded-md open-delete-modal"
+                                            title="Delete">
+                                            Delete Coupon
+                                          </button>
+                                        </form>
                                       </div>
                                     </td>
                                   </tr>
@@ -116,6 +144,53 @@
 
         </main>
         <%- include('addCoupon') %>
+
+        <div id="coupon-mod"
+             class="fixed inset-0 bg-black bg-opacity-60 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+          <div id="coupon-det"
+               class="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg mx-auto mt-24 transform scale-90 opacity-0 transition-all duration-300">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Coupon Details</h2>
+            <div class="space-y-2 text-sm text-gray-700">
+              <p><span class="font-semibold">Name:</span> <span id="detail-name">-</span></p>
+              <p><span class="font-semibold">Description:</span> <span id="detail-description">-</span></p>
+              <p><span class="font-semibold">Type:</span> <span id="detail-discount-type">-</span></p>
+              <p><span class="font-semibold">Discount Value:</span> <span id="detail-discount-value">-</span></p>
+              <p><span class="font-semibold">Min Purchase:</span> <span id="detail-min-purchase">-</span></p>
+              <p><span class="font-semibold">Start Date:</span> <span id="detail-start-date">-</span></p>
+              <p><span class="font-semibold">End Date:</span> <span id="detail-end-date">-</span></p>
+              <p><span class="font-semibold">Status:</span> <span id="detail-status">-</span></p>
+              <p><span class="font-semibold">Usage Limit:</span> <span id="detail-usage-limit">-</span></p>
+              <p><span class="font-semibold">Per User Limit:</span> <span id="detail-per-user-limit">-</span></p>
+            </div>
+            <div class="mt-6 flex justify-end">
+              <button id="close-coupon-details"
+                      class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="deletePermission" 
+             class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
+          <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
+            <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: Michroma, sans-serif;">Camverse</h2>
+            <div class="w-full flex items-center justify-center py-4 px-4 text-7xl text-gray-300">
+              <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <p class="text-lg font-extralight mb-6 text-center" style="font-family: 'Kanit', sans-serif;">
+              Are you sure you want to delete this coupon?
+            </p>
+            <div class="flex items-center justify-center space-x-4 mt-4">
+              <button id="confirmDelete" class="bg-red-600 w-full text-white px-12 py-2 rounded-md hover:bg-red-700 transition duration-200 ease-in-out">
+                Confirm
+              </button>
+              <button id="cancelDelete" class="bg-blue-500 w-full text-white px-12 py-2 rounded-md hover:bg-blue-600 transition duration-200 ease-in-out">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       
 
 
@@ -124,6 +199,15 @@
     <script>
         const menuBtn = document.getElementById('menu-toggle');
         const menu = document.getElementById('sidebar');
+        const couponForm = document.getElementById("coupon-form");
+        const modalTitle = document.getElementById("modal-title");
+        const couponSubmitBtn = document.getElementById("coupon-submit-btn");
+        const couponNameInput = document.getElementById("couponName");
+        const couponDescriptionInput = document.getElementById("couponDescription");
+        const couponDiscountValueInput = document.getElementById("couponDiscountValue");
+        const couponMinPurchaseInput = document.getElementById("couponMinPurchase");
+        const couponStartDateInput = document.getElementById("couponStartDate");
+        const couponEndDateInput = document.getElementById("couponEndDate");
 
         menuBtn.addEventListener('click', () => {
             menu.classList.toggle('hidden');
@@ -132,12 +216,35 @@
 
         document.querySelectorAll(".coupon-btn").forEach(btn => {
             btn.addEventListener("click", () => {
-                const couponId = btn.dataset.id; // ✅ get coupon id from button
-                console.log("Selected Coupon ID:", couponId);
-
                 const closeBtn = document.getElementById("close-coupon-details");
                 const modal = document.getElementById("coupon-mod");
                 const card = document.getElementById("coupon-det");
+                const detailName = document.getElementById("detail-name");
+                const detailDescription = document.getElementById("detail-description");
+                const detailDiscountType = document.getElementById("detail-discount-type");
+                const detailDiscountValue = document.getElementById("detail-discount-value");
+                const detailMinPurchase = document.getElementById("detail-min-purchase");
+                const detailStartDate = document.getElementById("detail-start-date");
+                const detailEndDate = document.getElementById("detail-end-date");
+                const detailStatus = document.getElementById("detail-status");
+                const detailUsageLimit = document.getElementById("detail-usage-limit");
+                const detailPerUserLimit = document.getElementById("detail-per-user-limit");
+
+                if (detailName) detailName.textContent = btn.dataset.name || "-";
+                if (detailDescription) detailDescription.textContent = btn.dataset.description || "-";
+                if (detailDiscountType) detailDiscountType.textContent = btn.dataset.discountType || "-";
+                if (detailDiscountValue) {
+                  detailDiscountValue.textContent =
+                    (btn.dataset.discountType === "PERCENTAGE")
+                      ? `${btn.dataset.discountValue || 0}%`
+                      : `₹${Number(btn.dataset.discountValue || 0).toLocaleString("en-IN")}`;
+                }
+                if (detailMinPurchase) detailMinPurchase.textContent = `₹${Number(btn.dataset.minPurchase || 0).toLocaleString("en-IN")}`;
+                if (detailStartDate) detailStartDate.textContent = btn.dataset.startDate || "-";
+                if (detailEndDate) detailEndDate.textContent = btn.dataset.endDate || "-";
+                if (detailStatus) detailStatus.textContent = btn.dataset.status || "-";
+                if (detailUsageLimit) detailUsageLimit.textContent = btn.dataset.usageLimit || "0";
+                if (detailPerUserLimit) detailPerUserLimit.textContent = btn.dataset.perUserLimit || "0";
 
                 // open modal
                 modal.classList.remove("opacity-0", "pointer-events-none");
@@ -162,11 +269,68 @@
             });
         });
 
+        document.querySelectorAll(".edit-coupon-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = btn.dataset.id;
+            if (!id || !couponForm) return;
+
+            couponForm.action = `/admin/coupons/edit/${id}?_method=PATCH`;
+            if (modalTitle) modalTitle.textContent = "Edit Coupon";
+            if (couponSubmitBtn) couponSubmitBtn.textContent = "Save Changes";
+            if (couponNameInput) couponNameInput.value = btn.dataset.name || "";
+            if (couponDescriptionInput) couponDescriptionInput.value = btn.dataset.description || "";
+            if (couponDiscountValueInput) couponDiscountValueInput.value = btn.dataset.discountValue || "";
+            if (couponMinPurchaseInput) couponMinPurchaseInput.value = btn.dataset.minPurchase || "0";
+            if (couponStartDateInput) couponStartDateInput.value = btn.dataset.startDate || "";
+            if (couponEndDateInput) couponEndDateInput.value = btn.dataset.endDate || "";
+
+            const selectedType = btn.dataset.discountType || "";
+            const typeRadio = couponForm.querySelector(`input[name="discountType"][value="${selectedType}"]`);
+            if (typeRadio) typeRadio.checked = true;
+
+            if (typeof window.openCouponModal === "function") {
+              window.openCouponModal();
+            }
+          });
+        });
+
+        const deleteModal = document.getElementById("deletePermission");
+        const confirmDeleteBtn = document.getElementById("confirmDelete");
+        const cancelDeleteBtn = document.getElementById("cancelDelete");
+        let selectedDeleteForm = null;
+
+        document.querySelectorAll(".open-delete-modal").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            selectedDeleteForm = btn.closest("form");
+            deleteModal.classList.remove("hidden");
+          });
+        });
+
+        if (cancelDeleteBtn) {
+          cancelDeleteBtn.addEventListener("click", () => {
+            deleteModal.classList.add("hidden");
+            selectedDeleteForm = null;
+          });
+        }
+
+        if (confirmDeleteBtn) {
+          confirmDeleteBtn.addEventListener("click", () => {
+            if (selectedDeleteForm) {
+              selectedDeleteForm.submit();
+            }
+          });
+        }
+
+        if (deleteModal) {
+          deleteModal.addEventListener("click", (e) => {
+            if (e.target === deleteModal) {
+              deleteModal.classList.add("hidden");
+              selectedDeleteForm = null;
+            }
+          });
+        }
+
     </script>
 
 </body>
 </html>
-
-
-
-

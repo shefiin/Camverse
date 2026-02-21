@@ -35,13 +35,14 @@ const renderCouponPage = async (req, res) => {
 const addCoupon = async (req, res) => {    
 
     try {
-        const { discountType, couponName, description, discountValue, startDate, endDate } = req.body;
+        const { discountType, couponName, description, discountValue, minPurchase, startDate, endDate } = req.body;
 
         const coupon = new Coupon({
             name: couponName.toUpperCase(),
             description: description,
             discountType: discountType,
             discountValue: discountValue,
+            minPurchase: Number(minPurchase) || 0,
             startDate: startDate,
             endDate: endDate
         })
@@ -56,11 +57,58 @@ const addCoupon = async (req, res) => {
     }
 };
 
+const editCoupon = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { discountType, couponName, description, discountValue, minPurchase, startDate, endDate } = req.body;
+
+        const coupon = await Coupon.findById(id);
+        if (!coupon || coupon.isDeleted) {
+            return res.status(404).send('Coupon not found');
+        }
+
+        coupon.name = couponName.toUpperCase();
+        coupon.description = description;
+        coupon.discountType = discountType;
+        coupon.discountValue = discountValue;
+        coupon.minPurchase = Number(minPurchase) || 0;
+        coupon.startDate = startDate;
+        coupon.endDate = endDate;
+
+        await coupon.save();
+        return res.redirect('/admin/coupons');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('something went wrong while updating the coupon');
+    }
+};
 
 
+
+
+const deleteCoupon = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const coupon = await Coupon.findById(id);
+        if (!coupon) {
+            return res.status(404).send("Coupon not found");
+        }
+
+        coupon.isDeleted = true;
+        coupon.status = "INACTIVE";
+        await coupon.save();
+
+        return res.redirect("/admin/coupons");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("something went wrong while deleting the coupon");
+    }
+};
 
 module.exports = {
     renderCouponPage,
-    addCoupon
+    addCoupon,
+    editCoupon,
+    deleteCoupon
 }
-
