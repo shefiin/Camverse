@@ -5,6 +5,8 @@ const walletTransactionSchema = new mongoose.Schema({
     amount: { type: Number, required: true },
     description: { type: String }, 
     orderId: { type: mongoose.Schema.Types.ObjectId, ref: "Order" }, 
+    orderItemId: { type: mongoose.Schema.Types.ObjectId },
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
     createdAt: { type: Date, default: Date.now }
 });
 

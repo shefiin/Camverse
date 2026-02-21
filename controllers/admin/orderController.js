@@ -171,16 +171,37 @@ const acceptReturn = async (req, res) => {
             .populate('products.productId')
             .populate("user");
 
-        const product = order.products.find(
-            p => p._id.toString() === productId
-        );
+        if (!order) {
+            return res.status(404).send("Order not found");
+        }
+
+        const product = order.products.find((p) => {
+            const lineId = p._id?.toString();
+            const actualProductId = p.productId?._id
+                ? p.productId._id.toString()
+                : p.productId?.toString();
+            return lineId === productId || actualProductId === productId;
+        });
+
+        if (!product) {
+            return res.status(404).send("Product not found in order");
+        }
+
+        if (product.status !== "Return in process") {
+            return res.status(400).send("This item is not awaiting return approval");
+        }
         
         if(action === "accept") {
-            await Product.findByIdAndUpdate(product.productId, {
+            const actualProductId = product.productId?._id
+                ? product.productId._id
+                : product.productId;
+
+            await Product.findByIdAndUpdate(actualProductId, {
                 $inc: { stock: product.quantity }
             });
 
-            const refundAmount = product.price * product.quantity;
+            // Refund must always use the order line price (historical price at purchase time).
+            const refundAmount = Number(product.price) * Number(product.quantity);
 
             let userWallet = await Wallet.findOne({ user: order.user._id });
             if(!userWallet) {
@@ -191,13 +212,25 @@ const acceptReturn = async (req, res) => {
                 });
             }
 
-            userWallet.balance += refundAmount;
-            userWallet.transactions.push({
-                type: "CREDIT",
-                amount: refundAmount,
-                orderId: order._id,
-                description: `Refund for returned item in order #${order.orderId}`
-            });
+            const existingRefund = userWallet.transactions.find(
+                txn =>
+                    txn.type === "CREDIT" &&
+                    txn.orderId?.toString() === order._id.toString() &&
+                    txn.orderItemId?.toString() === product._id.toString() &&
+                    txn.description === "Refund for returned item"
+            );
+
+            if (!existingRefund) {
+                userWallet.balance += refundAmount;
+                userWallet.transactions.push({
+                    type: "CREDIT",
+                    amount: refundAmount,
+                    orderId: order._id,
+                    orderItemId: product._id,
+                    productId: actualProductId,
+                    description: "Refund for returned item"
+                });
+            }
 
             await userWallet.save();
 
@@ -206,6 +239,13 @@ const acceptReturn = async (req, res) => {
 
         } else {
             product.status = "Delivered";
+        }
+
+        const allReturnedOrCancelled = order.products.every(
+            item => item.status === "Returned" || item.status === "Cancelled"
+        );
+        if (allReturnedOrCancelled) {
+            order.status = "Returned";
         }
         
         await order.save();
