@@ -62,7 +62,7 @@
                   <% } else if(order.status === 'Out for delivery') { %>  
                     <div class="bg-green-100 py-1 px-2 rounded-full text-gray-700">
                       <p class="font-normal text-xs md:text-sm">
-                        <i class="fa-regular fa-circle-check"></i>
+                        <i class="fa-solid fa-truck-fast"></i>
                         Out for delivery
                       </p>
                     </div>
@@ -157,7 +157,10 @@
                         <i class="fa-regular fa-circle-xmark"></i> Cancel this Product
                       </button>
                   <% } else if(order.status === 'Delivered' && p.status !== 'Cancelled' && p.status !== 'Returned' && p.status !== 'Return in process') { %> 
-                      <button class="returnProduct bg-orange-50 hover:bg-orange-100 transition px-3 py-1 text-orange-600 text-sm">
+                      <button
+                        class="returnProduct bg-orange-50 hover:bg-orange-100 transition px-3 py-1 text-orange-600 text-sm"
+                        data-action="/order/<%= order._id %>/return/<%= p.productId._id %>?_method=PATCH"
+                      >
                         <i class="fa-solid fa-rotate-left"></i> Return this Product
                       </button>
                   <% } %>
@@ -285,4 +288,3 @@
 
 </body>
 </html>     
-

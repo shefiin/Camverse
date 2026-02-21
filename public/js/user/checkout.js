@@ -34,6 +34,30 @@ document.addEventListener('DOMContentLoaded', () => {
         raw
       };
     };
+    const warningModal = document.getElementById("checkoutWarningModal");
+    const warningText = document.getElementById("checkoutWarningText");
+    const closeWarningBtn = document.getElementById("closeCheckoutWarning");
+
+    const showCheckoutWarning = (message) => {
+      if (!warningModal || !warningText) {
+        alert(message);
+        return;
+      }
+      warningText.textContent = message;
+      warningModal.classList.remove("hidden");
+      warningModal.classList.add("flex");
+    };
+
+    const hideCheckoutWarning = () => {
+      if (!warningModal) return;
+      warningModal.classList.add("hidden");
+      warningModal.classList.remove("flex");
+    };
+
+    closeWarningBtn?.addEventListener("click", hideCheckoutWarning);
+    warningModal?.addEventListener("click", (e) => {
+      if (e.target === warningModal) hideCheckoutWarning();
+    });
     const modal = document.getElementById('addressModal');
     const openBtn = document.getElementById('openModal');           // may be null
     const closeBtn = document.getElementById('closeModal');
@@ -229,9 +253,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const formData = new FormData(checkoutForm);
       const paymentMethod = formData.get("payment");
       const addressId = formData.get("addressId");
+      const couponId = formData.get("couponId");
 
       if (!addressId) {
-        alert("Please select or add a delivery address.");
+        showCheckoutWarning("Please select or add a delivery address.");
         return;
       }
 
@@ -247,7 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify({
               addressId,
-              payment: paymentMethod
+              payment: paymentMethod,
+              couponId
             })
           });
           const { data } = await parseApiResponse(response);

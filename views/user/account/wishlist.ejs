@@ -62,8 +62,9 @@
                         </button>
                       </form>
                       <div class="h-6 w-px bg-gray-300"></div>
-                      <form action="/wishlist/move" method="POST">
+                      <form action="/cart/add" method="POST">
                         <input type="hidden" name="productId" value="<%= item.product._id %>">
+                        <input type="hidden" name="quantity" value="1">
                         <input type="hidden" name="redirectTo" value="/wishlist">
                         <button class="text-blue-500 text-base px-3 py-1 mr-10">
                           Move to Cart

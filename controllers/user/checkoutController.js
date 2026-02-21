@@ -3,6 +3,7 @@ const Brand = require('../../models/brand');
 const Category = require('../../models/category');
 const Cart = require('../../models/cart');
 const Product = require('../../models/product');
+const Coupon = require('../../models/coupon');
 
 
 
@@ -28,6 +29,7 @@ const RenderCheckout = async (req, res) => {
         let totalQuantity = 0;
         let totalMRP = 0;
         let totalDiscount = 0;
+        let eligibleCoupons = [];
 
         if(cart) {
             cart.items = cart.items.filter(item => {
@@ -52,6 +54,15 @@ const RenderCheckout = async (req, res) => {
             },0);
 
             totalDiscount = totalMRP - total;
+
+            const now = new Date();
+            eligibleCoupons = await Coupon.find({
+                isDeleted: false,
+                status: 'ACTIVE',
+                startDate: { $lte: now },
+                endDate: { $gte: now },
+                minPurchase: { $lte: total }
+            }).sort({ createdAt: -1 });
         }  
         
         res.render('user/account/checkout', {
@@ -63,7 +74,8 @@ const RenderCheckout = async (req, res) => {
             total,
             totalQuantity,
             totalMRP,
-            totalDiscount
+            totalDiscount,
+            eligibleCoupons
         });
 
     } catch(error){

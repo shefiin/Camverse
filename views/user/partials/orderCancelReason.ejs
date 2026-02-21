@@ -36,7 +36,7 @@
   
         <!-- Buttons -->
         <div class="mt-6 flex justify-center gap-3">
-          <button id="closeCancel" type="button" onclick="closeCancelModal()" class="px-4 w-full py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+          <button id="closeCancel" type="button" class="px-4 w-full py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
             Close
           </button>
           <button type="submit" class="px-4 py-2 bg-red-600 text-white w-full rounded-md hover:bg-red-700">
@@ -87,7 +87,7 @@
 
         <!-- Buttons -->
         <div class="mt-6 flex justify-center gap-3">
-          <button id="closeProductCancel" type="button" onclick="closeProductCancelModal()" class="px-4 w-full py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+          <button id="closeProductCancel" type="button" class="px-4 w-full py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
             Close
           </button>
           <button type="submit" class="px-4 py-2 bg-red-600 text-white w-full rounded-md hover:bg-red-700">
@@ -102,6 +102,7 @@
 
 
 <script>
+  (() => {
     const cancelOrder = document.getElementById("cancelOrder");
     const cancelModal = document.getElementById("cancelModal");
     const customReason = document.getElementById("customReason");
@@ -116,30 +117,36 @@
 
 
   
-    function openCancelModal(actionUrl) {
+    function openCancelModal() {
+      if (!cancelModal) return;
       cancelModal.classList.remove("hidden");
       cancelModal.classList.add("flex");
     }
   
     function closeCancelModal() {
+      if (!cancelModal) return;
       cancelModal.classList.add("hidden");
       cancelModal.classList.remove("flex");
     }
 
-    cancelOrder.addEventListener("click", () => {
-      openCancelModal();
-    })
+    if (cancelOrder) {
+      cancelOrder.addEventListener("click", () => {
+        openCancelModal();
+      });
+    }
 
-    closeCancel.addEventListener("click", () => {
-      closeCancelModal();
-    })
+    if (closeCancel) {
+      closeCancel.addEventListener("click", () => {
+        closeCancelModal();
+      });
+    }
 
     // Show textarea only if "Other" is selected
     document.querySelectorAll("input[name='reason']").forEach(radio => {
       radio.addEventListener("change", () => {
-        if (reasonOther.checked) {
+        if (reasonOther && reasonOther.checked && customReason) {
           customReason.classList.remove("hidden");
-        } else {
+        } else if (customReason) {
           customReason.classList.add("hidden");
           customReason.value = "";
         }
@@ -147,12 +154,14 @@
     });
 
 
-    function openProductCancelModal(actionUrl) {
+    function openProductCancelModal() {
+      if (!cancelProductModal) return;
       cancelProductModal.classList.remove("hidden");
       cancelProductModal.classList.add("flex");
     }
   
     function closeProductCancelModal() {
+      if (!cancelProductModal) return;
       cancelProductModal.classList.add("hidden");
       cancelProductModal.classList.remove("flex");
     }
@@ -164,21 +173,22 @@
         });
     });
 
-    closeProductCancel.addEventListener("click", () => {
-      closeProductCancelModal();
-    })
+    if (closeProductCancel) {
+      closeProductCancel.addEventListener("click", () => {
+        closeProductCancelModal();
+      });
+    }
 
 
     document.querySelectorAll("input[name='reason1']").forEach(radio => {
       radio.addEventListener("change", () => {
-        if (productReasonOther.checked) {
+        if (productReasonOther && productReasonOther.checked && productCustomReason) {
           productCustomReason.classList.remove("hidden");
-        } else {
+        } else if (productCustomReason) {
           productCustomReason.classList.add("hidden");
           productCustomReason.value = "";
         }
       });
     });
-
-
+  })();
 </script>

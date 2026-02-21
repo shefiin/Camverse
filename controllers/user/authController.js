@@ -134,9 +134,7 @@ const resendOtp = async (req, res) => {
 const login = async (req, res) => {
     try{
         const { email, password } = req.body;
-        const trimmedPassword = password.trim();
-        console.log('Email:', email);
-        console.log('Password:', password);
+        const trimmedPassword = typeof password === "string" ? password.trim() : "";
 
         const user = await User.findOne({ email });
         if(!user) {
@@ -148,13 +146,17 @@ const login = async (req, res) => {
             return res.redirect('/login');
         }
 
-        console.log('Received password:', password);
-        console.log('Stored hash:', user.password);
+        if (!trimmedPassword) {
+            req.flash('error', 'Please enter your password');
+            return res.redirect('/login');
+        }
+
+        if (!user.password) {
+            req.flash('error', 'This account uses Google sign-in. Continue with Google or set a password using reset password.');
+            return res.redirect('/login');
+        }
 
         const isMatch = await bcrypt.compare(trimmedPassword, user.password);
-        console.log("Plain entered:", trimmedPassword);
-        console.log("Stored hash:", user.password);
-
 
         if(!isMatch){
             req.flash('error', 'Invalid email or password');
@@ -386,8 +388,8 @@ const updatePassword = async (req, res) => {
             return res.redirect('/reset/new-password');
         }
 
-        const newHashed = await bcrypt.hash(newPassword, 10);
-        user.password = newHashed;
+        // User model pre-save hook already hashes password; assigning plain text avoids double-hashing.
+        user.password = newPassword;
         await user.save();
 
         delete req.session.resetEmail; // clear session after update
@@ -415,6 +417,4 @@ module.exports = {
     updatePassword,
     resendOtp
 };
-
-
 

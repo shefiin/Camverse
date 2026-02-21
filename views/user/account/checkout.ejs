@@ -53,6 +53,21 @@
           </div>
         </div>
 
+        <div id="checkoutWarningModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-60 z-50">
+          <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+            <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: Michroma, sans-serif;">Camverse</h2>
+            <div class="w-full flex items-center justify-center py-2 text-6xl text-amber-500">
+              <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <p id="checkoutWarningText" class="text-center text-lg font-extralight text-gray-700 mt-3 mb-6" style="font-family: 'Kanit', sans-serif;">
+              Please select or add a delivery address.
+            </p>
+            <button id="closeCheckoutWarning" type="button" class="w-full bg-teal-700 hover:bg-teal-800 text-white py-2">
+              OK
+            </button>
+          </div>
+        </div>
+
         <!-- Address Modal -->
         <div id="addressModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
           <form id="addressForm" action="/user/address/add" method="POST"
@@ -198,6 +213,10 @@
                 <span>Total Discount</span>
                 <span class="text-green-600">- ₹<%= totalDiscount.toLocaleString() %></span>
               </div>
+              <div id="couponDiscountRow" class="flex justify-between text-gray-600 mb-2 hidden">
+                <span>Coupon Discount</span>
+                <span id="couponDiscountValue" class="text-green-600">- ₹0</span>
+              </div>
               <div class="flex justify-between text-gray-600 mb-2">
                 <span>Shipping</span>
                 <span>Free</span>
@@ -205,11 +224,36 @@
               <hr class="my-3">
               <div class="flex justify-between font-bold text-gray-800 text-lg mb-6">
                 <span>Total</span>
-                <span>₹<%= total.toLocaleString() %>.00</span>
+                <span id="payableTotal" data-base-total="<%= total %>">₹<%= total.toLocaleString() %>.00</span>
               </div>
 
               <form id="checkoutForm" action="/order" method="POST">
                 <input type="hidden" name="addressId" value="<%= selectedAddress?._id %>">
+                <% if (eligibleCoupons && eligibleCoupons.length > 0) { %>
+                  <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Apply Coupon</h3>
+                    <select
+                      id="couponSelect"
+                      name="couponId"
+                      class="w-full appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    >
+                      <option value="">Select a coupon</option>
+                      <% eligibleCoupons.forEach(coupon => { %>
+                        <option
+                          value="<%= coupon._id %>"
+                          data-discount-type="<%= coupon.discountType %>"
+                          data-discount-value="<%= coupon.discountValue %>"
+                          data-max-discount="<%= coupon.maxDiscount || '' %>"
+                        >
+                          <%= coupon.name %> 
+                        </option>
+                      <% }) %>
+                    </select>
+                    <div class="pointer-events-none relative -mt-8 mr-3 float-right text-gray-400">
+                      <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </div>
+                  </div>
+                <% } %>
                 <div class="mb-6">
                   <h3 class="text-lg font-semibold text-gray-700 mb-3">Payment Method</h3>
                   <div class="space-y-2">
@@ -220,10 +264,6 @@
                     <label class="flex items-center space-x-2 cursor-pointer">
                         <input type="radio" name="payment" value="online">
                         <span>Pay Online (Razorpay)</span>
-                    </label>
-                    <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="payment" value="wallet">
-                        <span>Wallet</span>
                     </label>
                   </div>
                 </div>
@@ -243,5 +283,49 @@
     <%- include('../partials/userFooter') %>
     <script src="/js/user/homePage.js"></script>
     <script src="/js/user/checkout.js"></script>
+    <script>
+      (() => {
+        const couponSelect = document.getElementById("couponSelect");
+        const payableTotal = document.getElementById("payableTotal");
+        const couponDiscountRow = document.getElementById("couponDiscountRow");
+        const couponDiscountValue = document.getElementById("couponDiscountValue");
+        if (!couponSelect || !payableTotal) return;
+
+        const baseTotal = Number(payableTotal.dataset.baseTotal || 0);
+
+        const formatINR = (value) => `₹${Math.round(value).toLocaleString("en-IN")}.00`;
+
+        couponSelect.addEventListener("change", () => {
+          const selected = couponSelect.options[couponSelect.selectedIndex];
+          if (!selected || !selected.value) {
+            couponDiscountRow.classList.add("hidden");
+            couponDiscountValue.textContent = "- ₹0";
+            payableTotal.textContent = formatINR(baseTotal);
+            return;
+          }
+
+          const discountType = selected.dataset.discountType;
+          const discountValue = Number(selected.dataset.discountValue || 0);
+          const maxDiscount = selected.dataset.maxDiscount ? Number(selected.dataset.maxDiscount) : null;
+
+          let discount = 0;
+          if (discountType === "FLAT") {
+            discount = discountValue;
+          } else {
+            discount = (baseTotal * discountValue) / 100;
+            if (maxDiscount && maxDiscount > 0) {
+              discount = Math.min(discount, maxDiscount);
+            }
+          }
+
+          discount = Math.min(baseTotal, Math.round(discount));
+          const finalTotal = Math.max(0, baseTotal - discount);
+
+          couponDiscountRow.classList.remove("hidden");
+          couponDiscountValue.textContent = `- ₹${discount.toLocaleString("en-IN")}`;
+          payableTotal.textContent = formatINR(finalTotal);
+        });
+      })();
+    </script>
 </body>
 </html>

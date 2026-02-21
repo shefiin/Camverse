@@ -6,8 +6,9 @@ const { buildProductQuery } = require('../user/helpers/buildProductQuery');
 
 const loadShopPage = async (req, res) => {
     try {
-        const user = req.user || null;
+        const user = res.locals.user || null;
         const userId = req.session.userId || (req.session.user && req.session.user._id);
+        const isLoggedIn = Boolean(userId);
         const page = parseInt(req.query.page) || 1;
         const limit = 12;
 
@@ -70,6 +71,7 @@ const loadShopPage = async (req, res) => {
 
         res.render('user/shop', {
             user,
+            isLoggedIn,
             brands,
             categories,
             products,
@@ -94,8 +96,9 @@ const loadShopPage = async (req, res) => {
 const getProductsByCategory = async (req, res) => {
     try {
       const categoryId = req.params.id;
-      const user = req.user || null;
+      const user = res.locals.user || null;
       const userId = req.session.userId || (req.session.user && req.session.user._id);
+      const isLoggedIn = Boolean(userId);
       const page = parseInt(req.query.page) || 1;
       const limit = 12;
   
@@ -143,6 +146,8 @@ const getProductsByCategory = async (req, res) => {
   
       
       const products = await Product.find(query)
+        .populate('brand')
+        .populate('category')
         .sort(sortOption)
         .skip((page - 1) * limit)
         .limit(limit);
@@ -159,6 +164,7 @@ const getProductsByCategory = async (req, res) => {
       
       res.render('user/shop', {
         user,
+        isLoggedIn,
         brands,
         categories,
         products,
@@ -182,8 +188,9 @@ const getProductsByCategory = async (req, res) => {
   const getProductsByBrand = async (req, res) => {
     try {
       const brandId = req.params.id;
-      const user = req.user || null;
+      const user = res.locals.user || null;
       const userId = req.session.userId || (req.session.user && req.session.user._id);
+      const isLoggedIn = Boolean(userId);
       const page = parseInt(req.query.page) || 1;
       const limit = 12;
   
@@ -233,6 +240,8 @@ const getProductsByCategory = async (req, res) => {
       const totalPages = Math.ceil(totalProducts / limit);
   
       const products = await Product.find(query)
+        .populate('brand')
+        .populate('category')
         .sort(sortOption)
         .skip((page - 1) * limit)
         .limit(limit);
@@ -247,6 +256,7 @@ const getProductsByCategory = async (req, res) => {
   
       res.render('user/shop', {
         user,
+        isLoggedIn,
         brands,
         categories,
         products,

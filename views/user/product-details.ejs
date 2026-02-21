@@ -158,7 +158,7 @@
   </ul>
 
   
-  <div class="container mx-auto px-6 py-20 mt-8">
+  <div class="container mx-auto px-8 md:pl-20 md:pr-20 py-20 mt-8">
 
 
     <nav class="text-sm mb-2" aria-label="Breadcrumb">
@@ -281,9 +281,34 @@
         </div>
   
         <div>
+          <%
+            const nowMain = new Date();
+            const isOfferActiveMain = (offer) => {
+              if (!offer || !offer.isActive) return false;
+              if (!offer.discountValue || Number(offer.discountValue) <= 0) return false;
+              const startsAt = offer.startDate ? new Date(offer.startDate) : null;
+              const endsAt = offer.endDate ? new Date(offer.endDate) : null;
+              if (startsAt && nowMain < startsAt) return false;
+              if (endsAt && nowMain > endsAt) return false;
+              return true;
+            };
+            const productOfferMain = isOfferActiveMain(product.individualOffer) ? product.individualOffer : null;
+            const categoryOfferMain = isOfferActiveMain(product.category?.individualOffer) ? product.category.individualOffer : null;
+            const activeOfferMain = productOfferMain || categoryOfferMain;
+            const offerBadgeTextMain = activeOfferMain
+              ? (activeOfferMain.discountType === "FLAT"
+                  ? `EXTRA FLAT ₹${Number(activeOfferMain.discountValue).toLocaleString("en-IN")}`
+                  : `EXTRA ${Number(activeOfferMain.discountValue)}% OFF`)
+              : "";
+          %>
           <p class="text-xl md:text-3xl font-bold">
             ₹<%= product.price.toLocaleString() %>
           </p>
+          <% if (offerBadgeTextMain) { %>
+            <p class="inline-block mt-2 px-2 py-1 rounded bg-orange-100 text-orange-700 text-xs font-semibold">
+              <%= offerBadgeTextMain %>
+            </p>
+          <% } %>
           <p class="text-sm text-gray-600">(Incl. all Taxes)</p>
 
           <div class="flex items-center mt-1 gap-1 text-xs">
@@ -353,7 +378,32 @@
     <h2 class="text-2xl text-center font-semibold mt-10 mb-5 text-teal-500">Related Products</h2>
     <div class="grid grid-cols-2 md:grid-cols-4 p-2 justify-center max-w-[800px] mx-auto mb-16">
       <% relatedProducts.forEach(rp => { %>
-        <div class="border p-4 shadow-xl hover:shadow-2xl rounded-lg max-w-[220px] md:max-w-[170px] mx-auto mb-5">
+        <%
+          const now = new Date();
+          const isOfferActive = (offer) => {
+            if (!offer || !offer.isActive) return false;
+            if (!offer.discountValue || Number(offer.discountValue) <= 0) return false;
+            const startsAt = offer.startDate ? new Date(offer.startDate) : null;
+            const endsAt = offer.endDate ? new Date(offer.endDate) : null;
+            if (startsAt && now < startsAt) return false;
+            if (endsAt && now > endsAt) return false;
+            return true;
+          };
+          const productOffer = isOfferActive(rp.individualOffer) ? rp.individualOffer : null;
+          const categoryOffer = isOfferActive(rp.category?.individualOffer) ? rp.category.individualOffer : null;
+          const activeOffer = productOffer || categoryOffer;
+          const offerBadgeText = activeOffer
+            ? (activeOffer.discountType === "FLAT"
+                ? `EXTRA FLAT ₹${Number(activeOffer.discountValue).toLocaleString("en-IN")}`
+                : `EXTRA ${Number(activeOffer.discountValue)}% OFF`)
+            : "";
+        %>
+        <div class="relative border p-4 shadow-xl hover:shadow-2xl rounded-lg max-w-[220px] md:max-w-[170px] mx-auto mb-5">
+          <% if (offerBadgeText) { %>
+            <div class="absolute top-2 left-2 z-10 bg-orange-500 text-white text-[10px] font-semibold px-2 py-1 rounded">
+              <%= offerBadgeText %>
+            </div>
+          <% } %>
           <a href="/product/<%= rp._id %>" class="block">
             <img src="<%= rp.images[0].url %>" 
                  alt="<%= rp.name %>" 

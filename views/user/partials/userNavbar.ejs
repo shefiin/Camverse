@@ -26,7 +26,6 @@
                     <% }) %>
                 </ul>
             </li>
-            <li><a href="" class="hover:underline hover:text-gray-300">About</a></li>
         </ul>
 
         <div class="relative ml-5 w-[150px] md:w-[200px] flex-shrink-0">
@@ -63,44 +62,44 @@
                                       
                 </a>
                 
+                  <ul id="login-dropdown" class="absolute right-0 top-full bg-white shadow-md w-44 hidden z-50">
+                    <% if (user) { %>
+                      <li class="block px-4 py-2 hover:bg-gray-100 text-xl text-gray-700">
+                        Hello, <%= user.name %>
+                      </li>
+                      <li><a href="/user/account" class="block px-4 py-2 hover:bg-gray-100 hover:text-gray-600 font-extralight">
+                        <i class="fa-solid fa-user mr-2"></i>My Account
+                      </a></li>
+                      <li><a href="/order/details" class="block px-4 py-2 hover:bg-gray-100 hover:text-gray-600 font-extralight">
+                        <i class="fa-solid fa-bag-shopping mr-2"></i>Orders
+                      </a></li>
+                      <li><a href="/wishlist" class="block px-4 py-2 hover:bg-gray-100 hover:text-gray-600 font-extralight">
+                        <i class="fa-solid fa-heart mr-2"></i>Wishlist
+                      </a></li>
+                      <li><a href="/logout" class="block px-4 py-2 hover:bg-gray-100 text-red-600 font-extralight">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                      </a></li>
+                    <% } else { %>
+                      <li class="block px-4 py-2 hover:bg-gray-100 font-extralight">
+                        Already a customer?
+                        <a href="/login" class="font-bold text-blue-600 hover:text-blue-800">Login</a>
+                      </li>
+                      <li class="block px-4 py-2 hover:bg-gray-100 font-extralight">
+                        New Customer?
+                        <a href="/register" class="font-bold text-blue-600 hover:text-blue-800">Register</a>
+                      </li>
+                      <li><a href="/user/account" class="block px-4 py-2 hover:bg-gray-100 font-extralight">
+                        <i class="fa-solid fa-user mr-2"></i>My Account
+                      </a></li>
+                      <li><a href="/order/details" class="block px-4 py-2 hover:bg-gray-100 font-extralight">
+                        <i class="fa-solid fa-bag-shopping mr-2"></i>Orders
+                      </a></li>
+                      <li><a href="/user/wishlist" class="block px-4 py-2 hover:bg-gray-100 font-extralight">
+                        <i class="fa-solid fa-heart mr-2"></i>Wishlist
+                      </a></li>
+                    <% } %>
+                  </ul>
 
-                    <ul id="login-dropdown" class="absolute right-0 top-full bg-white shadow-md w-60 hidden z-50">
-                        <% if (user) { %>
-                          <li class="block px-4 py-2 hover:bg-gray-100 text-xl text-gray-700">
-                            Hello, <%= user.name %>
-                          </li>
-                          <li><a href="/user/account" class="block px-4 py-2 hover:bg-gray-100 font-extralight">
-                            <i class="fa-solid fa-user mr-2"></i>My Account
-                          </a></li>
-                          <li><a href="/order/details" class="block px-4 py-2 hover:bg-gray-100 font-extralight">
-                            <i class="fa-solid fa-bag-shopping mr-2"></i>Orders
-                          </a></li>
-                          <li><a href="/wishlist" class="block px-4 py-2 hover:bg-gray-100 font-extralight">
-                            <i class="fa-solid fa-heart mr-2"></i>Wishlist
-                          </a></li>
-                          <li><a href="/logout" class="block px-4 py-2 hover:bg-gray-100 text-red-600 font-extralight">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                          </a></li>
-                        <% } else { %>
-                          <li class="block px-4 py-2 hover:bg-gray-100 font-extralight">
-                            Already a customer?
-                            <a href="/login" class="font-bold text-blue-600 hover:text-blue-800">Login</a>
-                          </li>
-                          <li class="block px-4 py-2 hover:bg-gray-100 font-extralight">
-                            New Customer? 
-                            <a href="/register" class="font-bold text-blue-600 hover:text-blue-800">Register</a>
-                          </li>
-                          <li><a href="/user/account" class="block px-4 py-2 hover:bg-gray-100 font-extralight">
-                            <i class="fa-solid fa-user mr-2"></i>My Account
-                          </a></li>
-                          <li><a href="/order/details" class="block px-4 py-2 hover:bg-gray-100 font-extralight">
-                            <i class="fa-solid fa-bag-shopping mr-2"></i>Orders
-                          </a></li>
-                          <li><a href="/user/wishlist" class="block px-4 py-2 hover:bg-gray-100 font-extralight">
-                            <i class="fa-solid fa-heart mr-2"></i>Wishlist
-                          </a></li>
-                        <% } %>
-                      </ul>
                       
                 </ul>
             </div>  
@@ -113,60 +112,34 @@
     </div>
 </nav>
 
-<ul id="menu" class="hidden mt-20 flex flex-col px-6 py-4 bg-white shadow-md tablet:hidden space-y-4 text-sm font-medium text-gray-700">
-    <li><a href="/">Home</a></li>
-    <li><a href="/shop">Shop</a></li>
-    <li>
+<ul id="menu" class="hidden mt-20 flex flex-col px-6 py-4 bg-black shadow-md tablet:hidden space-y-4 text-sm font-medium text-gray-700">
+    <li class="text-white"><a href="/">Home</a></li>
+    <li class="text-white"><a href="/shop">Shop</a></li>
+    <li class="text-white">
         <a href="#" id="brand-link" class="inline-flex items-center">
             Brands
             <i class="fas fa-chevron-down text-xs ml-2"></i>
         </a>
-        <ul id="brands-submenu" class="hidden flex-col space-y-2 pl-4 bg-gray-100 text-gray-600 text-sm mt-2">
+        <ul id="brands-submenu" class="hidden flex-col space-y-2 pl-4 bg-gray-800 text-gray-600 text-sm mt-2">
             <% brands.forEach(brand => { %>
-                <li><a href="/shop?brand=<%= brand.name %>"><%= brand.name %></a></li>
+                <li class="text-white"><a href="/shop?brand=<%= brand.name %>"><%= brand.name %></a></li>
             <% }) %>        
         </ul>
     </li>
 
-    <li>
+    <li class="text-white">
         <a href="#" id="category-link" class="inline-flex items-center">
             Categories
             <i class="fas fa-chevron-down text-xs ml-2"></i>
         </a>
-        <ul id="categories-submenu" class="hidden flex-col space-y-2 pl-4 bg-gray-100 text-gray-600 text-sm mt-2">
+        <ul id="categories-submenu" class="hidden flex-col space-y-2 pl-4 bg-gray-800 text-gray-600 text-sm mt-2">
             <% categories.forEach(cat => { %>
-                <li><a href="/shop?category=<%= cat.name %>"><%= cat.name %></a></li>
+                <li class="text-white"><a href="/shop?category=<%= cat.name %>"><%= cat.name %></a></li>
             <% }) %>
         </ul>
     </li>
-    <li><a href="#">About</a></li>
   </ul>
 
 
-  <script>
-    const navbar = document.getElementById("navbar");
-  
-    window.addEventListener("scroll", () => {
-      if (window.scrollY >= 920) {
-        navbar.classList.remove("bg-black");
-        navbar.classList.add("bg-white", "shadow-lg");
-        nav-links.classList.remove("text-gray-400");
-        nav-links.classList.add("text-gray-700");
-        search-form.classList.remove("bg-gray-900");
-        search-form.classList.add("bg-white");
-        search-input.classList.remove("bg-gray-900");
-        search-input.classList.add("bg-white")
-      } else {
-        navbar.classList.remove("bg-white", "shadow-lg");
-        navbar.classList.add("bg-black");
-        nav-links.classList.remove("text-gray-700");
-        nav-links.classList.add("text-gray-400");
-        search-form.classList.remove("bg-white");
-        search-form.classList.add("bg-gray-900");
-        search-input.classList.remove("bg-white");
-        search-input.classList.add("bg-gray-900")
-      }
-    });
-  </script>
 
   

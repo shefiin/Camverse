@@ -47,7 +47,32 @@
                           </span> 
                         </p>
 
+                        <%
+                          const now = new Date();
+                          const isOfferActive = (offer) => {
+                            if (!offer || !offer.isActive) return false;
+                            if (!offer.discountValue || Number(offer.discountValue) <= 0) return false;
+                            const startsAt = offer.startDate ? new Date(offer.startDate) : null;
+                            const endsAt = offer.endDate ? new Date(offer.endDate) : null;
+                            if (startsAt && now < startsAt) return false;
+                            if (endsAt && now > endsAt) return false;
+                            return true;
+                          };
+                          const productOffer = isOfferActive(item.product.individualOffer) ? item.product.individualOffer : null;
+                          const categoryOffer = isOfferActive(item.product.category?.individualOffer) ? item.product.category.individualOffer : null;
+                          const activeOffer = productOffer || categoryOffer;
+                          const offerBadgeText = activeOffer
+                            ? (activeOffer.discountType === "FLAT"
+                                ? `EXTRA FLAT ₹${Number(activeOffer.discountValue).toLocaleString("en-IN")}`
+                                : `EXTRA ${Number(activeOffer.discountValue)}% OFF`)
+                            : "";
+                        %>
                         <p class="mt-1 text-gray-700 font-semibold">₹<%= item.product.price.toLocaleString() %></p>
+                        <% if (offerBadgeText) { %>
+                          <p class="inline-block mt-1 px-2 py-1 rounded bg-orange-100 text-orange-700 text-xs font-semibold">
+                            <%= offerBadgeText %>
+                          </p>
+                        <% } %>
                         <p class="mt-1 text-gray-400 line-through text-sm">₹<%= item.product.mrp.toLocaleString() %></p>
                         <p class="text-sm text-green-600">
                           (Save ₹<%= (item.product.mrp - item.product.price).toLocaleString() %>, 
@@ -110,6 +135,16 @@
                   </div>
             
                   <div class="flex justify-between text-gray-600 mb-2">
+                    <span>Discount</span>
+                    <span class="text-green-600">- ₹<%= discount.toLocaleString() %></span>
+                  </div>
+
+                  <div class="flex justify-between text-gray-600 mb-2">
+                    <span>Extra Discount</span>
+                    <span class="text-green-600">- ₹<%= extraDiscount.toLocaleString() %></span>
+                  </div>
+
+                  <div class="flex justify-between text-gray-700 mb-2 font-medium">
                     <span>Total Discount</span>
                     <span class="text-green-600">- ₹<%= totalDiscount.toLocaleString() %></span>
                   </div>
@@ -125,7 +160,7 @@
                   </div>
                   
                     <a href="/checkout" 
-                    class="block text-center bg-teal-600 text-white font-semibold py-2 hover:bg-teal-700">
+                    class="block text-center bg-teal-700 text-white font-semibold py-2 hover:bg-teal-800">
                     Proceed to Checkout
                     </a>
                 <% } %>

@@ -26,7 +26,9 @@ const getProductDetails = async (req, res) => {
     const relatedProducts = await Product.find({
       category: product.category,
       _id: { $ne: product._id }
-    }).limit(4); // show only 4
+    })
+      .populate("category")
+      .limit(4); // show only 4
 
     res.render('user/product-details', { product, brands, categories, relatedProducts });
   } catch (err) {

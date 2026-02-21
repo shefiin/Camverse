@@ -34,7 +34,33 @@
             
                 <% products.forEach(product => { %>
                   <% const isInWishlist = wishlistProductIds && wishlistProductIds.includes(product._id.toString()); %>
+                  <%
+                    const now = new Date();
+                    const isOfferActive = (offer) => {
+                      if (!offer || !offer.isActive) return false;
+                      if (!offer.discountValue || Number(offer.discountValue) <= 0) return false;
+                      const startsAt = offer.startDate ? new Date(offer.startDate) : null;
+                      const endsAt = offer.endDate ? new Date(offer.endDate) : null;
+                      if (startsAt && now < startsAt) return false;
+                      if (endsAt && now > endsAt) return false;
+                      return true;
+                    };
+                    const productOffer = isOfferActive(product.individualOffer) ? product.individualOffer : null;
+                    const categoryOffer = isOfferActive(product.category?.individualOffer) ? product.category.individualOffer : null;
+                    const activeOffer = productOffer || categoryOffer;
+                    const offerBadgeText = activeOffer
+                      ? (activeOffer.discountType === "FLAT"
+                          ? `EXTRA FLAT ₹${Number(activeOffer.discountValue).toLocaleString("en-IN")}`
+                          : `EXTRA ${Number(activeOffer.discountValue)}% OFF`)
+                      : "";
+                  %>
                   <div class="relative p-5 shadow-lg px-6 space-y-4 transition group cursor-pointer">
+
+                    <% if (offerBadgeText) { %>
+                      <div class="absolute top-2 left-2 z-10 bg-orange-500 text-white text-[10px] md:text-xs font-semibold px-2 py-1 rounded">
+                        <%= offerBadgeText %>
+                      </div>
+                    <% } %>
 
                     <form action="/wishlist/add" method="POST" class="absolute top-2 right-2 z-10">
                       <input type="hidden" name="productId" value="<%= product._id %>">
@@ -96,7 +122,7 @@
                             ₹<%= product.mrp.toLocaleString() %>
                           </span>
                           <p class="text-xs py-1 px-2 font-normal bg-green-50 rounded-full text-green-600">
-                            <%= Math.round(((product.mrp - product.price) / product.mrp) * 100) %>% OFF
+                            SAVE <%= Math.round(((product.mrp - product.price) / product.mrp) * 100) %>% 
                           </p>
                         <% } %>
                       </div>
@@ -134,7 +160,7 @@
       <%- include('partials/userFooter') %>
 
     <script>
-      window.IS_LOGGED_IN = <%= user ? 'true' : 'false' %>;
+      window.IS_LOGGED_IN = <%= isLoggedIn ? 'true' : 'false' %>;
     </script>
 
     <script src="/js/user/shopPage.js"></script>

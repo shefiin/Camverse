@@ -27,7 +27,37 @@ const renderCart = async (req, res) => {
         let total = 0;
         let totalQuantity = 0;
         let totalMRP = 0;
+        let discount = 0;
+        let extraDiscount = 0;
         let totalDiscount = 0;
+        const now = new Date();
+
+        const isOfferActive = (offer) => {
+            if (!offer || !offer.isActive) return false;
+            if (!offer.discountValue || Number(offer.discountValue) <= 0) return false;
+            const startsAt = offer.startDate ? new Date(offer.startDate) : null;
+            const endsAt = offer.endDate ? new Date(offer.endDate) : null;
+            if (startsAt && now < startsAt) return false;
+            if (endsAt && now > endsAt) return false;
+            return true;
+        };
+
+        const getEffectiveUnitPrice = (product) => {
+            const productOffer = isOfferActive(product.individualOffer) ? product.individualOffer : null;
+            const categoryOffer = isOfferActive(product.category?.individualOffer) ? product.category.individualOffer : null;
+            const activeOffer = productOffer || categoryOffer;
+
+            if (!activeOffer) return product.price;
+
+            let offerDiscount = 0;
+            if (activeOffer.discountType === "FLAT") {
+                offerDiscount = Number(activeOffer.discountValue) || 0;
+            } else {
+                offerDiscount = (product.price * (Number(activeOffer.discountValue) || 0)) / 100;
+            }
+
+            return Math.max(0, Math.round(product.price - offerDiscount));
+        };
 
         if(cart) {
             cart.items = cart.items.filter(item => {
@@ -41,7 +71,8 @@ const renderCart = async (req, res) => {
             cart.items = cart.items.sort((a, b) => b.addedAt - a.addedAt);
 
             total = cart.items.reduce((sum, item) => {
-                return sum + (item.product.price * item.quantity);
+                const effectivePrice = getEffectiveUnitPrice(item.product);
+                return sum + (effectivePrice * item.quantity);
             }, 0);
 
             totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
@@ -51,7 +82,17 @@ const renderCart = async (req, res) => {
                 return sum + (mrp * item.quantity)
             },0);
 
-            totalDiscount = totalMRP - total;
+            discount = cart.items.reduce((sum, item) => {
+                const mrp = item.product.mrp || item.product.price;
+                return sum + Math.max(0, (mrp - item.product.price) * item.quantity);
+            }, 0);
+
+            extraDiscount = cart.items.reduce((sum, item) => {
+                const effectivePrice = getEffectiveUnitPrice(item.product);
+                return sum + Math.max(0, (item.product.price - effectivePrice) * item.quantity);
+            }, 0);
+
+            totalDiscount = discount + extraDiscount;
 
         }    
     
@@ -64,6 +105,8 @@ const renderCart = async (req, res) => {
             total,
             totalQuantity,
             totalMRP,
+            discount,
+            extraDiscount,
             totalDiscount
         })
     } catch(error){
@@ -99,8 +142,10 @@ const addToCart = async(req, res) => {
             const existInWishlistIndex = wishlist.items.findIndex(
                 item => item.product.toString() === productId
             );
-            wishlist.items.splice(existInWishlistIndex, 1)
-            await wishlist.save();
+            if (existInWishlistIndex > -1) {
+                wishlist.items.splice(existInWishlistIndex, 1);
+                await wishlist.save();
+            }
         }
 
 

@@ -4,6 +4,7 @@ const Category = require('../../models/category');
 const Cart = require('../../models/cart');
 const Product = require('../../models/product');
 const Order = require('../../models/order');
+const Coupon = require('../../models/coupon');
 const urlencodedser = require('../../models/user');
 const { createRazorpayOrder } = require('../user/paymentController');
 const PDFDocument = require("pdfkit");
@@ -143,10 +144,49 @@ const createCodOrder = async (req, res) => {
         const grossAmount = cart.items.reduce((sum, item) =>
             sum + item.product.mrp * item.quantity, 0);
 
-        const offerAmount = cart.items.reduce((sum, item) =>
+        const subtotal = cart.items.reduce((sum, item) =>
             sum + item.product.price * item.quantity, 0);
 
-        const discount = grossAmount - offerAmount;
+        const productDiscount = grossAmount - subtotal;
+        let couponDiscount = 0;
+        let couponCode = null;
+
+        if (req.body.couponId) {
+            const now = new Date();
+            const coupon = await Coupon.findOne({
+                _id: req.body.couponId,
+                isDeleted: false,
+                status: 'ACTIVE',
+                startDate: { $lte: now },
+                endDate: { $gte: now }
+            });
+
+            if (!coupon) {
+                return res.status(400).json({ success: false, message: "Selected coupon is invalid or expired" });
+            }
+
+            if (subtotal < coupon.minPurchase) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Minimum purchase ₹${coupon.minPurchase} required for this coupon`
+                });
+            }
+
+            if (coupon.discountType === "FLAT") {
+                couponDiscount = Number(coupon.discountValue) || 0;
+            } else {
+                couponDiscount = (subtotal * (Number(coupon.discountValue) || 0)) / 100;
+                if (coupon.maxDiscount && coupon.maxDiscount > 0) {
+                    couponDiscount = Math.min(couponDiscount, coupon.maxDiscount);
+                }
+            }
+
+            couponDiscount = Math.min(subtotal, Math.round(couponDiscount));
+            couponCode = coupon.name;
+        }
+
+        const offerAmount = Math.max(0, subtotal - couponDiscount);
+        const discount = productDiscount + couponDiscount;
 
         const timestamp = Date.now();
 
@@ -205,6 +245,8 @@ const createCodOrder = async (req, res) => {
             grossAmount,
             totalDiscount: discount,
             totalAmount: offerAmount,
+            couponCode,
+            couponDiscount,
             paymentMethod: payment,
             paymentStatus: "Pending",
             createdAt: new Date()
