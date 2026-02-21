@@ -3,6 +3,7 @@ const emailInput = document.getElementById('email');
 const emailError = document.getElementById('emailError');
 const requiredInputs = document.querySelectorAll('.requiredFields');
 const submitBtn = document.getElementById('submitBtn');
+const form = document.querySelector('form[action="/reset"]');
 
 
 emailInput.addEventListener('blur', () => {
@@ -49,5 +50,16 @@ requiredInputs.forEach(input => {
     input.addEventListener('input', checkAllFieldsFilled);
 });
 
-passwordInput.addEventListener('input', checkAllFieldsFilled);
+if (form) {
+    form.addEventListener('submit', (e) => {
+        if (submitBtn.disabled) {
+            e.preventDefault();
+            return;
+        }
 
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('bg-gray-800', 'text-white', 'cursor-pointer');
+        submitBtn.classList.add('bg-gray-100', 'text-gray-300', 'cursor-not-allowed');
+        submitBtn.textContent = 'SENDING...';
+    });
+}

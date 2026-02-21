@@ -10,11 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body class="min-h-screen flex flex-col" style="font-family:'Open Sans', sans-serif";>
+<body class="wallet-page min-h-screen flex flex-col" style="font-family:'Open Sans', sans-serif";>
 
     <%- include('../partials/userNavbar') %>
 
-    <section class="flex-1 px-4 py-20 md:px-8 lg:px-16 mt-12 md:mt-14">
+    <section class="flex-1 px-4 pt-12 pb-8 md:px-8 md:pt-[150px] md:pb-10 lg:px-16 mt-6 md:mt-8 mb-[280px]">
       <div class="max-w-6xl mx-auto">
         <h1 class="text-2xl md:text-3xl text-gray-800 text-center mb-10">My Wallet</h1>
 
@@ -110,7 +110,6 @@
       </div>
     </section>
 
-    <%- include('../partials/mobileFilter') %>
 
     <%- include('../partials/userFooter') %>
 
@@ -167,6 +166,17 @@
           items.forEach(i => container.appendChild(i));
         }
         </script>
+
+    <style>
+      .wallet-page footer {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+      }
+      .wallet-page footer > div:last-child {
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+      }
+    </style>
         
 
 </body>

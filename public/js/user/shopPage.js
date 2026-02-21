@@ -220,19 +220,42 @@ document.querySelectorAll('.wishlist-btn').forEach((button) => {
 const filterDrawer = document.getElementById('filterDrawer');
 const filterBtn = document.getElementById('filterBtn');
 const closeFilterBtn = document.getElementById('closeFilterBtn');
+const sortDrawer = document.getElementById('sortDrawer');
+const sortBtn = document.getElementById('sortBtn');
+const closeSortBtn = document.getElementById('closeSortBtn');
+const applySortBtn = document.getElementById('applySortBtn');
+const clearSortBtn = document.getElementById('clearSortBtn');
+const clearFilterBtn = document.getElementById('clearFilterBtn');
+const mobileFilterForm = document.getElementById('mobileFilterForm');
 
 let isDrawerOpen = false;
+let isSortDrawerOpen = false;
 
 
 if (filterBtn && filterDrawer) {
   filterBtn.addEventListener('click', () => {
     isDrawerOpen = true;
+    isSortDrawerOpen = false;
+    sortDrawer?.classList.add('hidden');
     if (window.innerWidth < 768) {
       filterDrawer.classList.remove('hidden');
+      document.getElementById('brandContent')?.classList.remove('hidden');
+      document.getElementById('categoryContent')?.classList.add('hidden');
+      document.getElementById('priceContent')?.classList.add('hidden');
     }
   });
 }
 
+if (sortBtn && sortDrawer) {
+  sortBtn.addEventListener('click', () => {
+    isSortDrawerOpen = true;
+    isDrawerOpen = false;
+    filterDrawer?.classList.add('hidden');
+    if (window.innerWidth < 768) {
+      sortDrawer.classList.remove('hidden');
+    }
+  });
+}
 
 if (closeFilterBtn && filterDrawer) {
   closeFilterBtn.addEventListener('click', () => {
@@ -241,21 +264,64 @@ if (closeFilterBtn && filterDrawer) {
   });
 }
 
+if (closeSortBtn && sortDrawer) {
+  closeSortBtn.addEventListener('click', () => {
+    isSortDrawerOpen = false;
+    sortDrawer.classList.add('hidden');
+  });
+}
+
+if (applySortBtn) {
+  applySortBtn.addEventListener('click', () => {
+    const selected = document.querySelector('input[name="mobileSort"]:checked');
+    const params = new URLSearchParams(window.location.search);
+    params.delete('page');
+    if (selected && selected.value) {
+      params.set('sort', selected.value);
+    } else {
+      params.delete('sort');
+    }
+    const query = params.toString();
+    window.location.href = query ? `${window.location.pathname}?${query}` : window.location.pathname;
+  });
+}
+
+if (clearSortBtn) {
+  clearSortBtn.addEventListener('click', () => {
+    const relevance = document.querySelector('input[name="mobileSort"][value=""]');
+    if (relevance) relevance.checked = true;
+  });
+}
+
+if (clearFilterBtn && mobileFilterForm) {
+  clearFilterBtn.addEventListener('click', () => {
+    mobileFilterForm.querySelectorAll('input[type="checkbox"]').forEach((el) => {
+      el.checked = false;
+    });
+  });
+}
+
 
 function handleResize() {
   const isDesktop = window.innerWidth >= 768;
-  if (!filterDrawer) return;
+  if (!filterDrawer && !sortDrawer) return;
 
   if (isDesktop) {
-    
-    filterDrawer.classList.add('hidden');
+    filterDrawer?.classList.add('hidden');
+    sortDrawer?.classList.add('hidden');
     isDrawerOpen = false;
+    isSortDrawerOpen = false;
   } else {
-    
     if (isDrawerOpen) {
-      filterDrawer.classList.remove('hidden');
+      filterDrawer?.classList.remove('hidden');
     } else {
-      filterDrawer.classList.add('hidden');
+      filterDrawer?.classList.add('hidden');
+    }
+
+    if (isSortDrawerOpen) {
+      sortDrawer?.classList.remove('hidden');
+    } else {
+      sortDrawer?.classList.add('hidden');
     }
   }
 }
@@ -273,7 +339,7 @@ const priceBtn = document.getElementById('priceBtn');
 
 if (brandBtn) {
   brandBtn.addEventListener('click', () => {
-    document.getElementById('brandContent').classList.toggle('hidden');
+    document.getElementById('brandContent').classList.remove('hidden');
     document.getElementById('categoryContent').classList.add('hidden');
     document.getElementById('priceContent').classList.add('hidden');
   });
@@ -281,18 +347,16 @@ if (brandBtn) {
 
 if (categoryBtn) {
   categoryBtn.addEventListener('click', () => {
-    document.getElementById('categoryContent').classList.toggle('hidden');
     document.getElementById('brandContent').classList.add('hidden');
+    document.getElementById('categoryContent').classList.remove('hidden');
     document.getElementById('priceContent').classList.add('hidden');
-    
   });
 }
 
 if (priceBtn) {
   priceBtn.addEventListener('click', () => {
-    document.getElementById('priceContent').classList.toggle('hidden');
     document.getElementById('brandContent').classList.add('hidden');
     document.getElementById('categoryContent').classList.add('hidden');
+    document.getElementById('priceContent').classList.remove('hidden');
   });
 }
-  

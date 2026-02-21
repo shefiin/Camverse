@@ -12,16 +12,17 @@
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body class="min-h-screen bg-cover bg-center flex items-center justify-center" style="background-image: url('/images/supermassive-black-hole.webp');">
-    <div class="bg-white p-10 shodow-lg w-full max-w-md">
+    <div class="bg-white p-10 shodow-lg w-full max-w-[380px]">
        <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: 'Michroma',sans-serif;">Camverse</h2>
         <h1 class="text-xl font-semibold mb-6" style="font-family: Inter, sans-serif;">Reset password OTP</h1>
         <p class="text-gray-600 font-extralight mb-6">Enter the OTP sent to your email <span class="text-blue-600"><%= email %></span></p>
         
-        <form action="/reset/otp" method="POST">
+        <form action="/reset/otp" method="POST" id="resetOtpForm">
             <label class="block text-sm font-medium text-gray-700 mb-1" for=""></label>
             <input 
                 type="text" 
                 name="otp" 
+                id="otpInput"
                 maxlength="6"
                 placeholder="Enter 6-digit OTP"
                 class="w-full px-4 py-2 font-extralight border mb-2
@@ -35,7 +36,8 @@
                 
                 <div 
                     id="timer-container" 
-                    data-remaining-resend="<%= remainingResend %>">
+                    data-remaining-resend="<%= remainingResend %>"
+                    data-resend-allowed-at="<%= resendAllowedAt || '' %>">
                     
                     <span id="timer" class="text-gray-400 font-medium"></span>
                     
@@ -48,7 +50,7 @@
                 </div>
           
     
-                <button type="submit" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold px-4 py-2 transition-duration-200 mt-6">
+                <button id="otpSubmitBtn" type="submit" disabled class="w-full bg-gray-300 text-white font-semibold px-4 py-2 transition-duration-200 mt-6 cursor-not-allowed">
                     SUBMIT
                 </button>
         </form>
@@ -56,7 +58,11 @@
 
     <script>
         const container = document.getElementById('timer-container');
-        let timer = parseInt(container.dataset.remainingResend, 10) || 0;
+        const resendAllowedAtRaw = container.dataset.resendAllowedAt;
+        const resendAllowedAt = resendAllowedAtRaw ? parseInt(resendAllowedAtRaw, 10) : null;
+        let timer = resendAllowedAt
+          ? Math.max(0, Math.ceil((resendAllowedAt - Date.now()) / 1000))
+          : (parseInt(container.dataset.remainingResend, 10) || 0);
 
         const resendLink = document.getElementById('resend-link');
         const timerDisplay = document.getElementById('timer');
@@ -74,6 +80,26 @@
             }
         }, 1000);
 
+        const otpInput = document.getElementById('otpInput');
+        const otpSubmitBtn = document.getElementById('otpSubmitBtn');
+
+        function toggleOtpSubmit() {
+          const value = (otpInput.value || '').replace(/\D/g, '').slice(0, 6);
+          otpInput.value = value;
+          const isValid = value.length === 6;
+          otpSubmitBtn.disabled = !isValid;
+          if (isValid) {
+            otpSubmitBtn.classList.remove('bg-gray-300', 'cursor-not-allowed');
+            otpSubmitBtn.classList.add('bg-gray-800', 'hover:bg-gray-900', 'cursor-pointer');
+          } else {
+            otpSubmitBtn.classList.remove('bg-gray-800', 'hover:bg-gray-900', 'cursor-pointer');
+            otpSubmitBtn.classList.add('bg-gray-300', 'cursor-not-allowed');
+          }
+        }
+
+        otpInput.addEventListener('input', toggleOtpSubmit);
+        otpInput.addEventListener('paste', () => setTimeout(toggleOtpSubmit, 0));
+        toggleOtpSubmit();
 
     </script>
     

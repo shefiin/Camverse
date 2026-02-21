@@ -204,6 +204,14 @@ const renderReset1 = (req, res) => {
 const checkUserExist = async (req, res) => {
     try{
         const { email } = req.body;
+        const now = Date.now();
+
+        if (req.session.resendAllowedAt && now < req.session.resendAllowedAt) {
+            const waitSec = Math.ceil((req.session.resendAllowedAt - now) / 1000);
+            req.flash('error', `Please wait ${waitSec}s before requesting another OTP`);
+            return res.redirect('/reset');
+        }
+
         const user = await User.findOne({email});
     
         if(!user || user.isBlocked === true) {
@@ -215,7 +223,7 @@ const checkUserExist = async (req, res) => {
 
         req.session.emailOtp = otp;
         req.session.otpExpiry = Date.now() + 5 * 60 * 1000;
-        req.session.resendAllowedAt = Date.now() + 30 * 1000;
+        req.session.resendAllowedAt = now + 30 * 1000;
         req.session.resetEmail = user.email; 
 
         await new Promise(resolve => req.session.save(resolve));
@@ -225,6 +233,7 @@ const checkUserExist = async (req, res) => {
         res.render('user/reset-otp', {
             email: user.email,
             remainingResend: Math.ceil((req.session.resendAllowedAt - Date.now()) / 1000),
+            resendAllowedAt: req.session.resendAllowedAt,
             error: null,
             userId: user._id
         });
@@ -299,6 +308,7 @@ const verifyResetOtp = async (req, res) => {
             return res.render('user/reset-otp', {
                 email: resetEmail,
                 remainingResend: Math.ceil((resendAllowedAt - Date.now()) / 1000),
+                resendAllowedAt,
                 error: 'OTP expired. Please request a new one.'
             });
         }
@@ -307,6 +317,7 @@ const verifyResetOtp = async (req, res) => {
             return res.render('user/reset-otp', {
                 email: resetEmail,
                 remainingResend: Math.ceil((resendAllowedAt - Date.now()) / 1000),
+                resendAllowedAt,
                 error: 'Invalid OTP. Please try again.'
             });
         }
@@ -331,7 +342,7 @@ const verifyResetOtp = async (req, res) => {
 
 const resetOtpResend = async (req, res) => {
     try {
-        const email = req.session.email
+        const email = req.session.resetEmail;
         const user = await User.findOne({email});
     
         if(!user || user.isBlocked === true) {
@@ -353,6 +364,7 @@ const resetOtpResend = async (req, res) => {
         res.render('user/reset-otp', {
             email: user.email,
             remainingResend: Math.ceil((req.session.resendAllowedAt - Date.now()) / 1000),
+            resendAllowedAt: req.session.resendAllowedAt,
             error: null,
             userId: user._id
 
@@ -417,4 +429,3 @@ module.exports = {
     updatePassword,
     resendOtp
 };
-

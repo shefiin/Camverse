@@ -8,7 +8,6 @@
             style="border-color: #d1d5db;" 
             onfocus="this.style.borderColor='#00A69D'"
             onblur="this.style.borderColor='#d1d5db'"
-            onclick="document.getElementById('sortMenu').classList.toggle('hidden')"
         >
             SORT
             <i class="fas fa-chevron-down text-xs ml-2"></i>
@@ -17,6 +16,10 @@
       
         <% const currentParams = new URLSearchParams(queryParams); %>
         <ul id="sortMenu" class="absolute right-0 mt-1 w-44 bg-white font-extralight shadow-md hidden z-50">
+          <li>
+            <a href="?<%= (() => { const params = new URLSearchParams(Object.fromEntries(currentParams)); params.delete('sort'); return params.toString(); })() %>"
+               class="block px-4 py-2 hover:bg-teal-50 text-sm">Relevance</a>
+          </li>
           <li>
             <a href="?<%= new URLSearchParams({...Object.fromEntries(currentParams), sort: 'price_asc'}) %>"
                class="block px-4 py-2 hover:bg-teal-50 text-sm">Price: Low to High</a>
