@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -83,15 +84,38 @@
                                     <% } %>
                                   </td>
                                   <td class="px-4 py-2 max-w-[150px] truncate"><%= product.name %></td>
-                                  <td class="px-4 py-2"><%= product.category.name %></td>
+                                  <td class="px-4 py-2"><%= product.category ? product.category.name : 'N/A' %></td>
                                   <td class="px-4 py-2">₹<%= product.price.toLocaleString() %></td>
                                   <td class="px-4 py-2"><%= product.sold %></td>
-                                  <td class="px-4 py-2"><%= product.revenue %></td>                                 
+                                  <td class="px-4 py-2">₹<%= product.revenue.toLocaleString() %></td>                                 
                               </tr>
                               <% }); %> 
                             </tbody>
                         </table>
                     </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                <div class="bg-black rounded-xl p-4">
+                    <h3 class="text-white text-base font-semibold mb-3">Most Selling Categories</h3>
+                    <canvas id="categoryPieChart" height="220"></canvas>
+                </div>
+                <div class="bg-black rounded-xl p-4">
+                    <h3 class="text-white text-base font-semibold mb-3">Most Selling Brands</h3>
+                    <canvas id="brandPieChart" height="220"></canvas>
+                </div>
+                <div class="bg-black rounded-xl p-4 lg:col-span-2">
+                    <h3 class="text-white text-base font-semibold mb-3">Sales by Month</h3>
+                    <canvas id="monthLineChart" height="120"></canvas>
+                </div>
+                <div class="bg-black rounded-xl p-4">
+                    <h3 class="text-white text-base font-semibold mb-3">Sales by Week</h3>
+                    <canvas id="weekBarChart" height="180"></canvas>
+                </div>
+                <div class="bg-black rounded-xl p-4">
+                    <h3 class="text-white text-base font-semibold mb-3">Sales by Year</h3>
+                    <canvas id="yearBarChart" height="180"></canvas>
+                </div>
             </div>
             <%-include('partials/pagination') %>
             
@@ -105,7 +129,121 @@
 
         menuBtn.addEventListener('click', () => {
             menu.classList.toggle('hidden');
-        })
+        });
+
+        const analytics = <%- JSON.stringify(analytics || {}) %>;
+        const chartTextColor = "#d1d5db";
+
+        const baseOptions = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: chartTextColor }
+                }
+            },
+            scales: {
+                x: { ticks: { color: chartTextColor }, grid: { color: "rgba(255,255,255,0.08)" } },
+                y: { ticks: { color: chartTextColor }, grid: { color: "rgba(255,255,255,0.08)" } }
+            }
+        };
+
+        new Chart(document.getElementById("categoryPieChart"), {
+            type: "pie",
+            data: {
+                labels: analytics.categories?.labels || [],
+                datasets: [{
+                    data: analytics.categories?.data || [],
+                    backgroundColor: ["#14b8a6", "#3b82f6", "#f59e0b", "#f43f5e", "#22c55e", "#8b5cf6"],
+                    borderColor: "transparent",
+                    borderWidth: 0,
+                    radius: "78%"
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: chartTextColor,
+                            usePointStyle: true,
+                            pointStyle: "rect",
+                            boxWidth: 10,
+                            boxHeight: 10
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById("brandPieChart"), {
+            type: "pie",
+            data: {
+                labels: analytics.brands?.labels || [],
+                datasets: [{
+                    data: analytics.brands?.data || [],
+                    backgroundColor: ["#06b6d4", "#f97316", "#84cc16", "#eab308", "#ec4899", "#6366f1"],
+                    borderColor: "transparent",
+                    borderWidth: 0,
+                    radius: "78%"
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: chartTextColor,
+                            usePointStyle: true,
+                            pointStyle: "rect",
+                            boxWidth: 10,
+                            boxHeight: 10
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById("monthLineChart"), {
+            type: "line",
+            data: {
+                labels: analytics.monthlySales?.labels || [],
+                datasets: [{
+                    label: "Revenue (₹)",
+                    data: analytics.monthlySales?.data || [],
+                    borderColor: "#14b8a6",
+                    backgroundColor: "rgba(20,184,166,0.22)",
+                    fill: true,
+                    tension: 0.32
+                }]
+            },
+            options: baseOptions
+        });
+
+        new Chart(document.getElementById("weekBarChart"), {
+            type: "bar",
+            data: {
+                labels: analytics.weeklySales?.labels || [],
+                datasets: [{
+                    label: "Revenue (₹)",
+                    data: analytics.weeklySales?.data || [],
+                    backgroundColor: "#3b82f6"
+                }]
+            },
+            options: baseOptions
+        });
+
+        new Chart(document.getElementById("yearBarChart"), {
+            type: "bar",
+            data: {
+                labels: analytics.yearlySales?.labels || [],
+                datasets: [{
+                    label: "Revenue (₹)",
+                    data: analytics.yearlySales?.data || [],
+                    backgroundColor: "#f59e0b"
+                }]
+            },
+            options: baseOptions
+        });
     </script>
     
     
