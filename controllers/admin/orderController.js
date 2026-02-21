@@ -27,7 +27,11 @@ const renderOrders = async (req, res) => {
         }
 
         if (statusFilter) {
-            filter.status = statusFilter;
+            if (statusFilter === "ReturnRequested") {
+                filter["products.status"] = "Return in process";
+            } else {
+                filter.status = statusFilter;
+            }
         }
 
         const totalOrders = await Order.countDocuments(filter);
