@@ -5,6 +5,7 @@ const User = require('../../models/user');
 const Cart = require('../../models/cart');
 const Product = require('../../models/product');
 const Coupon = require('../../models/coupon');
+const Wallet = require('../../models/wallet');
 
 
 const razorpay = new Razorpay({
@@ -16,6 +17,7 @@ const razorpay = new Razorpay({
 const createRazorpayOrder = async (req, res) => {
     try {
         const userId = req.session.userId;
+        const useWallet = req.body.useWallet === true || req.body.useWallet === "true" || req.body.useWallet === "on";
         const user = await User.findById(userId);
         if (!user) {
             return res.status(401).json({ success: false, message: "Please login first" });
@@ -92,16 +94,96 @@ const createRazorpayOrder = async (req, res) => {
 
         const totalAmount = Math.max(0, subtotal - couponDiscount);
         const totalDiscount = productDiscount + couponDiscount;
+        const walletDoc = await Wallet.findOne({ user: userId });
+        const walletBalance = Number(walletDoc?.balance || 0);
+        const walletUsed = useWallet ? Math.min(walletBalance, totalAmount) : 0;
+        const remainingAmount = Math.max(0, totalAmount - walletUsed);
+
+        if (useWallet && walletBalance < walletUsed) {
+            return res.status(400).json({ success: false, message: "Insufficient wallet balance." });
+        }
+
+        const orderId = 'CAMV-' + Date.now().toString().slice(-6);
+
+        if (remainingAmount === 0) {
+            const walletOnlyOrder = new Order({
+                user: userId,
+                orderId,
+                products: cart.items.map(i => ({
+                    productId: i.product._id,
+                    quantity: i.quantity,
+                    price: i.product.price,
+                    status: "Placed"
+                })),
+                shippingAddress: {
+                    fullName: address.fullName,
+                    mobile: address.mobile,
+                    pincode: address.pincode,
+                    house: address.house,
+                    area: address.area,
+                    landmark: address.landmark,
+                    city: address.city,
+                    state: address.state
+                },
+                totalQuantity,
+                grossAmount,
+                totalDiscount,
+                totalAmount,
+                walletUsed,
+                remainingAmount: 0,
+                couponCode,
+                couponDiscount,
+                paymentMethod: "Wallet",
+                paymentStatus: "Paid",
+                createdAt: new Date()
+            });
+
+            for (const item of cart.items) {
+                const product = item.product;
+                if (product.stock < item.quantity) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `Not enough stock for ${product.name}`
+                    });
+                }
+                product.stock -= item.quantity;
+                await product.save();
+            }
+
+            await walletOnlyOrder.save();
+
+            let wallet = walletDoc;
+            if (!wallet) {
+                wallet = new Wallet({ user: userId, balance: 0, transactions: [] });
+            }
+            wallet.balance -= walletUsed;
+            wallet.transactions.push({
+                type: "DEBIT",
+                amount: walletUsed,
+                orderId: walletOnlyOrder._id,
+                description: "Wallet used for order payment"
+            });
+            await wallet.save();
+
+            await Cart.findOneAndUpdate(
+                { user: userId },
+                { $set: { items: [] } }
+            );
+
+            return res.json({
+                success: true,
+                walletOnly: true,
+                orderId: walletOnlyOrder._id
+            });
+        }
 
         const options = {
-            amount: totalAmount * 100,
+            amount: remainingAmount * 100,
             currency: "INR",
             receipt: `rcpt_${Date.now()}`
         };
 
         const razorpayOrder = await razorpay.orders.create(options);
-
-        const orderId = 'CAMV-' + Date.now().toString().slice(-6);
 
         const order = new Order({
             user: userId,
@@ -127,6 +209,8 @@ const createRazorpayOrder = async (req, res) => {
             grossAmount,
             totalDiscount,
             totalAmount,
+            walletUsed,
+            remainingAmount,
             couponCode,
             couponDiscount,
             paymentMethod: "Online",
@@ -135,6 +219,21 @@ const createRazorpayOrder = async (req, res) => {
         });
 
         await order.save();
+
+        if (walletUsed > 0) {
+            let wallet = walletDoc;
+            if (!wallet) {
+                wallet = new Wallet({ user: userId, balance: 0, transactions: [] });
+            }
+            wallet.balance -= walletUsed;
+            wallet.transactions.push({
+                type: "DEBIT",
+                amount: walletUsed,
+                orderId: order._id,
+                description: "Wallet used for order payment"
+            });
+            await wallet.save();
+        }
 
         res.json({
             success: true,

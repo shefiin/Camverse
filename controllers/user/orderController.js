@@ -5,6 +5,7 @@ const Cart = require('../../models/cart');
 const Product = require('../../models/product');
 const Order = require('../../models/order');
 const Coupon = require('../../models/coupon');
+const Wallet = require('../../models/wallet');
 const urlencodedser = require('../../models/user');
 const { createRazorpayOrder } = require('../user/paymentController');
 const PDFDocument = require("pdfkit");
@@ -125,12 +126,16 @@ const createCodOrder = async (req, res) => {
         const userId = req.session.userId;
         const user = await User.findById(userId);
         const { payment } = req.body;
+        const useWallet = req.body.useWallet === true || req.body.useWallet === "true" || req.body.useWallet === "on";
 
         if (!user) {
             return res.status(401).json({ success: false, message: "User not found" });
         }
 
         const address = user.addresses.id(req.body.addressId);
+        if (!address) {
+            return res.status(400).json({ success: false, message: "Please select a delivery address" });
+        }
 
         const cart = await Cart.findOne({ user: userId })
             .populate("items.product");
@@ -187,33 +192,12 @@ const createCodOrder = async (req, res) => {
 
         const offerAmount = Math.max(0, subtotal - couponDiscount);
         const discount = productDiscount + couponDiscount;
+        const walletDoc = await Wallet.findOne({ user: userId });
+        const walletBalance = Number(walletDoc?.balance || 0);
+        const walletUsed = useWallet ? Math.min(walletBalance, offerAmount) : 0;
+        const remainingAmount = Math.max(0, offerAmount - walletUsed);
 
         const timestamp = Date.now();
-
-        // ==========================
-        // 🔹 ONLINE PAYMENT FLOW
-        // ==========================
-        if (payment === "online") {
-
-            const razorpayOrder = await razorpay.orders.create({
-                amount: offerAmount * 100,
-                currency: "INR",
-                receipt: "rcpt_" + timestamp,
-            });
-
-            return res.json({
-                success: true,
-                key: process.env.RAZORPAY_KEY_ID,
-                amount: razorpayOrder.amount,
-                currency: razorpayOrder.currency,
-                razorpayOrderId: razorpayOrder.id,
-                customer: {
-                    name: user.name,
-                    email: user.email,
-                    contact: user.mobile
-                }
-            });
-        }
 
         // ==========================
         // 🔹 COD FLOW
@@ -245,10 +229,12 @@ const createCodOrder = async (req, res) => {
             grossAmount,
             totalDiscount: discount,
             totalAmount: offerAmount,
+            walletUsed,
+            remainingAmount,
             couponCode,
             couponDiscount,
-            paymentMethod: payment,
-            paymentStatus: "Pending",
+            paymentMethod: remainingAmount === 0 ? "Wallet" : "Cash on delivery",
+            paymentStatus: remainingAmount === 0 ? "Paid" : "Pending",
             createdAt: new Date()
         });
 
@@ -267,6 +253,24 @@ const createCodOrder = async (req, res) => {
         }
 
         await order.save();
+
+        if (walletUsed > 0) {
+            let wallet = walletDoc;
+            if (!wallet) {
+                wallet = new Wallet({ user: userId, balance: 0, transactions: [] });
+            }
+            if (wallet.balance < walletUsed) {
+                return res.status(400).json({ success: false, message: "Insufficient wallet balance." });
+            }
+            wallet.balance -= walletUsed;
+            wallet.transactions.push({
+                type: "DEBIT",
+                amount: walletUsed,
+                orderId: order._id,
+                description: "Wallet used for order payment"
+            });
+            await wallet.save();
+        }
 
         cart.items = [];
         await cart.save();
@@ -339,10 +343,40 @@ const verifyPayment = async (req, res) => {
             return res.json({ success: true, orderId: order._id });
         }
 
-        await Order.findOneAndUpdate(
+        const failedOrder = await Order.findOneAndUpdate(
             { razorpayOrderId: razorpay_order_id },
             { paymentStatus: "Failed" }
-        );
+        ).populate("user");
+
+        if (failedOrder && failedOrder.walletUsed > 0) {
+            let wallet = await Wallet.findOne({ user: failedOrder.user._id || failedOrder.user });
+            if (!wallet) {
+                wallet = new Wallet({
+                    user: failedOrder.user._id || failedOrder.user,
+                    balance: 0,
+                    transactions: []
+                });
+            }
+
+            const existingRollback = wallet.transactions.find(
+                txn =>
+                    txn.type === "CREDIT" &&
+                    txn.orderId?.toString() === failedOrder._id.toString() &&
+                    txn.description === "Wallet refund for failed online payment"
+            );
+
+            if (!existingRollback) {
+                wallet.balance += Number(failedOrder.walletUsed);
+                wallet.transactions.push({
+                    type: "CREDIT",
+                    amount: Number(failedOrder.walletUsed),
+                    orderId: failedOrder._id,
+                    description: "Wallet refund for failed online payment"
+                });
+                await wallet.save();
+            }
+        }
+
         return res.status(400).json({ success: false, message: "Signature mismatch" });
     } catch (error) {
         console.error(error);

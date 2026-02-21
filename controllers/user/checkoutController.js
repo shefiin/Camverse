@@ -4,6 +4,7 @@ const Category = require('../../models/category');
 const Cart = require('../../models/cart');
 const Product = require('../../models/product');
 const Coupon = require('../../models/coupon');
+const Wallet = require('../../models/wallet');
 
 
 
@@ -30,6 +31,7 @@ const RenderCheckout = async (req, res) => {
         let totalMRP = 0;
         let totalDiscount = 0;
         let eligibleCoupons = [];
+        let walletBalance = 0;
 
         if(cart) {
             cart.items = cart.items.filter(item => {
@@ -64,6 +66,9 @@ const RenderCheckout = async (req, res) => {
                 minPurchase: { $lte: total }
             }).sort({ createdAt: -1 });
         }  
+
+        const wallet = await Wallet.findOne({ user: userId });
+        walletBalance = Number(wallet?.balance || 0);
         
         res.render('user/account/checkout', {
             user,
@@ -75,7 +80,8 @@ const RenderCheckout = async (req, res) => {
             totalQuantity,
             totalMRP,
             totalDiscount,
-            eligibleCoupons
+            eligibleCoupons,
+            walletBalance
         });
 
     } catch(error){

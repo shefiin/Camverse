@@ -246,6 +246,82 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const checkoutForm = document.getElementById("checkoutForm");
     if (!checkoutForm) return;
+    const couponSelect = document.getElementById("couponSelect");
+    const payableTotal = document.getElementById("payableTotal");
+    const couponDiscountRow = document.getElementById("couponDiscountRow");
+    const couponDiscountValue = document.getElementById("couponDiscountValue");
+    const useWalletCheckbox = document.getElementById("useWallet");
+    const walletUsedRow = document.getElementById("walletUsedRow");
+    const walletUsedValue = document.getElementById("walletUsedValue");
+    const remainingPayableRow = document.getElementById("remainingPayableRow");
+    const remainingPayableValue = document.getElementById("remainingPayableValue");
+
+    const baseTotal = Number(payableTotal?.dataset.baseTotal || 0);
+    const walletBalance = Number(payableTotal?.dataset.walletBalance || 0);
+    const formatINR = (value) => `₹${Math.round(value).toLocaleString("en-IN")}.00`;
+
+    const computeSummary = () => {
+      let couponDiscount = 0;
+      if (couponSelect && couponSelect.value) {
+        const selected = couponSelect.options[couponSelect.selectedIndex];
+        const discountType = selected.dataset.discountType;
+        const discountValue = Number(selected.dataset.discountValue || 0);
+        const maxDiscount = selected.dataset.maxDiscount ? Number(selected.dataset.maxDiscount) : null;
+
+        if (discountType === "FLAT") {
+          couponDiscount = discountValue;
+        } else {
+          couponDiscount = (baseTotal * discountValue) / 100;
+          if (maxDiscount && maxDiscount > 0) {
+            couponDiscount = Math.min(couponDiscount, maxDiscount);
+          }
+        }
+      }
+      couponDiscount = Math.min(baseTotal, Math.round(couponDiscount));
+      const payableAfterCoupon = Math.max(0, baseTotal - couponDiscount);
+      const walletUsed = useWalletCheckbox?.checked ? Math.min(walletBalance, payableAfterCoupon) : 0;
+      const remaining = Math.max(0, payableAfterCoupon - walletUsed);
+
+      if (couponDiscountRow && couponDiscountValue) {
+        if (couponDiscount > 0) {
+          couponDiscountRow.classList.remove("hidden");
+          couponDiscountValue.textContent = `- ₹${couponDiscount.toLocaleString("en-IN")}`;
+        } else {
+          couponDiscountRow.classList.add("hidden");
+          couponDiscountValue.textContent = "- ₹0";
+        }
+      }
+
+      if (walletUsedRow && walletUsedValue) {
+        if (walletUsed > 0) {
+          walletUsedRow.classList.remove("hidden");
+          walletUsedValue.textContent = `- ₹${walletUsed.toLocaleString("en-IN")}`;
+        } else {
+          walletUsedRow.classList.add("hidden");
+          walletUsedValue.textContent = "- ₹0";
+        }
+      }
+
+      if (remainingPayableRow && remainingPayableValue) {
+        if (useWalletCheckbox?.checked) {
+          remainingPayableRow.classList.remove("hidden");
+          remainingPayableValue.textContent = `₹${remaining.toLocaleString("en-IN")}`;
+        } else {
+          remainingPayableRow.classList.add("hidden");
+          remainingPayableValue.textContent = "₹0";
+        }
+      }
+
+      if (payableTotal) {
+        payableTotal.textContent = formatINR(payableAfterCoupon);
+      }
+
+      return { couponDiscount, payableAfterCoupon, walletUsed, remaining };
+    };
+
+    couponSelect?.addEventListener("change", computeSummary);
+    useWalletCheckbox?.addEventListener("change", computeSummary);
+    computeSummary();
 
     checkoutForm.addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -254,6 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const paymentMethod = formData.get("payment");
       const addressId = formData.get("addressId");
       const couponId = formData.get("couponId");
+      const useWallet = formData.get("useWallet") === "on";
 
       if (!addressId) {
         showCheckoutWarning("Please select or add a delivery address.");
@@ -273,13 +350,19 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({
               addressId,
               payment: paymentMethod,
-              couponId
+              couponId,
+              useWallet
             })
           });
           const { data } = await parseApiResponse(response);
 
           if(!response.ok || !data.success) {
             alert(data.message || "Error creating Razorpay order");
+            return;
+          }
+
+          if (data.walletOnly && data.orderId) {
+            window.location.href = `/order/order-success/${data.orderId}`;
             return;
           }
 
