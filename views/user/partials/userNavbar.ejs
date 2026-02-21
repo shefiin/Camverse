@@ -1,17 +1,34 @@
-<nav id="navbar" class="bg-black transition-all duration-300 py-2 shadow-md fixed top-0 left-0 w-full z-50">
+<%
+  const isLightNavbar = typeof navbarTheme !== "undefined" && navbarTheme === "light";
+  const scrollLightAt = typeof navbarLightOnScrollAt !== "undefined" ? Number(navbarLightOnScrollAt) : null;
+  const navBgClass = isLightNavbar ? "bg-white" : "bg-black";
+  const brandTextClass = isLightNavbar ? "text-gray-900" : "text-gray-400";
+  const navTextClass = isLightNavbar ? "text-gray-700" : "text-gray-400";
+  const navHoverTextClass = isLightNavbar ? "hover:text-gray-900" : "hover:text-gray-300";
+  const searchBoxClass = isLightNavbar ? "bg-white border-gray-300" : "bg-gray-900 border-gray-300";
+  const searchInputClass = isLightNavbar ? "bg-white text-gray-700" : "bg-gray-900 text-gray-300";
+  const searchIconHoverClass = isLightNavbar ? "hover:text-gray-700" : "hover:text-gray-300";
+  const iconTextClass = isLightNavbar ? "text-gray-700" : "text-gray-500";
+  const iconHoverClass = isLightNavbar ? "hover:text-gray-900" : "hover:text-gray-300";
+%>
+<nav
+  id="navbar"
+  data-scroll-light-at="<%= Number.isFinite(scrollLightAt) ? scrollLightAt : '' %>"
+  class="<%= navBgClass %> transition-all duration-300 py-2 shadow-md fixed top-0 left-0 w-full z-50"
+>
     <div class="w-full px-12 py-4 flex items-center justify-between">
 
         <div class="flex-1">
-            <a href="/" class="text-xl tablet:text-2xl font-bold text-gray-400" style="font-family: 'Michroma', sans-serif;">Camverse</a>
+            <a href="/" class="text-xl tablet:text-2xl font-bold <%= brandTextClass %>" style="font-family: 'Michroma', sans-serif;">Camverse</a>
         </div>
 
 
-        <ul id="nav-links" class="hidden tablet:flex space-x-8 text-sm font-medium text-gray-400">
-            <li><a href="/" class="hover:underline hover:text-gray-300">Home</a></li>
-            <li><a href="/shop" class="hover:underline hover:text-gray-300">Shop</a></li>
+        <ul id="nav-links" class="hidden tablet:flex space-x-8 text-sm font-medium <%= navTextClass %>">
+            <li><a href="/" class="hover:underline <%= navHoverTextClass %>">Home</a></li>
+            <li><a href="/shop" class="hover:underline <%= navHoverTextClass %>">Shop</a></li>
 
             <li class="relative group">
-                <a href="" class="hover:underline hover:text-gray-300">Brands</a>
+                <a href="" class="hover:underline <%= navHoverTextClass %>">Brands</a>
                 <ul class="absolute left-0 top-full bg-white shadow-md w-40 hidden group-hover:block z-50">
                     <% brands.forEach(brand => { %>
                         <li><a href="/shop/brand/<%= brand._id %>" class="block px-4 py-2 hover:bg-gray-100"><%= brand.name %></a></li>
@@ -19,7 +36,7 @@
                 </ul>
             </li>
             <li class="relative group">
-                <a href="" class="hover:underline hover:text-gray-300">Categories</a>
+                <a href="" class="hover:underline <%= navHoverTextClass %>">Categories</a>
                 <ul class="absolute left-0 top-full bg-white shadow-md w-40 hidden group-hover:block z-50">
                     <% categories.forEach(category => { %>
                         <li><a href="/shop/category/<%= category._id %>"  class="block px-4 py-2 hover:bg-gray-100"><%= category.name %></a></li>
@@ -29,16 +46,16 @@
         </ul>
 
         <div class="relative ml-5 w-[150px] md:w-[200px] flex-shrink-0">
-            <form id="search-form" action="/search" method="GET" class="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-gray-900">
+            <form id="search-form" action="/search" method="GET" class="flex items-center border rounded-lg overflow-hidden <%= searchBoxClass %>">
               <input
                 id="search-input" 
                 type="text" 
                 name="search" 
                 value="<%= typeof search !== 'undefined' ? search : '' %>" 
                 placeholder="Search..." 
-                class="flex-grow min-w-0 px-2 py-1 text-sm focus:outline-none bg-gray-900 text-gray-300"
+                class="flex-grow min-w-0 px-2 py-1 text-sm focus:outline-none <%= searchInputClass %>"
               />
-              <button type="submit" class="flex-shrink-0 px-2 text-gray-600 hover:text-gray-300">
+              <button type="submit" class="flex-shrink-0 px-2 text-gray-600 <%= searchIconHoverClass %>">
                 <i class="fas fa-search"></i>
               </button>
               <% if (typeof search !== 'undefined' && search.trim() !== '') { %>
@@ -50,13 +67,13 @@
           </div>
           
 
-        <div id="login-toggle" class="flex items-center space-x-6 text-gray-500 ml-10">
+        <div id="login-toggle" class="flex items-center space-x-6 <%= iconTextClass %> ml-10">
 
-            <a href="/cart" class="hover:text-gray-300 flex items-center space-x-1">
+            <a href="/cart" class="<%= iconHoverClass %> flex items-center space-x-1">
               <i class="fa fa-cart-shopping text-xl tablet:text-2xl"></i>  
             </a>
 
-            <div class="relative group hover:text-gray-300 flex items-center space-x-1">
+            <div class="relative group flex items-center space-x-1">
                 <a id="login-click" href="#" class="flex items-center space-x-1">
                     <i class="fa-solid fa-user text-xl tablet:text-2xl"></i>
                                       
@@ -105,41 +122,65 @@
             </div>  
         </div>
 
-        <button id="menu-toggle" class="tablet:hidden ml-5 text-xl text-gray-700">
+        <button id="menu-toggle" class="tablet:hidden ml-5 text-xl <%= isLightNavbar ? 'text-gray-700' : 'text-gray-300' %>">
             <i class="fas fa-bars"></i>
         </button>
 
     </div>
 </nav>
 
-<ul id="menu" class="hidden mt-20 flex flex-col px-6 py-4 bg-black shadow-md tablet:hidden space-y-4 text-sm font-medium text-gray-700">
-    <li class="text-white"><a href="/">Home</a></li>
-    <li class="text-white"><a href="/shop">Shop</a></li>
-    <li class="text-white">
+<ul id="menu" class="hidden mt-20 flex flex-col px-6 py-4 <%= isLightNavbar ? 'bg-white' : 'bg-black' %> shadow-md tablet:hidden space-y-4 text-sm font-medium <%= isLightNavbar ? 'text-gray-700' : 'text-gray-300' %>">
+    <li><a href="/">Home</a></li>
+    <li><a href="/shop">Shop</a></li>
+    <li>
         <a href="#" id="brand-link" class="inline-flex items-center">
             Brands
             <i class="fas fa-chevron-down text-xs ml-2"></i>
         </a>
-        <ul id="brands-submenu" class="hidden flex-col space-y-2 pl-4 bg-gray-800 text-gray-600 text-sm mt-2">
+        <ul id="brands-submenu" class="hidden flex-col space-y-2 pl-4 <%= isLightNavbar ? 'bg-gray-100 text-gray-700' : 'bg-gray-800 text-gray-300' %> text-sm mt-2">
             <% brands.forEach(brand => { %>
-                <li class="text-white"><a href="/shop?brand=<%= brand.name %>"><%= brand.name %></a></li>
+                <li><a href="/shop?brand=<%= brand.name %>"><%= brand.name %></a></li>
             <% }) %>        
         </ul>
     </li>
 
-    <li class="text-white">
+    <li>
         <a href="#" id="category-link" class="inline-flex items-center">
             Categories
             <i class="fas fa-chevron-down text-xs ml-2"></i>
         </a>
-        <ul id="categories-submenu" class="hidden flex-col space-y-2 pl-4 bg-gray-800 text-gray-600 text-sm mt-2">
+        <ul id="categories-submenu" class="hidden flex-col space-y-2 pl-4 <%= isLightNavbar ? 'bg-gray-100 text-gray-700' : 'bg-gray-800 text-gray-300' %> text-sm mt-2">
             <% categories.forEach(cat => { %>
-                <li class="text-white"><a href="/shop?category=<%= cat.name %>"><%= cat.name %></a></li>
+                <li><a href="/shop?category=<%= cat.name %>"><%= cat.name %></a></li>
             <% }) %>
         </ul>
     </li>
-  </ul>
+</ul>
 
 
 
-  
+<style>
+  #navbar.scrolled-light {
+    background-color: #ffffff !important;
+  }
+  #navbar.scrolled-light a,
+  #navbar.scrolled-light #nav-links,
+  #navbar.scrolled-light #login-toggle {
+    color: #374151 !important;
+  }
+  #navbar.scrolled-light #nav-links a:hover,
+  #navbar.scrolled-light #login-toggle a:hover {
+    color: #111827 !important;
+  }
+  #navbar.scrolled-light #search-form {
+    background-color: #ffffff !important;
+    border-color: #d1d5db !important;
+  }
+  #navbar.scrolled-light #search-input {
+    background-color: #ffffff !important;
+    color: #374151 !important;
+  }
+  #navbar.scrolled-light #menu-toggle {
+    color: #374151 !important;
+  }
+</style>

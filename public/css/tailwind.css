@@ -201,6 +201,9 @@
 .w-px {
   width: 1px;
 }
+.max-w-\[3\] {
+  max-width: 3;
+}
 .max-w-\[10\] {
   max-width: 10;
 }
