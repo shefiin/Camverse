@@ -8,56 +8,60 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body style="font-family:'Open Sans', sans-serif;">
+<body class="bg-gray-50 text-gray-800" style="font-family:'Open Sans', sans-serif;">
 
     <%- include('partials/userNavbar', { navbarTheme: 'light' }) %>
 
-    <section class="px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
-        <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-16">My Account</h1>
+    <section class="px-4 sm:px-6 lg:px-10 pt-28 pb-16">
+        <div class="mx-auto max-w-6xl">
+            <div class="mb-10 rounded-2xl bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 px-6 py-8 text-white shadow-xl sm:px-10">
+                <p class="text-xs tracking-[0.25em] text-gray-300 uppercase">Camverse Account</p>
+                <h1 class="mt-2 text-3xl font-semibold sm:text-4xl">My Account</h1>
+                <p class="mt-2 text-sm text-gray-300 sm:text-base">Manage profile, orders, addresses, wishlist, and wallet from one place.</p>
+            </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <a href="/user/profile/<%= user._id %>" class="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg">
+                    <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+                        <i class="fa-solid fa-circle-user text-xl"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-gray-900">My Profile</h2>
+                    <p class="mt-2 text-sm text-gray-500">View and edit your personal details.</p>
+                </a>
 
-             <a href="/user/profile/<%= user._id %>" class="bg-white shadow p-6 flex flex-col items-center hover:shadow-lg transition">
-                <i class="fa-solid fa-circle-user text-4xl mb-4 text-gray-300"></i>
-                <h2 class="font-semibold text-xl mb-2">My Profile</h2>
-                <p class="text-gray-500 font-extralight text-center text-sm mb-4">
-                    View and edit your personal details.
-                </p>
-             </a>
+                <a href="/user/address" class="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg">
+                    <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+                        <i class="fa-solid fa-address-card text-xl"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-gray-900">My Addresses</h2>
+                    <p class="mt-2 text-sm text-gray-500">Manage your saved addresses for faster checkout.</p>
+                </a>
 
-             <a href="/user/address%>" class="bg-white shadow p-6 flex flex-col items-center hover:shadow-lg transition">
-                <i class="fa-solid fa-address-card text-4xl mb-4 text-gray-300"></i>
-                <h2 class="font-semibold text-xl mb-2">My Addresses</h2>
-                <p class="text-gray-500 font-extralight text-center text-sm mb-4">
-                    Manage your saved addresses for faster checkout.
-                </p>
-             </a>
+                <a href="/order/details" class="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg">
+                    <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                        <i class="fa-solid fa-box text-xl"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-gray-900">My Orders</h2>
+                    <p class="mt-2 text-sm text-gray-500">Track and manage your recent orders.</p>
+                </a>
 
-             <a href="/order/details" class="bg-whit shadow p-6 flex flex-col items-center hover:shadow-lg transition">
-                <i class="fa fa-box text-4xl text-gray-300"></i>
-                <h2 class="font-semibold text-xl mb-2">My Orders</h2>
-                <p class="text-gray-500 font-extralight text-center text-sm mb-4">
-                    Track and manage your recent orders.
-                </p>
-             </a>
-             <a href="/user/wishlist" class="bg-white shadow p-6 flex flex-col items-center hover:shadow-lg transition">
-                <i class="fa-solid fa-heart text-4xl mb-4 text-gray-300"></i>
-                <h2 class="font-semibold text-xl mb-2">My Wishlist</h2>
-                <p class="text-gray-500 font-extralight text-center text-sm mb-4">
-                    View and manage your saved items for later purchase.
-                </p>
-             </a>
-             <a href="/user/wallet" class="bg-white shadow p-6 flex flex-col items-center hover:shadow-lg transition">
-                <i class="fa-solid fa-wallet text-4xl mb-4 text-gray-300"></i>
-                <h2 class="font-semibold text-xl mb-2">My Wallet</h2>
-                <p class="text-gray-500 font-extralight text-center text-sm mb-4">
-                    Check your balance, add funds, and view transactions.
-                </p>
-             </a>
-            
+                <a href="/user/wishlist" class="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg">
+                    <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-700">
+                        <i class="fa-solid fa-heart text-xl"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-gray-900">My Wishlist</h2>
+                    <p class="mt-2 text-sm text-gray-500">View and manage your saved items for later purchase.</p>
+                </a>
+
+                <a href="/user/wallet" class="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg">
+                    <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+                        <i class="fa-solid fa-wallet text-xl"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-gray-900">My Wallet</h2>
+                    <p class="mt-2 text-sm text-gray-500">Check balance and see your wallet transactions.</p>
+                </a>
+            </div>
         </div>
-    
-        
     </section>    
 
 

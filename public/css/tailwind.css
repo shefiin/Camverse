@@ -477,6 +477,10 @@
   --tw-tracking: 0.2em;
   letter-spacing: 0.2em;
 }
+.tracking-\[0\.25em\] {
+  --tw-tracking: 0.25em;
+  letter-spacing: 0.25em;
+}
 .whitespace-nowrap {
   white-space: nowrap;
 }
