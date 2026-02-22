@@ -20,6 +20,7 @@
         <% } %>
 
         <form action="/login" method="POST" class="space-y-4">            
+              <input type="hidden" name="redirect" value="<%= redirectTarget || '' %>">
               <div>
                 <label for="name" class="block text-sm font-medium text-gray-700">Email</label>
                 <input 
@@ -47,7 +48,7 @@
                 </div>
                 <p class="text-sm text-gray-600 font-extralight mt-1 mb-3">
                     Forgot Password?
-                    <a href="/reset" class="text-blue-600 font-extralight hover:underline">Reset</a>
+                    <a href="/reset<%= redirectTarget ? `?redirect=${encodeURIComponent(redirectTarget)}` : '' %>" class="text-blue-600 font-extralight hover:underline">Reset</a>
                   </p>
 
               </div>
@@ -58,7 +59,7 @@
               
               <p class="text-sm text-gray-600 font-extralight text-center mt-2">
                 Don't have an account? 
-                <a href="/register" class="text-blue-600 font-extralight hover:underline">Register</a>
+                <a href="/register<%= redirectTarget ? `?redirect=${encodeURIComponent(redirectTarget)}` : '' %>" class="text-blue-600 font-extralight hover:underline">Register</a>
               </p>
 
               <div class="flex items-center my-4">
@@ -67,7 +68,7 @@
                 <hr class="flex-grow border-gray-300">
               </div>
 
-              <a href="/auth/google" class="flex items-center justify-center w-full border border-gray-300 py-2 px-4 hover:bg-gray-100">
+              <a href="/auth/google<%= redirectTarget ? `?redirect=${encodeURIComponent(redirectTarget)}` : '' %>" class="flex items-center justify-center w-full border border-gray-300 py-2 px-4 hover:bg-gray-100">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5 mr-2">
                 <span class="text-sm text-gray-700 font-medium">Continue with Google</span>
               </a>

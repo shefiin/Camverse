@@ -81,7 +81,8 @@ function handleCartLoginRedirect() {
   }, 1200);
   cartLoginRedirectTimeout = setTimeout(() => {
     clearCartLoginRedirectState();
-    window.location.href = "/login?error=Please login first";
+    const returnTo = `${window.location.pathname}${window.location.search}`;
+    window.location.href = `/login?error=Please%20login%20first&redirect=${encodeURIComponent(returnTo)}`;
   }, 2000);
 }
 
@@ -108,4 +109,3 @@ document.addEventListener("visibilitychange", () => {
     clearCartLoginRedirectState();
   }
 });
-

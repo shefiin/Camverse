@@ -19,6 +19,36 @@ const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000);
 };
 
+const getSafeRedirectPath = (redirectTo) => {
+    if (typeof redirectTo !== 'string') return null;
+    const trimmed = redirectTo.trim();
+    if (!trimmed.startsWith('/')) return null;
+    if (trimmed.startsWith('//')) return null;
+    if (trimmed.startsWith('/login')) return null;
+    if (trimmed.startsWith('/logout')) return null;
+    return trimmed;
+};
+
+const isProtectedAfterLogoutPath = (path) => {
+    if (typeof path !== 'string') return true;
+    const protectedPrefixes = ['/user', '/cart', '/checkout', '/order', '/wishlist'];
+    return protectedPrefixes.some(prefix => path === prefix || path.startsWith(`${prefix}/`));
+};
+
+const getSafeRefererPath = (req) => {
+    const referer = req.get('referer');
+    const host = req.get('host');
+    if (!referer || !host) return null;
+
+    try {
+        const parsed = new URL(referer);
+        if (parsed.host !== host) return null;
+        return getSafeRedirectPath(`${parsed.pathname}${parsed.search}`);
+    } catch (error) {
+        return null;
+    }
+};
+
 
 const register = async (req, res) => {
     try {       
@@ -133,34 +163,38 @@ const resendOtp = async (req, res) => {
 
 const login = async (req, res) => {
     try{
-        const { email, password } = req.body;
+        const { email, password, redirect } = req.body;
         const trimmedPassword = typeof password === "string" ? password.trim() : "";
+        const safeRedirect = getSafeRedirectPath(redirect);
+        const loginRedirectUrl = safeRedirect
+            ? `/login?redirect=${encodeURIComponent(safeRedirect)}`
+            : '/login';
 
         const user = await User.findOne({ email });
         if(!user) {
             req.flash('error', 'User does not exists');
-            return res.redirect('/login')
+            return res.redirect(loginRedirectUrl)
         }
         if (user.isBlocked) {
             req.flash('error', 'Your account is blocked');
-            return res.redirect('/login');
+            return res.redirect(loginRedirectUrl);
         }
 
         if (!trimmedPassword) {
             req.flash('error', 'Please enter your password');
-            return res.redirect('/login');
+            return res.redirect(loginRedirectUrl);
         }
 
         if (!user.password) {
             req.flash('error', 'This account uses Google sign-in. Continue with Google or set a password using reset password.');
-            return res.redirect('/login');
+            return res.redirect(loginRedirectUrl);
         }
 
         const isMatch = await bcrypt.compare(trimmedPassword, user.password);
 
         if(!isMatch){
             req.flash('error', 'Invalid email or password');
-            return res.redirect('/login');
+            return res.redirect(loginRedirectUrl);
         }
 
         req.session.userId = user._id;
@@ -171,7 +205,7 @@ const login = async (req, res) => {
         };
           
 
-        res.redirect('/');
+        res.redirect(safeRedirect || '/');
 
     } catch(error){
         console.error('something went wrong while logging', error);
@@ -181,13 +215,20 @@ const login = async (req, res) => {
 
 
 const logout = (req, res) => {
+    const queryRedirect = getSafeRedirectPath(req.query.redirect);
+    const refererRedirect = getSafeRefererPath(req);
+    const requestedRedirect = queryRedirect || refererRedirect;
+    const finalRedirect = requestedRedirect && !isProtectedAfterLogoutPath(requestedRedirect)
+        ? requestedRedirect
+        : '/';
+
     req.session.destroy(err => {
         if(err) {
             console.error('Logout error:', err);
             return res.status(500).send('Could not logout.')
         }
         res.clearCookie('connect.sid');
-        res.redirect('/');
+        res.redirect(finalRedirect);
     })
 }
 

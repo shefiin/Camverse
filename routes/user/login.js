@@ -3,9 +3,23 @@ const router = express.Router();
 const { login } = require('../../controllers/user/authController')
 const { redirectIfLoggedIn } = require('../../middlewares/user/auth')
 
+const getSafeRedirectPath = (redirectTo) => {
+    if (typeof redirectTo !== 'string') return '';
+    const trimmed = redirectTo.trim();
+    if (!trimmed.startsWith('/')) return '';
+    if (trimmed.startsWith('//')) return '';
+    if (trimmed.startsWith('/login')) return '';
+    return trimmed;
+};
+
 router.get('/', redirectIfLoggedIn, (req, res) => {
     const error = req.flash('error');
-    res.render('user/login', { errorMessage: error.length > 0 ? error[0] : null});
+    const redirectTarget = getSafeRedirectPath(req.query.redirect);
+    const queryError = typeof req.query.error === 'string' ? req.query.error : null;
+    res.render('user/login', {
+        errorMessage: error.length > 0 ? error[0] : queryError,
+        redirectTarget
+    });
 });
 
 

@@ -233,7 +233,8 @@ function triggerLoginRedirectPopup() {
   }, 1200);
   loginRedirectTimeout = setTimeout(() => {
     clearLoginRedirectState();
-    window.location.href = '/login?error=Please login first';
+    const returnTo = `${window.location.pathname}${window.location.search}`;
+    window.location.href = `/login?error=Please%20login%20first&redirect=${encodeURIComponent(returnTo)}`;
   }, 2000);
 }
 

@@ -194,7 +194,8 @@ function handleGuestCartClick(e) {
   setTimeout(() => hideNavLoginRedirectBanner(), 1200);
   navLoginRedirectTimeout = setTimeout(() => {
     clearNavLoginRedirectState();
-    window.location.href = '/login?error=Please login first';
+    const returnTo = `${window.location.pathname}${window.location.search}`;
+    window.location.href = `/login?error=Please%20login%20first&redirect=${encodeURIComponent(returnTo)}`;
   }, 2000);
 }
 
