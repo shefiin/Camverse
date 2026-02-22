@@ -12,6 +12,12 @@ const getSafeRedirectPath = (redirectTo, fallback = '/') => {
   return trimmed;
 };
 
+const withReviewStatus = (redirectTo, status) => {
+  const [basePath, hashPart] = redirectTo.split('#');
+  const sep = basePath.includes('?') ? '&' : '?';
+  return `${basePath}${sep}reviewStatus=${encodeURIComponent(status)}${hashPart ? `#${hashPart}` : ''}`;
+};
+
 const getEligibleDeliveredItem = async (userId, productId) => {
   const order = await Order.findOne({
     user: userId,
@@ -68,16 +74,16 @@ const upsertReview = async (req, res) => {
     const redirectTo = getSafeRedirectPath(req.body.redirectTo, `/product/${productId}`);
 
     if (!mongoose.Types.ObjectId.isValid(productId)) {
-      return res.redirect(`${redirectTo}?reviewStatus=invalid`);
+      return res.redirect(withReviewStatus(redirectTo, 'invalid'));
     }
 
     if (!Number.isFinite(rating) || rating < 0.5 || rating > 5 || Math.round(rating * 2) !== rating * 2) {
-      return res.redirect(`${redirectTo}?reviewStatus=invalid`);
+      return res.redirect(withReviewStatus(redirectTo, 'invalid'));
     }
 
     const eligible = await getEligibleDeliveredItem(userId, productId);
     if (!eligible) {
-      return res.redirect(`${redirectTo}?reviewStatus=notEligible`);
+      return res.redirect(withReviewStatus(redirectTo, 'notEligible'));
     }
 
     const existingReview = await Review.findOne({ user: userId, product: productId });
@@ -107,11 +113,11 @@ const upsertReview = async (req, res) => {
     }
 
     await syncProductRatingStats(productId);
-    return res.redirect(`${redirectTo}?reviewStatus=${reviewStatus}`);
+    return res.redirect(withReviewStatus(redirectTo, reviewStatus));
   } catch (error) {
     console.error('Error while saving review:', error);
     const fallback = getSafeRedirectPath(req.body.redirectTo, '/shop');
-    return res.redirect(`${fallback}?reviewStatus=error`);
+    return res.redirect(withReviewStatus(fallback, 'error'));
   }
 };
 
@@ -122,7 +128,7 @@ const deleteReview = async (req, res) => {
     const redirectTo = getSafeRedirectPath(req.body.redirectTo, `/product/${productId}#reviews`);
 
     if (!mongoose.Types.ObjectId.isValid(productId)) {
-      return res.redirect(`${redirectTo}?reviewStatus=invalid`);
+      return res.redirect(withReviewStatus(redirectTo, 'invalid'));
     }
 
     const deleted = await Review.findOneAndDelete({
@@ -131,15 +137,15 @@ const deleteReview = async (req, res) => {
     });
 
     if (!deleted) {
-      return res.redirect(`${redirectTo}?reviewStatus=invalid`);
+      return res.redirect(withReviewStatus(redirectTo, 'invalid'));
     }
 
     await syncProductRatingStats(productId);
-    return res.redirect(`${redirectTo}?reviewStatus=deleted`);
+    return res.redirect(withReviewStatus(redirectTo, 'deleted'));
   } catch (error) {
     console.error('Error while deleting review:', error);
     const fallback = getSafeRedirectPath(req.body.redirectTo, '/shop');
-    return res.redirect(`${fallback}?reviewStatus=error`);
+    return res.redirect(withReviewStatus(fallback, 'error'));
   }
 };
 

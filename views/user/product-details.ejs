@@ -532,6 +532,8 @@
 
       document.querySelectorAll(".rating-widget").forEach((widget) => {
         const input = widget.parentElement.querySelector(".rating-value");
+        const errorText = widget.parentElement.querySelector(".rating-error");
+        const form = widget.closest("form");
         const initial = Number(widget.dataset.initialRating || input?.value || 0);
         if (initial > 0) {
           input.value = initial;
@@ -548,7 +550,20 @@
             const selected = isLeftHalf ? idx - 0.5 : idx;
             input.value = selected;
             paintStars(widget, selected);
+            if (errorText) {
+              errorText.classList.add("hidden");
+            }
           });
+        });
+
+        form?.addEventListener("submit", (event) => {
+          const selected = Number(input?.value || 0);
+          if (!Number.isFinite(selected) || selected <= 0) {
+            event.preventDefault();
+            if (errorText) {
+              errorText.classList.remove("hidden");
+            }
+          }
         });
       });
     </script>
