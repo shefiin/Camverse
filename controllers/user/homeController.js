@@ -24,6 +24,28 @@ const renderHomePage = async (req, res) => {
     }
 };
 
+const renderAboutPage = async (req, res) => {
+    try {
+        const customOrder = ['Mirrorless', 'DSLR', 'Action', 'Compact', 'Instant'];
+
+        let categories = await Category.find({ isDeleted: { $ne: true }});
+        categories.sort((a, b) => {
+            return customOrder.indexOf(a.name) - customOrder.indexOf(b.name);
+        });
+
+        const brands = await Brand.find();
+
+        res.render('user/about', {
+            categories,
+            brands
+        });
+    } catch (error) {
+        console.error('Error rendering about page:', error);
+        res.status(500).send('Something went wrong while rendering about page.');
+    }
+};
+
 module.exports = {
-    renderHomePage
+    renderHomePage,
+    renderAboutPage
 }

@@ -26,6 +26,7 @@
         <ul id="nav-links" class="hidden tablet:flex space-x-8 text-sm font-medium <%= navTextClass %>">
             <li><a href="/" class="hover:underline <%= navHoverTextClass %>">Home</a></li>
             <li><a href="/shop" class="hover:underline <%= navHoverTextClass %>">Shop</a></li>
+            <li><a href="/about" class="hover:underline <%= navHoverTextClass %>">About</a></li>
 
             <li class="relative group">
                 <a href="" class="hover:underline <%= navHoverTextClass %>">Brands</a>
@@ -55,11 +56,11 @@
                 placeholder="Search..." 
                 class="flex-grow min-w-0 px-2 py-1 text-sm focus:outline-none <%= searchInputClass %>"
               />
-              <button type="submit" class="flex-shrink-0 px-2 text-gray-600 <%= searchIconHoverClass %>">
+              <button type="submit" class="flex-shrink-0 px-2 text-gray-600 <%= searchIconHoverClass %> active:scale-[0.95] transition duration-150 ease-out transform">
                 <i class="fas fa-search"></i>
               </button>
               <% if (typeof search !== 'undefined' && search.trim() !== '') { %>
-                <button type="button" id="clear-search" class="hidden flex-shrink-0 text-gray-400 hover:text-black px-2">
+                <button type="button" id="clear-search" class="hidden flex-shrink-0 text-gray-400 hover:text-black px-2 active:scale-[0.95] transition duration-150 ease-out transform">
                     <i class="fas fa-times"></i>
                 </button>
               <% } %>
@@ -122,7 +123,7 @@
             </div>  
         </div>
 
-        <button id="menu-toggle" class="tablet:hidden ml-5 text-xl <%= isLightNavbar ? 'text-gray-700' : 'text-gray-300' %>">
+        <button id="menu-toggle" class="tablet:hidden ml-5 text-xl <%= isLightNavbar ? 'text-gray-700' : 'text-gray-300' %> active:scale-[0.95] transition duration-150 ease-out transform">
             <i class="fas fa-bars"></i>
         </button>
 
@@ -132,6 +133,7 @@
 <ul id="menu" class="hidden mt-20 flex flex-col px-6 py-4 <%= isLightNavbar ? 'bg-white' : 'bg-black' %> shadow-md tablet:hidden space-y-4 text-sm font-medium <%= isLightNavbar ? 'text-gray-700' : 'text-gray-300' %>">
     <li><a href="/">Home</a></li>
     <li><a href="/shop">Shop</a></li>
+    <li><a href="/about">About</a></li>
     <li>
         <a href="#" id="brand-link" class="inline-flex items-center">
             Brands

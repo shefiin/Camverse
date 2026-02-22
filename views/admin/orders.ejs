@@ -34,7 +34,7 @@
             </select>
                 
             <!-- Buttons -->
-            <button type="submit" class="bg-teal-600 text-white px-4 py-1 rounded">Apply</button>
+            <button type="submit" class="bg-teal-600 text-white px-4 py-1 rounded active:scale-[0.95] transition duration-150 ease-out transform">Apply</button>
             <a href="/admin/orders" class="bg-gray-400 text-white px-4 py-1 rounded">Clear</a>
         </form>
         
@@ -131,7 +131,7 @@
               <div class="flex justify-between items-center mt-6">
                 <div class="flex gap-3">
                   <a href="/admin/orders/edit/<%= order._id %>" 
-                    class="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg text-sm">
+                    class="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg text-sm transition duration-150 ease-out transform active:scale-[0.95]">
                     Manage
                   </a>
                 </div>

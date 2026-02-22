@@ -1,0 +1,129 @@
+<div id="reviews" class="border border-gray-300 rounded-xl p-6 mt-8 text-center max-w-4xl mx-auto mb-20">
+  <h3 class="text-lg font-semibold mb-4">Customer Reviews</h3>
+
+  <% if (canReview && currentUserReview) { %>
+    <div class="border rounded-lg p-4 mb-6 bg-gray-50 max-w-2xl mx-auto text-left">
+      <div class="flex items-start justify-between gap-3">
+        <div class="text-left">
+          <p class="text-sm font-semibold text-gray-800">Your Review</p>
+          <p class="text-xs text-gray-500"><%= currentUserReview.createdAt.toLocaleDateString('en-IN') %></p>
+        </div>
+        <div class="relative">
+          <button id="reviewMenuBtn" type="button" class="text-gray-500 hover:text-gray-800 p-1 active:scale-[0.95] transition duration-150 ease-out transform">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </button>
+          <div id="reviewMenu" class="hidden absolute right-0 mt-1 w-28 bg-white border shadow z-20">
+            <button id="editReviewBtn" type="button" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 active:scale-[0.95] transition duration-150 ease-out transform">Edit</button>
+            <form action="/reviews/<%= product._id %>/delete" method="POST">
+              <input type="hidden" name="redirectTo" value="/product/<%= product._id %>#reviews">
+              <button type="submit" class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 active:scale-[0.95] transition duration-150 ease-out transform">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <p class="text-sm text-yellow-500 my-2">
+        <% for (let i = 1; i <= 5; i++) { %>
+          <% if (i <= Math.floor(currentUserReview.rating)) { %>
+            <i class="fa-solid fa-star text-yellow-400"></i>
+          <% } else if (i - 0.5 === Number(currentUserReview.rating)) { %>
+            <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
+          <% } else { %>
+            <i class="fa-solid fa-star text-gray-300"></i>
+          <% } %>
+        <% } %>
+      </p>
+      <% if (currentUserReview.title) { %><p class="text-sm font-medium text-gray-700"><%= currentUserReview.title %></p><% } %>
+      <% if (currentUserReview.comment) { %><p class="text-sm text-gray-600 mt-1"><%= currentUserReview.comment %></p><% } %>
+    </div>
+
+    <form id="editReviewForm" action="/reviews/<%= product._id %>" method="POST" class="space-y-3 mb-6 hidden max-w-2xl mx-auto text-left">
+      <input type="hidden" name="redirectTo" value="/product/<%= product._id %>#reviews">
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Rating</label>
+        <input type="hidden" name="rating" class="rating-value" value="<%= currentUserReview.rating %>" required>
+        <div class="rating-widget flex items-center gap-1 text-4xl md:text-3xl text-gray-300" data-initial-rating="<%= currentUserReview.rating %>">
+          <i class="fa-solid fa-star cursor-pointer" data-star-index="1"></i>
+          <i class="fa-solid fa-star cursor-pointer" data-star-index="2"></i>
+          <i class="fa-solid fa-star cursor-pointer" data-star-index="3"></i>
+          <i class="fa-solid fa-star cursor-pointer" data-star-index="4"></i>
+          <i class="fa-solid fa-star cursor-pointer" data-star-index="5"></i>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Title</label>
+        <input type="text" name="title" maxlength="80" class="w-full border p-2" value="<%= currentUserReview.title || '' %>">
+      </div>
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Review</label>
+        <textarea name="comment" rows="3" maxlength="500" class="w-full border p-2"><%= currentUserReview.comment || '' %></textarea>
+      </div>
+      <div class="flex gap-2">
+        <button type="submit" class="bg-teal-700 hover:bg-teal-800 text-white px-4 py-2 active:scale-[0.95] transition duration-150 ease-out transform">
+          Update Review
+        </button>
+        <button id="cancelEditReviewBtn" type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 active:scale-[0.95] transition duration-150 ease-out transform">
+          Cancel
+        </button>
+      </div>
+    </form>
+  <% } else if (canReview) { %>
+    <form action="/reviews/<%= product._id %>" method="POST" class="space-y-3 mb-6 max-w-2xl mx-auto text-left">
+      <input type="hidden" name="redirectTo" value="/product/<%= product._id %>#reviews">
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Rating</label>
+        <input type="hidden" name="rating" class="rating-value" value="" required>
+        <div class="rating-widget flex items-center gap-1 text-3xl md:text-2xl text-gray-300" data-initial-rating="">
+          <i class="fa-solid fa-star cursor-pointer" data-star-index="1"></i>
+          <i class="fa-solid fa-star cursor-pointer" data-star-index="2"></i>
+          <i class="fa-solid fa-star cursor-pointer" data-star-index="3"></i>
+          <i class="fa-solid fa-star cursor-pointer" data-star-index="4"></i>
+          <i class="fa-solid fa-star cursor-pointer" data-star-index="5"></i>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Title</label>
+        <input type="text" name="title" maxlength="80" class="w-full border p-2">
+      </div>
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Review</label>
+        <textarea name="comment" rows="3" maxlength="500" class="w-full border p-2"></textarea>
+      </div>
+      <button type="submit" class="bg-teal-700 hover:bg-teal-800 text-white px-4 py-2 active:scale-[0.95] transition duration-150 ease-out transform">
+        Submit Review
+      </button>
+    </form>
+  <% } %>
+
+  <%
+    const visibleReviews = (reviews || []).filter(
+      rv => !currentUserReview || String(rv._id) !== String(currentUserReview._id)
+    );
+  %>
+  <% if (visibleReviews.length) { %>
+    <div class="space-y-4 max-w-2xl mx-auto text-left">
+      <% visibleReviews.forEach(rv => { %>
+        <div class="border rounded-lg p-4 bg-white mx-auto">
+          <div class="flex items-center justify-between mb-1">
+            <p class="text-sm font-semibold text-gray-800"><%= rv.user?.name || 'Customer' %></p>
+            <p class="text-xs text-gray-500"><%= rv.createdAt.toLocaleDateString('en-IN') %></p>
+          </div>
+          <p class="text-sm text-yellow-500 mb-1">
+            <% for (let i = 1; i <= 5; i++) { %>
+              <% if (i <= Math.floor(rv.rating)) { %>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+              <% } else if (i - 0.5 === Number(rv.rating)) { %>
+                <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
+              <% } else { %>
+                <i class="fa-solid fa-star text-gray-300"></i>
+              <% } %>
+            <% } %>
+          </p>
+          <% if (rv.title) { %><p class="text-sm font-medium text-gray-700"><%= rv.title %></p><% } %>
+          <% if (rv.comment) { %><p class="text-sm text-gray-600"><%= rv.comment %></p><% } %>
+        </div>
+      <% }) %>
+    </div>
+  <% } else if (!currentUserReview) { %>
+    <p class="text-sm text-gray-500">No reviews yet. Be the first to review this product.</p>
+  <% } %>
+</div>

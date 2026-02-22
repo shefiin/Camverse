@@ -83,14 +83,14 @@
                         
                         <div class="flex items-center gap-2">
                             <form action="/cart/decrease/<%= item.product._id %>" method="POST">
-                              <button class="px-2 py-1 bg-gray-50 hover:bg-gray-100 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                              <button class="px-2 py-1 bg-gray-50 hover:bg-gray-100 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-out transform active:scale-[0.95]"
                                 <%= item.quantity === 1 ? "disabled" : "" %>>
                                 <i class="fa-solid fa-minus"></i>
                               </button>
                             </form>
                             <p class="px-3 py-1 bg-gray-50 font-base text-sm text-gray-400">QTY: <span class="font-bold text-gray-800"><%= item.quantity %></span></p>
                             <form action="/cart/increase/<%= item.product._id %>" method="POST">
-                              <button class="px-2 py-1 bg-gray-50 hover:bg-gray-100 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                              <button class="px-2 py-1 bg-gray-50 hover:bg-gray-100 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-out transform active:scale-[0.95]"
                                 <%= (item.quantity === item.product.stock || item.quantity === 10) ? "disabled" : "" %>>                                                            
                                 <i class="fa-solid fa-plus"></i>
                               </button>
@@ -101,7 +101,7 @@
                    <!-- ✅ Actions Row (below the product card) -->
                     <div class="flex justify-around gap-3 mb-4 pb-2 border-b">
                       <form action="/cart/remove/<%= item.product._id %>" method="POST">
-                        <button class="text-red-500 text-base px-3 py-1 ml-20">
+                        <button class="text-red-500 text-base px-3 py-1 ml-20 transition duration-150 ease-out transform active:scale-[0.95]">
                           Remove
                         </button>
                       </form>
@@ -109,7 +109,7 @@
                       <form action="/wishlist/add" method="POST">
                         <input type="hidden" name="productId" value="<%= item.product._id %>">
                         <input type="hidden" name="redirectTo" value="/cart">
-                        <button class="text-blue-500 text-base px-3 py-1 mr-10">
+                        <button class="text-blue-500 text-base px-3 py-1 mr-10 transition duration-150 ease-out transform active:scale-[0.95]">
                           Move to Wishlist
                         </button>
                       </form>
@@ -158,7 +158,7 @@
                   </div>
                   
                     <a href="/checkout" 
-                    class="block text-center bg-teal-700 text-white font-semibold py-2 hover:bg-teal-800">
+                    class="block text-center bg-teal-700 text-white font-semibold py-2 hover:bg-teal-800 transition duration-150 ease-out transform active:scale-[0.95]">
                     Proceed to Checkout
                     </a>
                 <% } %>

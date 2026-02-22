@@ -38,7 +38,7 @@
                 
                     <button
                       type="submit"
-                      class="absolute inset-y-0 right-0 m-1 p-3 rounded flex items-center bg-gray-200 text-gray-600 hover:text-blue-600">
+                      class="absolute inset-y-0 right-0 m-1 p-3 rounded flex items-center bg-gray-200 text-gray-600 hover:text-blue-600 active:scale-[0.95] transition duration-150 ease-out transform">
                       <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
                 
@@ -113,13 +113,13 @@
                                     
                                     <% if (user.isBlocked) { %>
                                       <form action="/admin/users/unblock/<%= user._id %>?_method=PATCH" method="POST" class="inline-block block-form">
-                                        <button type="submit" class="px-3 py-1 rounded-md bg-green-600 text-white hover:bg-green-700">
+                                        <button type="submit" class="px-3 py-1 rounded-md bg-green-600 text-white hover:bg-green-700 active:scale-[0.95] transition duration-150 ease-out transform">
                                           Unblock
                                         </button>
                                       </form>
                                     <% } else { %>
                                       <form action="/admin/users/block/<%= user._id %>?_method=PATCH" method="POST" class="inline-block block-form">
-                                        <button type="submit" class="px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700">
+                                        <button type="submit" class="px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700 active:scale-[0.95] transition duration-150 ease-out transform">
                                           Block
                                         </button>
                                       </form>

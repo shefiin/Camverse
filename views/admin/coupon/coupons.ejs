@@ -48,7 +48,7 @@
 
             <button  
                 id="open-coupon-modal"
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow flex items-center gap-2">
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow flex items-center gap-2 active:scale-[0.95] transition duration-150 ease-out transform">
                 <i class="fa-solid fa-plus"></i>
                 ADD COUPON
             </button>
@@ -76,7 +76,7 @@
                                     <td class="px-4 py-2"><%= skip + index + 1 %></td>
                                     <td class="px-4 py-2">
                                       <button 
-                                        class="coupon-btn"
+                                        class="coupon-btn active:scale-[0.95] transition duration-150 ease-out transform"
                                         data-id="<%= coupon._id %>"
                                         data-name="<%= coupon.name %>"
                                         data-description="<%= coupon.description %>"
@@ -109,7 +109,7 @@
                                     <td class="px-4 py-3 flex items-center gap-4">      
                                       <div class="flex flex-col items-center gap-2">
                                         <button 
-                                          class="edit-coupon-btn text-white bg-blue-500 px-2 py-1 text-xs rounded-md hover:bg-blue-600"
+                                          class="edit-coupon-btn text-white bg-blue-500 px-2 py-1 text-xs rounded-md hover:bg-blue-600 active:scale-[0.95] transition duration-150 ease-out transform"
                                           data-id="<%= coupon._id %>"
                                           data-name="<%= coupon.name %>"
                                           data-description="<%= coupon.description %>"
@@ -123,7 +123,7 @@
                                         <form action="/admin/coupons/delete/<%= coupon._id %>?_method=PATCH" method="POST" class="coupon-delete-form">
                                           <button
                                             type="button"
-                                            class="ml-2 text-xs p-1 bg-red-500 hover:bg-red-600 rounded-md open-delete-modal"
+                                            class="ml-2 text-xs p-1 bg-red-500 hover:bg-red-600 rounded-md open-delete-modal active:scale-[0.95] transition duration-150 ease-out transform"
                                             title="Delete">
                                             Delete Coupon
                                           </button>
@@ -162,7 +162,7 @@
             </div>
             <div class="mt-6 flex justify-end">
               <button id="close-coupon-details"
-                      class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+                      class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 active:scale-[0.95] transition duration-150 ease-out transform">
                 Close
               </button>
             </div>
@@ -180,10 +180,10 @@
               Are you sure you want to delete this coupon?
             </p>
             <div class="flex items-center justify-center space-x-4 mt-4">
-              <button id="confirmDelete" class="bg-red-600 w-full text-white px-12 py-2 rounded-md hover:bg-red-700 transition duration-200 ease-in-out">
+              <button id="confirmDelete" class="bg-red-600 w-full text-white px-12 py-2 rounded-md hover:bg-red-700 transition duration-200 ease-in-out active:scale-[0.95] transition duration-150 ease-out transform">
                 Confirm
               </button>
-              <button id="cancelDelete" class="bg-blue-500 w-full text-white px-12 py-2 rounded-md hover:bg-blue-600 transition duration-200 ease-in-out">
+              <button id="cancelDelete" class="bg-blue-500 w-full text-white px-12 py-2 rounded-md hover:bg-blue-600 transition duration-200 ease-in-out active:scale-[0.95] transition duration-150 ease-out transform">
                 Cancel
               </button>
             </div>

@@ -32,6 +32,7 @@ const adminCouponRoutes = require('./routes/admin/coupon');
 
 const authRoutes = require('./routes/user/auth');
 const userHomeRoutes = require('./routes/user/home');
+const userAboutRoutes = require('./routes/user/about');
 const userRegisterRoutes = require('./routes/user/register');
 const userLoginRoutes = require('./routes/user/login');
 const userShopRoutes = require('./routes/user/shop');
@@ -44,6 +45,7 @@ const userCartRoutes = require('./routes/user/cart');
 const userCheckoutRoutes = require('./routes/user/checkout');
 const userOrderRoutes = require('./routes/user/order');
 const userWishlistRoutes = require('./routes/user/wishlist');
+const userReviewRoutes = require('./routes/user/review');
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/camverse')
@@ -91,6 +93,7 @@ app.use('/admin/coupons', adminCouponRoutes);
 
 
 app.use('/', userHomeRoutes);
+app.use('/about', userAboutRoutes);
 app.use('/register', userRegisterRoutes);
 app.use('/auth', authRoutes);
 app.use('/login', userLoginRoutes);
@@ -104,10 +107,10 @@ app.use('/cart', ensureLoggedIn, checkBlocked, userCartRoutes);
 app.use('/checkout', ensureLoggedIn, checkBlocked, userCheckoutRoutes);
 app.use('/order', ensureLoggedIn, checkBlocked, userOrderRoutes);
 app.use('/wishlist', ensureLoggedIn, checkBlocked, userWishlistRoutes);
+app.use('/reviews', ensureLoggedIn, checkBlocked, userReviewRoutes);
 
 
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
-

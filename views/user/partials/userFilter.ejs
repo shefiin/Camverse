@@ -4,7 +4,7 @@
         <button
             id="sortButton"
             type="button"
-            class="inline-flex items-center bg-white border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md focus:outline-none"
+            class="inline-flex items-center bg-white border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md focus:outline-none active:scale-[0.95] transition duration-150 ease-out transform"
             style="border-color: #d1d5db;" 
             onfocus="this.style.borderColor='#00A69D'"
             onblur="this.style.borderColor='#d1d5db'"
@@ -114,7 +114,10 @@
             </div>
 
             <div class="mt-6">
-              <button type="submit" class="bg-teal-700 hover:bg-teal-800 text-white py-2 w-full">
+              <button
+                type="submit"
+                class="bg-teal-700 hover:bg-teal-800 text-white py-2 w-full transition duration-150 ease-out transform active:scale-[0.95] active:shadow-inner"
+              >
                 Apply
               </button>
             </div>

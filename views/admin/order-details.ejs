@@ -25,7 +25,7 @@
                 <% if (order.products.some(p => p.status === 'Return in process')) { %>
                 <button
                     id="returns-btn"
-                    class="border bg-orange-100 hover:bg-orange-200 border-orange-400 text-orange-500 rounded-lg py-1 px-3"
+                    class="border bg-orange-100 hover:bg-orange-200 border-orange-400 text-orange-500 rounded-lg py-1 px-3 active:scale-[0.95] transition duration-150 ease-out transform"
                     data-orderid="<%= order._id %>">
                     View Returns
                 </button>
@@ -73,11 +73,11 @@
                             <!-- Accept / Reject Form -->
                             <form action="/admin/orders/<%= order.id %>/return/<%= p._id %>?_method=PATCH" method="POST" class="flex gap-3">
                             <button type="submit" name="action" value="accept"
-                                    class="px-4 py-1 bg-teal-600 text-white rounded-lg hover:bg-teal-700">
+                                    class="px-4 py-1 bg-teal-600 text-white rounded-lg hover:bg-teal-700 active:scale-[0.95] transition duration-150 ease-out transform">
                                 Accept
                             </button>
                             <button type="submit" name="action" value="reject"
-                                    class="px-4 py-1 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                                    class="px-4 py-1 bg-red-700 text-white rounded-lg hover:bg-red-800 active:scale-[0.95] transition duration-150 ease-out transform">
                                 Reject
                             </button>
                             </form>
@@ -175,7 +175,7 @@
                         <button 
                         type="button" 
                         onclick="toggleDropdown('<%= order._id %>')" 
-                        class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
+                        class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center gap-2 active:scale-[0.95] transition duration-150 ease-out transform"
                         >
                         Update Status
                         <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200" id="arrow-<%= order._id %>"></i>
@@ -211,7 +211,7 @@
                     
                         <!-- Update button -->
                         <div class="mt-4 text-center">
-                            <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 w-full rounded-md">
+                            <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 w-full rounded-md active:scale-[0.95] transition duration-150 ease-out transform">
                             Update
                             </button>
                         </div>

@@ -64,7 +64,7 @@
                       <input type="hidden" name="productId" value="<%= product._id %>">
                       <input type="hidden" name="redirectTo" value="/shop">
                       <button
-                        class="text-2xl wishlist-btn <%= isInWishlist ? 'text-rose-500' : 'text-gray-200 hover:text-gray-300' %>"
+                        class="text-2xl wishlist-btn <%= isInWishlist ? 'text-rose-500' : 'text-gray-200 hover:text-gray-300' %> active:scale-[0.95] transition duration-150 ease-out transform"
                         data-product-id="<%= product._id %>"
                         aria-label="Toggle wishlist"
                         type="submit"
@@ -88,28 +88,22 @@
                         <%= product.name %>
                       </a>
             
-                      <div class="flex items-center gap-1 text-xs">
-                        <i class="fa-solid fa-star text-zinc-300"></i>
-                        <i class="fa-solid fa-star text-zinc-300"></i>
-                        <i class="fa-solid fa-star text-zinc-300"></i>
-                        <i class="fa-solid fa-star text-zinc-300"></i>
-                        <i class="fa-solid fa-star-half-stroke text-zinc-300"></i>
-                        <span class="ml-1 text-sm text-green-600">4.5</span>
-                      </div>
-            
-                      <% if (product.rating) { %>
-                        <div class="text-yellow-500 text-sm mb-2">
-                          <% for (let i = 1; i <= 5; i++) { %>
-                            <% if (i <= Math.floor(product.rating)) { %>
-                              <i class="fa-solid fa-star"></i>
-                            <% } else if (i - product.rating < 1) { %>
-                              <i class="fa-solid fa-star-half-stroke"></i>
-                            <% } else { %>
-                              <i class="fa-regular fa-star"></i>
-                            <% } %>
+                      <%
+                        const hasReviews = Number(product.ratingCount || 0) > 0;
+                        const cardRating = hasReviews ? Number(product.averageRating || 0) : 4.5;
+                      %>
+                      <div class="flex items-center gap-1 text-xs mb-1">
+                        <% for (let i = 1; i <= 5; i++) { %>
+                          <% if (i <= Math.floor(cardRating)) { %>
+                            <i class="fa-solid fa-star text-yellow-400"></i>
+                          <% } else if (i - 0.5 <= cardRating) { %>
+                            <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
+                          <% } else { %>
+                            <i class="fa-solid fa-star text-gray-300"></i>
                           <% } %>
-                        </div>
-                      <% } %>
+                        <% } %>
+                        <span class="ml-1 text-sm text-green-600"><%= cardRating.toFixed(1) %></span>
+                      </div>
             
                       <div class="flex items-center gap-1 md:gap-2 mb-1">
                         <p class="font-bold text-sm sm:text-base md:text-lg lg:text-xl text-gray-700">

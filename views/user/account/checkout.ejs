@@ -60,7 +60,7 @@
             <p id="checkoutWarningText" class="text-center text-lg font-extralight text-gray-700 mt-3 mb-6" style="font-family: 'Kanit', sans-serif;">
               Please select or add a delivery address.
             </p>
-            <button id="closeCheckoutWarning" type="button" class="w-full bg-teal-700 hover:bg-teal-800 text-white py-2">
+            <button id="closeCheckoutWarning" type="button" class="w-full bg-teal-700 hover:bg-teal-800 text-white py-2 transition duration-150 ease-out transform active:scale-[0.95]">
               OK
             </button>
           </div>
@@ -119,11 +119,11 @@
 
             <div class="pt-4 text-center">
               <button id="submitButton" type="submit"
-                      class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2">
+                      class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 transition duration-150 ease-out transform active:scale-[0.95]">
                 Add address
               </button>
               <button type="button" id="closeModal" 
-                      class="bg-gray-400 hover:bg-gray-500 text-white px-9 py-2">
+                      class="bg-gray-400 hover:bg-gray-500 text-white px-9 py-2 transition duration-150 ease-out transform active:scale-[0.95]">
                 Cancel
               </button>
             </div>
@@ -138,7 +138,7 @@
             <div class="bg-white shadow p-6">
               <% if (!user.addresses || user.addresses.length === 0) { %>
                 <p class="text-gray-500">
-                  <button type="button" class="openAddressModal bg-[#ffd500] rounded-lg text-black px-3 py-2">
+                  <button type="button" class="openAddressModal bg-[#ffd500] rounded-lg text-black px-3 py-2 transition duration-150 ease-out transform active:scale-[0.95]">
                     <i class="fa-solid fa-location-crosshairs"></i> Add delivery address
                   </button>                    
                 </p>
@@ -284,7 +284,7 @@
                 </div>
 
                 <button type="submit" 
-                  class="block w-full text-center bg-teal-600 text-white py-2 hover:bg-teal-700">
+                  class="block w-full text-center bg-teal-600 text-white py-2 hover:bg-teal-700 transition duration-150 ease-out transform active:scale-[0.95]">
                   Place Order
                 </button>
               </form>

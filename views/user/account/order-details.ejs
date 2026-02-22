@@ -93,11 +93,11 @@
             %>
 
             <% if(order.status === 'Placed') { %>            
-                <button id="cancelOrder" class="bg-red-50 hover:bg-red-100 transition px-2 py-1 text-red-600 text-sm md:text-base">
+                <button id="cancelOrder" class="bg-red-50 hover:bg-red-100 transition px-2 py-1 text-red-600 text-sm md:text-base active:scale-[0.95] transition duration-150 ease-out transform">
                   <i class="fa-regular fa-circle-xmark"></i> Cancel Order
                 </button>
               <% } else if(order.status === 'Delivered' && deliveredProducts.length > 1) { %> 
-                  <button id="returnOrder" class="bg-orange-50 hover:bg-orange-100 transition px-2 py-1 text-orange-600 text-sm md:text-base">
+                  <button id="returnOrder" class="bg-orange-50 hover:bg-orange-100 transition px-2 py-1 text-orange-600 text-sm md:text-base active:scale-[0.95] transition duration-150 ease-out transform">
                     <i class="fa-solid fa-rotate-left"></i> Return Order
                   </button>
               <% } %> 
@@ -151,16 +151,24 @@
                   %>
               
                   <% if(order.status === 'Placed' && activeProducts.length > 1 && p.status === 'Placed') { %>
-                      <button class="cancelProduct bg-red-50 hover:bg-red-100 transition px-3 py-1 text-red-600 text-sm">
+                      <button class="cancelProduct bg-red-50 hover:bg-red-100 transition px-3 py-1 text-red-600 text-sm active:scale-[0.95] transition duration-150 ease-out transform">
                         <i class="fa-regular fa-circle-xmark"></i> Cancel this Product
                       </button>
-                  <% } else if(order.status === 'Delivered' && p.status !== 'Cancelled' && p.status !== 'Returned' && p.status !== 'Return in process') { %> 
-                      <button
-                        class="returnProduct bg-orange-50 hover:bg-orange-100 transition px-3 py-1 text-orange-600 text-sm"
-                        data-action="/order/<%= order._id %>/return/<%= p.productId._id %>?_method=PATCH"
-                      >
-                        <i class="fa-solid fa-rotate-left"></i> Return this Product
-                      </button>
+                  <% } else if(order.status === 'Delivered' && p.productId && p.status !== 'Cancelled' && p.status !== 'Returned' && p.status !== 'Return in process') { %> 
+                      <div class="flex flex-wrap gap-2">
+                        <button
+                          class="returnProduct bg-orange-50 hover:bg-orange-100 transition px-3 py-1 text-orange-600 text-sm active:scale-[0.95] transition duration-150 ease-out transform"
+                          data-action="/order/<%= order._id %>/return/<%= p.productId._id %>?_method=PATCH"
+                        >
+                          <i class="fa-solid fa-rotate-left"></i> Return this Product
+                        </button>
+                        <a
+                          href="/product/<%= p.productId._id %>#reviews"
+                          class="bg-teal-50 hover:bg-teal-100 transition px-3 py-1 text-teal-700 text-sm active:scale-[0.95] duration-150 ease-out transform"
+                        >
+                          <i class="fa-solid fa-star"></i> Write Review
+                        </a>
+                      </div>
                   <% } %>
                 </div>
               </div>

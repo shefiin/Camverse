@@ -90,7 +90,7 @@
                             focus:outline-none focus:ring-0 focus:border-gray-200">
                 <button onclick="navigator.clipboard.writeText('<%= user.referralToken %>')"
                         class="bg-black text-white px-4 py-3 text-lg flex items-center gap-2 
-                                hover:bg-gray-500 transform transition active:scale-90">
+                                hover:bg-gray-500 transform transition active:scale-[0.95] duration-150 ease-out">
                     <i class="fa-solid fa-copy"></i>
                 </button>
                         
@@ -99,7 +99,7 @@
             <!-- Share Buttons -->
             <div class="flex flex-wrap gap-4 mt-6 mb-6">
               <button id="copyLinkBtn" 
-                class="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white hover:bg-teal-700">
+                class="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white hover:bg-teal-700 active:scale-[0.95] transition duration-150 ease-out transform">
                 <i class="fa-solid fa-link"></i> <span id="copyText">Copy Link</span>
               </button>
                             

@@ -1,6 +1,8 @@
 const Brand = require('../../models/brand');
 const Category = require('../../models/category');
 const Product = require('../../models/product');
+const Review = require('../../models/review');
+const { getEligibleDeliveredItem } = require('./reviewController');
 
 
 const getProductDetails = async (req, res) => {
@@ -30,7 +32,29 @@ const getProductDetails = async (req, res) => {
       .populate("category")
       .limit(4); // show only 4
 
-    res.render('user/product-details', { product, brands, categories, relatedProducts });
+    const reviews = await Review.find({ product: productId })
+      .populate('user', 'name')
+      .sort({ createdAt: -1 });
+
+    const userId = req.session.userId;
+    let canReview = false;
+    let currentUserReview = null;
+    if (userId) {
+      currentUserReview = await Review.findOne({ user: userId, product: productId });
+      const eligible = await getEligibleDeliveredItem(userId, productId);
+      canReview = Boolean(eligible);
+    }
+
+    res.render('user/product-details', {
+      product,
+      brands,
+      categories,
+      relatedProducts,
+      reviews,
+      canReview,
+      currentUserReview,
+      reviewStatus: req.query.reviewStatus || null
+    });
   } catch (err) {
     console.error('Error fetching product details:', err);
     res.status(500).send('Server error');

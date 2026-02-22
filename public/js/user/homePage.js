@@ -12,6 +12,43 @@ if (typeof window.IS_LOGGED_IN === 'undefined') {
   window.IS_LOGGED_IN = Boolean(document.querySelector('a[href="/logout"]'));
 }
 
+if (!window.__camverseSlowScrollBound) {
+  window.__camverseSlowScrollBound = true;
+
+  const hasScrollableParent = (startEl, deltaY) => {
+    let el = startEl;
+    while (el && el !== document.body) {
+      const style = window.getComputedStyle(el);
+      const canScrollY = /(auto|scroll)/.test(style.overflowY) && el.scrollHeight > el.clientHeight;
+      if (canScrollY) {
+        const canScrollUp = deltaY < 0 && el.scrollTop > 0;
+        const canScrollDown = deltaY > 0 && el.scrollTop + el.clientHeight < el.scrollHeight;
+        if (canScrollUp || canScrollDown) return true;
+      }
+      el = el.parentElement;
+    }
+    return false;
+  };
+
+  window.addEventListener(
+    'wheel',
+    (e) => {
+      if (e.ctrlKey || e.metaKey) return;
+      const targetTag = (e.target?.tagName || '').toLowerCase();
+      if (['input', 'textarea', 'select'].includes(targetTag)) return;
+      if (hasScrollableParent(e.target, e.deltaY)) return;
+
+      e.preventDefault();
+      window.scrollBy({
+        top: e.deltaY * 0.3,
+        left: e.deltaX * 0.3,
+        behavior: 'auto'
+      });
+    },
+    { passive: false }
+  );
+}
+
 const toggleBtn = document.getElementById('menu-toggle');
 const menu = document.getElementById('menu');
 const navbar = document.getElementById('navbar');

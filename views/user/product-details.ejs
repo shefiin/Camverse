@@ -43,7 +43,7 @@
                     <% }) %>
                 </ul>
             </li>
-            <li><a href="" class="hover:underline">About</a></li>
+            <li><a href="/about" class="hover:underline">About</a></li>
         </ul>
 
         <div class="relative ml-5 w-[150px] md:w-[200px] flex-shrink-0">
@@ -55,11 +55,11 @@
               placeholder="Search..." 
               class="flex-grow min-w-0 px-2 py-1 text-sm focus:outline-none"
             />
-            <button type="submit" class="flex-shrink-0 px-2 text-gray-600 hover:text-black">
+            <button type="submit" class="flex-shrink-0 px-2 text-gray-600 hover:text-black active:scale-[0.95] transition duration-150 ease-out transform">
               <i class="fas fa-search"></i>
             </button>
             <% if (typeof search !== 'undefined' && search.trim() !== '') { %>
-              <button type="button" id="clear-search" class="hidden flex-shrink-0 text-gray-400 hover:text-black px-2">
+              <button type="button" id="clear-search" class="hidden flex-shrink-0 text-gray-400 hover:text-black px-2 active:scale-[0.95] transition duration-150 ease-out transform">
                   <i class="fas fa-times"></i>
               </button>
             <% } %>
@@ -121,7 +121,7 @@
             </div>  
         </div>
 
-        <button id="menu-toggle" class="tablet:hidden ml-5 text-xl text-gray-700">
+        <button id="menu-toggle" class="tablet:hidden ml-5 text-xl text-gray-700 active:scale-[0.95] transition duration-150 ease-out transform">
             <i class="fas fa-bars"></i>
         </button>
 
@@ -154,7 +154,7 @@
             <% }) %>
         </ul>
     </li>
-    <li><a href="#">About</a></li>
+    <li><a href="/about">About</a></li>
   </ul>
 
   
@@ -242,7 +242,7 @@
             <input type="hidden" name="quantity" value="1">
             <button 
               type="submit"
-              class="bg-yellow-400 text-white px-10 py-3 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed w-full"
+              class="bg-yellow-400 text-white px-10 py-3 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed w-full transition duration-150 ease-out transform active:scale-[0.95] active:shadow-inner"
               <%= product.stock === 0 ? "disabled" : "" %>>
               <i class="fa-solid fa-cart-shopping"></i>
               ADD TO CART
@@ -254,7 +254,7 @@
             <input type="hidden" name="redirectTo" value="/product/<%= product._id %>">
             <button 
               type="submit"
-              class="bg-red-500 text-white px-6 py-3 hover:bg-red-600 w-full">
+              class="bg-red-500 text-white px-6 py-3 hover:bg-red-600 w-full transition duration-150 ease-out transform active:scale-[0.95] active:shadow-inner">
               <i class="fa-solid fa-heart"></i>
               ADD TO WISHLIST
             </button>
@@ -312,17 +312,19 @@
           <p class="text-sm text-gray-600">(Incl. all Taxes)</p>
 
           <div class="flex items-center mt-1 gap-1 text-xs">
-            <!-- 4 full stars -->
-            <i class="fa-solid fa-star text-yellow-400"></i>
-            <i class="fa-solid fa-star text-yellow-400"></i>
-            <i class="fa-solid fa-star text-yellow-400"></i>
-            <i class="fa-solid fa-star text-yellow-400"></i>
-          
-            <!-- half star -->
-            <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
-          
-            <!-- rating number -->
-            <span class="ml-1 text-sm text-green-600">4.5</span>
+            <% const averageRating = Number(product.averageRating || 0); %>
+            <% for (let i = 1; i <= 5; i++) { %>
+              <% if (i <= Math.floor(averageRating)) { %>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+              <% } else if (i - 0.5 <= averageRating) { %>
+                <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
+              <% } else { %>
+                <i class="fa-solid fa-star text-gray-300"></i>
+              <% } %>
+            <% } %>
+            <span class="ml-1 text-sm text-green-600">
+              <%= Number(product.averageRating || 0).toFixed(1) %> (<%= Number(product.ratingCount || 0) %>)
+            </span>
           </div>
         </div>
 
@@ -365,11 +367,10 @@
           <strong class="block mb-2">Features</strong>
           <p class="text-sm text-gray-700 whitespace-pre-line"><%= product.description %></p>
         </div>
-  
+
         </div>
   
       </div>
-
 
     </div>
 
@@ -429,6 +430,8 @@
       <% }) %>
     </div>
 
+    <%- include('partials/productReviews') %>
+
 
     <div id="toast" 
       class="fixed bottom-5 left-1/2 transform -translate-x-1/2 
@@ -464,6 +467,90 @@
       if (params.get("cartStatus") === "exists") {
         showToast("⚠️ Product already in cart");
       }
+      if (params.get("reviewStatus") === "added") {
+        showToast("✅ Review submitted");
+      }
+      if (params.get("reviewStatus") === "updated") {
+        showToast("✅ Review updated");
+      }
+      if (params.get("reviewStatus") === "deleted") {
+        showToast("✅ Review deleted");
+      }
+      if (params.get("reviewStatus") === "notEligible") {
+        showToast("⚠️ You can review only delivered products");
+      }
+      if (params.get("reviewStatus") === "invalid") {
+        showToast("⚠️ Please choose a valid rating");
+      }
+      if (params.get("reviewStatus") === "error") {
+        showToast("⚠️ Could not save review");
+      }
+
+      const reviewMenuBtn = document.getElementById("reviewMenuBtn");
+      const reviewMenu = document.getElementById("reviewMenu");
+      const editReviewBtn = document.getElementById("editReviewBtn");
+      const editReviewForm = document.getElementById("editReviewForm");
+      const cancelEditReviewBtn = document.getElementById("cancelEditReviewBtn");
+
+      reviewMenuBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        reviewMenu?.classList.toggle("hidden");
+      });
+
+      editReviewBtn?.addEventListener("click", () => {
+        reviewMenu?.classList.add("hidden");
+        editReviewForm?.classList.remove("hidden");
+        editReviewForm?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+
+      cancelEditReviewBtn?.addEventListener("click", () => {
+        editReviewForm?.classList.add("hidden");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!reviewMenuBtn || !reviewMenu) return;
+        const clickedInside = reviewMenuBtn.contains(e.target) || reviewMenu.contains(e.target);
+        if (!clickedInside) {
+          reviewMenu.classList.add("hidden");
+        }
+      });
+
+      const paintStars = (widget, ratingValue) => {
+        const stars = widget.querySelectorAll("[data-star-index]");
+        stars.forEach((star) => {
+          const idx = Number(star.dataset.starIndex);
+          star.classList.remove("fa-star", "fa-star-half-stroke", "text-yellow-400", "text-gray-300");
+          if (idx <= Math.floor(ratingValue)) {
+            star.classList.add("fa-star", "text-yellow-400");
+          } else if (idx - 0.5 === ratingValue) {
+            star.classList.add("fa-star-half-stroke", "text-yellow-400");
+          } else {
+            star.classList.add("fa-star", "text-gray-300");
+          }
+        });
+      };
+
+      document.querySelectorAll(".rating-widget").forEach((widget) => {
+        const input = widget.parentElement.querySelector(".rating-value");
+        const initial = Number(widget.dataset.initialRating || input?.value || 0);
+        if (initial > 0) {
+          input.value = initial;
+          paintStars(widget, initial);
+        } else {
+          paintStars(widget, 0);
+        }
+
+        widget.querySelectorAll("[data-star-index]").forEach((star) => {
+          star.addEventListener("click", (event) => {
+            const idx = Number(star.dataset.starIndex);
+            const rect = star.getBoundingClientRect();
+            const isLeftHalf = event.clientX - rect.left < rect.width / 2;
+            const selected = isLeftHalf ? idx - 0.5 : idx;
+            input.value = selected;
+            paintStars(widget, selected);
+          });
+        });
+      });
     </script>
     
   </div>
