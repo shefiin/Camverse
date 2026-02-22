@@ -4,6 +4,23 @@ const Product = require('../../models/product');
 const Wishlist = require('../../models/wishlist');
 const { buildProductQuery } = require('../user/helpers/buildProductQuery');
 
+const getSortOption = (queryParams = {}) => {
+    switch (queryParams.sort) {
+        case 'price_asc':
+            return { price: 1 };
+        case 'price_desc':
+            return { price: -1 };
+        case 'alpha_asc':
+            return { name: 1 };
+        case 'alpha_desc':
+            return { name: -1 };
+        default:
+            // If user filtered by price but did not choose explicit sort,
+            // show cheapest items first for better UX.
+            return queryParams.price ? { price: 1 } : { createdAt: -1 };
+    }
+};
+
 const loadShopPage = async (req, res) => {
     try {
         const user = res.locals.user || null;
@@ -21,24 +38,7 @@ const loadShopPage = async (req, res) => {
         query.brand = { $in: activeBrands.map(b => b._id)};
         query.category = { $in: activeCategories.map(c => c._id)};
 
-        let sortOption = {};
-        switch (req.query.sort) {
-            case 'price_asc':
-                sortOption = { price: 1 };
-                break;
-            case 'price_desc':
-                sortOption = { price: -1 };
-                break;
-            case 'alpha_asc':
-                sortOption = { name: 1 };
-                break;
-            case 'alpha_desc':
-                sortOption = { name: -1 };
-                break;
-            default:
-                sortOption = { createdAt: -1 }; 
-                break;
-        }
+        const sortOption = getSortOption(req.query);
 
         const totalProducts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / limit);
@@ -122,23 +122,7 @@ const getProductsByCategory = async (req, res) => {
       let query = await buildProductQuery(req.query);
       query.category = categoryId;
   
-      let sortOption = {};
-      switch (req.query.sort) {
-        case 'price_asc':
-          sortOption = { price: 1 };
-          break;
-        case 'price_desc':
-          sortOption = { price: -1 };
-          break;
-        case 'alpha_asc':
-          sortOption = { name: 1 };
-          break;
-        case 'alpha_desc':
-          sortOption = { name: -1 };
-          break;
-        default:
-          sortOption = { createdAt: -1 }; 
-      }
+      const sortOption = getSortOption(req.query);
   
       
       const totalProducts = await Product.countDocuments(query);
@@ -218,23 +202,7 @@ const getProductsByCategory = async (req, res) => {
       query.brand = brandId;
   
       
-      let sortOption = {};
-      switch (req.query.sort) {
-        case 'price_asc':
-          sortOption = { price: 1 };
-          break;
-        case 'price_desc':
-          sortOption = { price: -1 };
-          break;
-        case 'alpha_asc':
-          sortOption = { name: 1 };
-          break;
-        case 'alpha_desc':
-          sortOption = { name: -1 };
-          break;
-        default:
-          sortOption = { createdAt: -1 };
-      }
+      const sortOption = getSortOption(req.query);
   
       const totalProducts = await Product.countDocuments(query);
       const totalPages = Math.ceil(totalProducts / limit);

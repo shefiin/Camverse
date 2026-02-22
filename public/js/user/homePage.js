@@ -34,6 +34,8 @@ if (!window.__camverseSlowScrollBound) {
     'wheel',
     (e) => {
       if (e.ctrlKey || e.metaKey) return;
+      // Preserve browser swipe back/forward gestures (trackpad horizontal scroll).
+      if (Math.abs(e.deltaX) > 0) return;
       const targetTag = (e.target?.tagName || '').toLowerCase();
       if (['input', 'textarea', 'select'].includes(targetTag)) return;
       if (hasScrollableParent(e.target, e.deltaY)) return;
@@ -41,7 +43,6 @@ if (!window.__camverseSlowScrollBound) {
       e.preventDefault();
       window.scrollBy({
         top: e.deltaY * 0.4,
-        left: e.deltaX * 0.4,
         behavior: 'auto'
       });
     },

@@ -155,16 +155,22 @@
                         <i class="fa-regular fa-circle-xmark"></i> Cancel this Product
                       </button>
                   <% } else if(order.status === 'Delivered' && p.productId && p.status !== 'Cancelled' && p.status !== 'Returned' && p.status !== 'Return in process') { %> 
-                      <div class="flex flex-wrap gap-2">
+                      <div class="flex flex-col gap-2 w-full sm:w-auto">
                         <button
-                          class="returnProduct bg-orange-50 hover:bg-orange-100 transition px-3 py-1 text-orange-600 text-sm active:scale-[0.95] transition duration-150 ease-out transform"
-                          data-action="/order/<%= order._id %>/return/<%= p.productId._id %>?_method=PATCH"
+                          class="returnProduct bg-orange-50 hover:bg-orange-100 transition px-3 py-1 text-orange-600 text-sm active:scale-[0.95] transition duration-150 ease-out transform w-full sm:min-w-[170px] text-center"
+                          data-action="/order/<%= order._id %>/return/<%= p._id %>?_method=PATCH"
+                          data-unit-price="<%= Number(p.price || 0) %>"
+                          data-max-qty="<%= Number(p.quantity || 1) %>"
+                          data-coupon-code="<%= couponWarningMeta?.code || '' %>"
+                          data-coupon-min="<%= Number(couponWarningMeta?.minPurchase || 0) %>"
+                          data-coupon-discount="<%= Number(couponWarningMeta?.couponDiscount || 0) %>"
+                          data-active-subtotal="<%= Number(couponWarningMeta?.activeSubtotal || 0) %>"
                         >
                           <i class="fa-solid fa-rotate-left"></i> Return this Product
                         </button>
                         <a
                           href="/product/<%= p.productId._id %>#reviews"
-                          class="bg-teal-50 hover:bg-teal-100 transition px-3 py-1 text-teal-700 text-sm active:scale-[0.95] duration-150 ease-out transform"
+                          class="bg-teal-50 hover:bg-teal-100 transition px-3 py-1 text-teal-700 text-sm active:scale-[0.95] duration-150 ease-out transform w-full sm:min-w-[170px] text-center"
                         >
                           <i class="fa-solid fa-star"></i> Write Review
                         </a>

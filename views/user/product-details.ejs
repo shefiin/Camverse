@@ -237,17 +237,27 @@
 
         <div class="flex flex-col text-xs md:tex-sm xl:flex-row gap-4 mt-6 font-semibold justify-center">
 
-          <form action="/cart/add" method="POST" class="inline">
-            <input type="hidden" name="productId" value="<%= product._id %>">
-            <input type="hidden" name="quantity" value="1">
-            <button 
-              type="submit"
-              class="bg-yellow-400 text-white px-10 py-3 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed w-full transition duration-150 ease-out transform active:scale-[0.95] active:shadow-inner"
-              <%= product.stock === 0 ? "disabled" : "" %>>
+          <% if (isInCart) { %>
+            <a
+              href="/cart"
+              class="bg-teal-700 text-white px-10 py-3 hover:bg-teal-800 w-full xl:w-auto inline-flex items-center justify-center gap-2 transition duration-150 ease-out transform active:scale-[0.95] active:shadow-inner"
+            >
               <i class="fa-solid fa-cart-shopping"></i>
-              ADD TO CART
-            </button>
-          </form>
+              SEE CART
+            </a>
+          <% } else { %>
+            <form action="/cart/add" method="POST" class="w-full xl:w-auto">
+              <input type="hidden" name="productId" value="<%= product._id %>">
+              <input type="hidden" name="quantity" value="1">
+              <button 
+                type="submit"
+                class="bg-yellow-400 text-white px-10 py-3 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed w-full xl:w-auto transition duration-150 ease-out transform active:scale-[0.95] active:shadow-inner"
+                <%= product.stock === 0 ? "disabled" : "" %>>
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="add-cart-label">ADD TO CART</span>
+              </button>
+            </form>
+          <% } %>
 
           <form action="/wishlist/add" method="POST" class="inline">
             <input type="hidden" name="productId" value="<%= product._id %>">
@@ -256,7 +266,7 @@
               type="submit"
               class="bg-red-500 text-white px-6 py-3 hover:bg-red-600 w-full transition duration-150 ease-out transform active:scale-[0.95] active:shadow-inner">
               <i class="fa-solid fa-heart"></i>
-              ADD TO WISHLIST
+              <span class="add-wishlist-label">ADD TO WISHLIST</span>
             </button>
           </form>
         

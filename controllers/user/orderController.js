@@ -8,6 +8,8 @@ const Coupon = require('../../models/coupon');
 const Wallet = require('../../models/wallet');
 const urlencodedser = require('../../models/user');
 const { createRazorpayOrder } = require('../user/paymentController');
+const { calculateRefundForItem } = require('../helpers/refundHelper');
+const { getEffectiveUnitPrice } = require('../helpers/effectivePrice');
 const PDFDocument = require("pdfkit");
 const razorpay = require("../../config/razorpay");
 const crypto = require("crypto");
@@ -138,7 +140,10 @@ const createCodOrder = async (req, res) => {
         }
 
         const cart = await Cart.findOne({ user: userId })
-            .populate("items.product");
+            .populate({
+                path: "items.product",
+                populate: [{ path: "category" }]
+            });
 
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ success: false, message: "Cart is empty" });
@@ -150,11 +155,12 @@ const createCodOrder = async (req, res) => {
             sum + item.product.mrp * item.quantity, 0);
 
         const subtotal = cart.items.reduce((sum, item) =>
-            sum + item.product.price * item.quantity, 0);
+            sum + getEffectiveUnitPrice(item.product) * item.quantity, 0);
 
         const productDiscount = grossAmount - subtotal;
         let couponDiscount = 0;
         let couponCode = null;
+        let couponMinPurchase = 0;
 
         if (req.body.couponId) {
             const now = new Date();
@@ -188,6 +194,7 @@ const createCodOrder = async (req, res) => {
 
             couponDiscount = Math.min(subtotal, Math.round(couponDiscount));
             couponCode = coupon.name;
+            couponMinPurchase = Number(coupon.minPurchase) || 0;
         }
 
         const offerAmount = Math.max(0, subtotal - couponDiscount);
@@ -211,7 +218,7 @@ const createCodOrder = async (req, res) => {
             products: cart.items.map(i => ({
                 productId: i.product._id,
                 quantity: i.quantity,
-                price: i.product.price,
+                price: getEffectiveUnitPrice(i.product),
                 status: "Placed",
                 placedAt: new Date()
             })),
@@ -233,6 +240,7 @@ const createCodOrder = async (req, res) => {
             remainingAmount,
             couponCode,
             couponDiscount,
+            couponMinPurchase,
             paymentMethod: remainingAmount === 0 ? "Wallet" : "Cash on delivery",
             paymentStatus: remainingAmount === 0 ? "Paid" : "Pending",
             createdAt: new Date()
@@ -516,6 +524,18 @@ const orderDetails = async (req, res) => {
             hour12: true
         });
 
+        const activeSubtotalForCouponCheck = order.products.reduce((sum, item) => {
+            if (item.status === "Cancelled" || item.status === "Returned") return sum;
+            return sum + (Number(item.price || 0) * Number(item.quantity || 0));
+        }, 0);
+
+        const couponWarningMeta = {
+            code: order.couponCode || "",
+            minPurchase: Number(order.couponMinPurchase || 0),
+            couponDiscount: Number(order.couponDiscount || 0),
+            activeSubtotal: activeSubtotalForCouponCheck
+        };
+
         res.render('user/account/order-details', {
             order,
             user,
@@ -528,7 +548,8 @@ const orderDetails = async (req, res) => {
             status: order.status,
             paymentStatus: order.paymentStatus,
             totalAmount: order.totalAmount,
-            statusTimestamps: order.statusTimestamps
+            statusTimestamps: order.statusTimestamps,
+            couponWarningMeta
         });
 
     } catch(error){
@@ -600,11 +621,56 @@ const cancelProduct = async (req, res) => {
       );
   
       if (!product) return res.status(400).send("Product not found in order");
+      if (product.status === "Cancelled") {
+        return res.status(400).send("Product already cancelled");
+      }
   
       await Product.findByIdAndUpdate(productId, {
         $inc: { stock: product.quantity }
       });
-  
+
+      if (order.paymentStatus === "Paid") {
+        const { refundableAmount, couponDeduction } = await calculateRefundForItem(
+          order,
+          product
+        );
+
+        let wallet = await Wallet.findOne({ user: userId });
+        if (!wallet) {
+          wallet = new Wallet({ user: userId, balance: 0, transactions: [] });
+        }
+
+        const existingRefund = wallet.transactions.find(
+          (txn) =>
+            txn.type === "CREDIT" &&
+            txn.orderId?.toString() === order._id.toString() &&
+            txn.orderItemId?.toString() === product._id.toString() &&
+            txn.description === "Refund for cancelled item"
+        );
+
+        let refundHandledNow = false;
+        if (!existingRefund) {
+          if (refundableAmount > 0) {
+            wallet.balance += refundableAmount;
+            wallet.transactions.push({
+              type: "CREDIT",
+              amount: refundableAmount,
+              orderId: order._id,
+              orderItemId: product._id,
+              productId: product.productId,
+              description: "Refund for cancelled item"
+            });
+          }
+
+          await wallet.save();
+          refundHandledNow = true;
+        }
+
+        if (couponDeduction > 0 && refundHandledNow) {
+          order.couponRefundDeducted = Number(order.couponRefundDeducted || 0) + couponDeduction;
+        }
+      }
+
       product.status = "Cancelled";
       product.cancelReason = finalReason;
       order.markModified("products");
@@ -659,6 +725,7 @@ const returnProduct = async (req, res) => {
         const {orderId, productId } = req.params;
         const userId = req.session.userId;
         const { reason2, productCustomReason } = req.body;
+        const requestedQty = Number(req.body.returnQuantity) || 1;
 
         const finalReason = reason2 === "Other" ? productCustomReason : reason2;
 
@@ -669,14 +736,28 @@ const returnProduct = async (req, res) => {
             return res.status(400).send("Order cannot be modified");
         }
 
-        const product = order.products.find(
-            (p) => p.productId.toString() === productId
+        const product = order.products.find((p) =>
+            p._id.toString() === productId || p.productId.toString() === productId
         );
 
         if (!product) return res.status(400).send("Product not found in order");
+        if (requestedQty < 1 || requestedQty > Number(product.quantity || 0)) {
+            return res.status(400).send("Invalid return quantity");
+        }
 
-        product.status = "Return in process";
-        product.returnReason = finalReason;
+        if (requestedQty === Number(product.quantity || 0)) {
+            product.status = "Return in process";
+            product.returnReason = finalReason;
+        } else {
+            product.quantity = Number(product.quantity) - requestedQty;
+            order.products.push({
+                productId: product.productId,
+                quantity: requestedQty,
+                price: product.price,
+                status: "Return in process",
+                returnReason: finalReason
+            });
+        }
         await order.save();
         
         res.redirect(`/order/details/${orderId}`);

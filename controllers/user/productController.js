@@ -1,6 +1,7 @@
 const Brand = require('../../models/brand');
 const Category = require('../../models/category');
 const Product = require('../../models/product');
+const Cart = require('../../models/cart');
 const Review = require('../../models/review');
 const { getEligibleDeliveredItem } = require('./reviewController');
 
@@ -43,10 +44,16 @@ const getProductDetails = async (req, res) => {
     const userId = req.session.userId;
     let canReview = false;
     let currentUserReview = null;
+    let isInCart = false;
     if (userId) {
       currentUserReview = await Review.findOne({ user: userId, product: productId });
       const eligible = await getEligibleDeliveredItem(userId, productId);
       canReview = Boolean(eligible);
+
+      const cart = await Cart.findOne({ user: userId }).select('items.product');
+      isInCart = Boolean(
+        cart?.items?.some((item) => item.product?.toString() === productId.toString())
+      );
     }
 
     res.render('user/product-details', {
@@ -57,6 +64,7 @@ const getProductDetails = async (req, res) => {
       reviews,
       canReview,
       currentUserReview,
+      isInCart,
       reviewStatus: req.query.reviewStatus || null
     });
   } catch (err) {

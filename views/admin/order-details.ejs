@@ -42,6 +42,7 @@
                 <div class="space-y-6 divide-y divide-gray-300">
                     <% order.products.forEach(p => { %>
                     <% if (p.status === 'Return in process') { %>
+                        <% const orderedUnitPrice = Number(p.price || 0); %>
                         <div class="pt-4 flex items-start gap-4">
                         <!-- Product Image -->
                         <% if (p.productId && p.productId.images && p.productId.images.length > 0) { %>
@@ -58,10 +59,12 @@
                         <div class="flex-1">
                             <p class="text-gray-800 font-medium"><%= p.productId?.name || "Unknown Product" %></p>
                             <p class="text-sm text-gray-500">Qty: <%= p.quantity %></p>
-                            <p class="text-sm text-gray-500">Price: ₹ <%= p.price.toLocaleString() %></p>
-                            <p class="text-base text-gray-800 font-semibold mb-3">
-                            Total: ₹ <%= (p.quantity * p.price).toLocaleString() %>
-                            </p>
+                            <p class="text-sm text-gray-500">Ordered Unit Price: ₹ <%= orderedUnitPrice.toLocaleString() %></p>
+                            <% if (p.quantity > 1) { %>
+                              <p class="text-base text-gray-800 font-semibold mb-3">
+                                Ordered Line Amount: ₹ <%= (p.quantity * orderedUnitPrice).toLocaleString() %>
+                              </p>
+                            <% } %>
             
                             <!-- Return Reason -->
                             <div class="border border-gray-300 rounded p-3 bg-gray-50 mb-3">
@@ -234,6 +237,7 @@
                     <h2 class="text-lg font-semibold text-white mb-6">Ordered Products</h2>
                   
                     <% order.products.forEach(p => { %>
+                      <% const orderedUnitPrice = Number(p.price || 0); %>
                       <div class="order-card flex justify-between items-center bg-gray-900 p-3 border-b border-gray-700">
                         
                         <!-- Product Info -->
@@ -257,8 +261,10 @@
                           <div>
                             <p class="text-white font-medium"><%= p.productId?.name || "Unknown Product" %></p>
                             <p class="text-sm text-gray-300">Qty: <%= p.quantity %></p>
-                            <p class="text-sm text-gray-300">Price: ₹ <%= p.price.toLocaleString() %></p>
-                            <p class="text-base text-gray-100 font-semibold mb-2">Total: ₹<%= (p.quantity * p.price).toLocaleString() %></p>
+                            <p class="text-sm text-gray-300">Ordered Unit Price: ₹ <%= orderedUnitPrice.toLocaleString() %></p>
+                            <% if (p.quantity > 1) { %>
+                              <p class="text-base text-gray-100 font-semibold mb-2">Ordered Line Amount: ₹<%= (p.quantity * orderedUnitPrice).toLocaleString() %></p>
+                            <% } %>
                             <% if(p.status === 'Cancelled' && order.status !== 'Cancelled') { %>                    
                               <p class="font-normal text-xs md:text-sm text-red-500">                      
                                 Cancelled
@@ -281,7 +287,7 @@
                         %>
                       </div>
                     <% }) %> 
-                    <p class="text-lg font-semibold text-white mt-4">Total Amount: ₹<%= order.totalAmount.toLocaleString() %></p>
+                    <p class="text-lg font-semibold text-white mt-4">Final Amount: ₹<%= order.totalAmount.toLocaleString() %></p>
                 </div>
         
                 <div class="grid md:grid-cols-3 gap-6 max-w-8xl mx-auto items-stretch ml-10 mr-10">

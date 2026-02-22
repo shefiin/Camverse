@@ -95,6 +95,14 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    couponMinPurchase: {
+        type: Number,
+        default: 0
+    },
+    couponRefundDeducted: {
+        type: Number,
+        default: 0
+    },
 
     paymentMethod: {
         type: String,

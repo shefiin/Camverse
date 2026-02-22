@@ -44,6 +44,11 @@
 
         <main class="md:ml-56 flex-1 p-6 w-full">
             <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mb-20">Coupon Management</h1>
+            <% if (couponError) { %>
+              <div class="mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <%= couponError %>
+              </div>
+            <% } %>
 
 
             <button  
@@ -67,11 +72,18 @@
                                     <th class="px-4 py-3 text-center">Min Purchase</th>
                                     <th class="px-4 py-3 text-center">From</th>
                                     <th class="px-4 py-3 text-center">To</th>
+                                    <th class="px-4 py-3 text-center">Status</th>
                                     <th class="px-4 py-3">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-700">
                                 <% coupons.forEach((coupon, index) => { %>
+                                  <%
+                                    const isExpired = coupon.endDate && new Date(coupon.endDate) < new Date();
+                                    const displayStatus = coupon.isDeleted
+                                      ? 'DELETED'
+                                      : ((isExpired || coupon.status === 'INACTIVE') ? 'INACTIVE' : 'ACTIVE');
+                                  %>
                                   <tr class="hover:bg-gray-800 divide-x divide-gray-700">
                                     <td class="px-4 py-2"><%= skip + index + 1 %></td>
                                     <td class="px-4 py-2">
@@ -85,7 +97,7 @@
                                         data-min-purchase="<%= coupon.minPurchase || 0 %>"
                                         data-start-date="<%= coupon.startDate ? new Date(coupon.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' %>"
                                         data-end-date="<%= coupon.endDate ? new Date(coupon.endDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' %>"
-                                        data-status="<%= coupon.status %>"
+                                        data-status="<%= displayStatus %>"
                                         data-usage-limit="<%= coupon.usageLimit || 0 %>"
                                         data-per-user-limit="<%= coupon.perUserLimit || 0 %>">
                                           <div class="coupon max-w-[250px] p-2 rounded-lg shadow-lg text-gray-500 text-center">
@@ -106,28 +118,48 @@
                                     <td class="px-4 py-2 text-center">
                                       <%= coupon.endDate ? new Date(coupon.endDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' %>
                                     </td>
+                                    <td class="px-4 py-2 text-center">
+                                      <% if (displayStatus === 'ACTIVE') { %>
+                                        <span class="inline-flex items-center rounded bg-green-600/20 px-2 py-1 text-xs text-green-300">ACTIVE</span>
+                                      <% } else if (displayStatus === 'DELETED') { %>
+                                        <span class="inline-flex items-center rounded bg-rose-600/20 px-2 py-1 text-xs text-rose-300">DELETED</span>
+                                      <% } else { %>
+                                        <span class="inline-flex items-center rounded bg-orange-600/20 px-2 py-1 text-xs text-orange-300">INACTIVE</span>
+                                      <% } %>
+                                    </td>
                                     <td class="px-4 py-3 flex items-center gap-4">      
                                       <div class="flex flex-col items-center gap-2">
-                                        <button 
-                                          class="edit-coupon-btn text-white bg-blue-500 px-2 py-1 text-xs rounded-md hover:bg-blue-600 active:scale-[0.95] transition duration-150 ease-out transform"
-                                          data-id="<%= coupon._id %>"
-                                          data-name="<%= coupon.name %>"
-                                          data-description="<%= coupon.description %>"
-                                          data-discount-type="<%= coupon.discountType %>"
-                                          data-discount-value="<%= coupon.discountValue %>"
-                                          data-min-purchase="<%= coupon.minPurchase || 0 %>"
-                                          data-start-date="<%= coupon.startDate ? coupon.startDate.toISOString().split('T')[0] : '' %>"
-                                          data-end-date="<%= coupon.endDate ? coupon.endDate.toISOString().split('T')[0] : '' %>">
-                                          Edit Coupon
-                                        </button>
-                                        <form action="/admin/coupons/delete/<%= coupon._id %>?_method=PATCH" method="POST" class="coupon-delete-form">
-                                          <button
-                                            type="button"
-                                            class="ml-2 text-xs p-1 bg-red-500 hover:bg-red-600 rounded-md open-delete-modal active:scale-[0.95] transition duration-150 ease-out transform"
-                                            title="Delete">
-                                            Delete Coupon
+                                        <% if (coupon.isDeleted) { %>
+                                          <form action="/admin/coupons/restore/<%= coupon._id %>?_method=PATCH" method="POST">
+                                            <button
+                                              type="submit"
+                                              class="ml-2 text-xs p-1 bg-emerald-600 hover:bg-emerald-700 rounded-md active:scale-[0.95] transition duration-150 ease-out transform"
+                                              title="Restore">
+                                              Restore
+                                            </button>
+                                          </form>
+                                        <% } else { %>
+                                          <button 
+                                            class="edit-coupon-btn text-white bg-blue-500 px-2 py-1 text-xs rounded-md hover:bg-blue-600 active:scale-[0.95] transition duration-150 ease-out transform"
+                                            data-id="<%= coupon._id %>"
+                                            data-name="<%= coupon.name %>"
+                                            data-description="<%= coupon.description %>"
+                                            data-discount-type="<%= coupon.discountType %>"
+                                            data-discount-value="<%= coupon.discountValue %>"
+                                            data-min-purchase="<%= coupon.minPurchase || 0 %>"
+                                            data-start-date="<%= coupon.startDate ? coupon.startDate.toISOString().split('T')[0] : '' %>"
+                                            data-end-date="<%= coupon.endDate ? coupon.endDate.toISOString().split('T')[0] : '' %>">
+                                            Edit Coupon
                                           </button>
-                                        </form>
+                                          <form action="/admin/coupons/delete/<%= coupon._id %>?_method=PATCH" method="POST" class="coupon-delete-form">
+                                            <button
+                                              type="button"
+                                              class="ml-2 text-xs p-1 bg-red-500 hover:bg-red-600 rounded-md open-delete-modal active:scale-[0.95] transition duration-150 ease-out transform"
+                                              title="Delete">
+                                              Delete Coupon
+                                            </button>
+                                          </form>
+                                        <% } %>
                                       </div>
                                     </td>
                                   </tr>

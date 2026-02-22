@@ -6,6 +6,7 @@ const Cart = require('../../models/cart');
 const Product = require('../../models/product');
 const Coupon = require('../../models/coupon');
 const Wallet = require('../../models/wallet');
+const { getEffectiveUnitPrice } = require('../helpers/effectivePrice');
 
 
 const razorpay = new Razorpay({
@@ -29,7 +30,10 @@ const createRazorpayOrder = async (req, res) => {
         }
 
         const cart = await Cart.findOne({ user: userId })
-            .populate("items.product");
+            .populate({
+                path: "items.product",
+                populate: [{ path: "category" }]
+            });
 
         if(!cart || cart.items.length === 0) {
             return res.status(400).json({ success: false, message: "Cart is empty" });
@@ -48,7 +52,7 @@ const createRazorpayOrder = async (req, res) => {
         }
 
         const subtotal = cart.items.reduce((sum, item) => {
-            return sum + item.product.price * item.quantity
+            return sum + getEffectiveUnitPrice(item.product) * item.quantity
         }, 0);
         const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
         const grossAmount = cart.items.reduce((sum, item) => {
@@ -57,6 +61,7 @@ const createRazorpayOrder = async (req, res) => {
         const productDiscount = grossAmount - subtotal;
         let couponDiscount = 0;
         let couponCode = null;
+        let couponMinPurchase = 0;
 
         if (req.body.couponId) {
             const now = new Date();
@@ -90,6 +95,7 @@ const createRazorpayOrder = async (req, res) => {
 
             couponDiscount = Math.min(subtotal, Math.round(couponDiscount));
             couponCode = coupon.name;
+            couponMinPurchase = Number(coupon.minPurchase) || 0;
         }
 
         const totalAmount = Math.max(0, subtotal - couponDiscount);
@@ -112,7 +118,7 @@ const createRazorpayOrder = async (req, res) => {
                 products: cart.items.map(i => ({
                     productId: i.product._id,
                     quantity: i.quantity,
-                    price: i.product.price,
+                    price: getEffectiveUnitPrice(i.product),
                     status: "Placed"
                 })),
                 shippingAddress: {
@@ -133,6 +139,7 @@ const createRazorpayOrder = async (req, res) => {
                 remainingAmount: 0,
                 couponCode,
                 couponDiscount,
+                couponMinPurchase,
                 paymentMethod: "Wallet",
                 paymentStatus: "Paid",
                 createdAt: new Date()
@@ -192,7 +199,7 @@ const createRazorpayOrder = async (req, res) => {
             products: cart.items.map(i => ({
                 productId: i.product._id,
                 quantity: i.quantity,
-                price: i.product.price,
+                price: getEffectiveUnitPrice(i.product),
                 status: "Pending"
             })),
             shippingAddress: {
@@ -213,6 +220,7 @@ const createRazorpayOrder = async (req, res) => {
             remainingAmount,
             couponCode,
             couponDiscount,
+            couponMinPurchase,
             paymentMethod: "Online",
             paymentStatus: "Pending",
             createdAt: new Date()

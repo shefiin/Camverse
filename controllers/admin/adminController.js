@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 
 
 const renderLoginPage = (req, res) => {
-    res.render('admin/login');
+    res.render('admin/login', { error: null });
 }
 
 
@@ -11,16 +11,20 @@ const loginAdmin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const admin = await Admin.findOne({email});
+        const normalizedEmail = String(email || '').trim().toLowerCase();
+        const normalizedPassword = String(password || '');
+        const invalidCredsMessage = 'Invalid email or password';
+
+        const admin = await Admin.findOne({ email: normalizedEmail });
 
         if(!admin) {
-            return res.status(404).json({message: 'Admin not found'});
+            return res.status(401).render('admin/login', { error: invalidCredsMessage });
         }
 
-        const isMatch = await bcrypt.compare(password, admin.password);
+        const isMatch = await bcrypt.compare(normalizedPassword, admin.password);
 
         if(!isMatch) {
-            return res.render('admin/login', { error: 'Invalid email or password' });
+            return res.status(401).render('admin/login', { error: invalidCredsMessage });
         }
 
         req.session.adminId = admin._id;
@@ -28,7 +32,7 @@ const loginAdmin = async (req, res) => {
 
     }   catch (error){
         console.error(error);
-        res.status(500).json({message: 'Server error'});
+        res.status(500).render('admin/login', { error: 'Something went wrong. Please try again.' });
     }
 }
 
@@ -47,7 +51,6 @@ module.exports = {
     renderLoginPage,
     logoutAdmin
 };
-
 
 
 

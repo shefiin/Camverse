@@ -98,13 +98,16 @@
                         <i class="fas fa-sign-out-alt mr-2"></i>Logout
                       </a></li>
                     <% } else { %>
-                      <li class="block px-4 py-2 hover:bg-gray-100 font-extralight">
-                        Already a customer?
-                        <a href="/login" class="font-bold text-blue-600 hover:text-blue-800">Login</a>
-                      </li>
-                      <li class="block px-4 py-2 hover:bg-gray-100 font-extralight">
-                        New Customer?
-                        <a href="/register" class="font-bold text-blue-600 hover:text-blue-800">Register</a>
+                      <li class="px-3 pt-3 pb-2 border-b border-gray-100">
+                        <p class="text-[11px] uppercase tracking-wide text-gray-400 mb-2">Welcome to Camverse</p>
+                        <div class="space-y-2">
+                          <a href="/login" class="w-full block text-center bg-gray-900 text-white py-2 rounded-md text-sm font-medium hover:bg-black transition duration-150 ease-out active:scale-[0.95] transform">
+                             Login
+                          </a>
+                          <a href="/register" class="w-full block text-center bg-gray-100 text-gray-700 py-2 rounded-md text-sm font-medium hover:bg-gray-200 transition duration-150 ease-out active:scale-[0.95] transform">
+                            <i class="fa-solid fa-user-plus mr-1"></i> Register
+                          </a>
+                        </div>
                       </li>
                       <li><a href="/user/account" class="block px-4 py-2 hover:bg-gray-100 font-extralight">
                         <i class="fa-solid fa-user mr-2"></i>My Account
@@ -165,13 +168,14 @@
   #navbar.scrolled-light {
     background-color: #ffffff !important;
   }
-  #navbar.scrolled-light a,
-  #navbar.scrolled-light #nav-links,
-  #navbar.scrolled-light #login-toggle {
+  #navbar.scrolled-light #nav-links > li > a,
+  #navbar.scrolled-light #login-toggle > a,
+  #navbar.scrolled-light #login-click {
     color: #374151 !important;
   }
-  #navbar.scrolled-light #nav-links a:hover,
-  #navbar.scrolled-light #login-toggle a:hover {
+  #navbar.scrolled-light #nav-links > li > a:hover,
+  #navbar.scrolled-light #login-toggle > a:hover,
+  #navbar.scrolled-light #login-click:hover {
     color: #111827 !important;
   }
   #navbar.scrolled-light #search-form {

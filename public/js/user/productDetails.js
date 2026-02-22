@@ -51,6 +51,8 @@
           'wheel',
           (e) => {
             if (e.ctrlKey || e.metaKey) return;
+            // Preserve browser swipe back/forward gestures (trackpad horizontal scroll).
+            if (Math.abs(e.deltaX) > 0) return;
             const targetTag = (e.target?.tagName || '').toLowerCase();
             if (['input', 'textarea', 'select'].includes(targetTag)) return;
             if (hasScrollableParent(e.target, e.deltaY)) return;
@@ -58,7 +60,6 @@
             e.preventDefault();
             window.scrollBy({
               top: e.deltaY * 0.4,
-              left: e.deltaX * 0.4,
               behavior: 'auto'
             });
           },
@@ -152,6 +153,52 @@
         if (action !== '/cart/add' && action !== '/wishlist/add') return;
         e.preventDefault();
         triggerLoginRedirectPopup();
+      });
+
+      // Prevent accidental double submit on Add to Cart.
+      document.addEventListener('submit', (e) => {
+        const form = e.target;
+        if (!form || form.getAttribute('action') !== '/cart/add') return;
+        if (e.defaultPrevented) return;
+
+        const submitBtn = e.submitter || form.querySelector('button[type="submit"]');
+        if (!submitBtn) return;
+
+        if (submitBtn.dataset.submitting === 'true') {
+          e.preventDefault();
+          return;
+        }
+
+        submitBtn.dataset.submitting = 'true';
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+        const label = submitBtn.querySelector('.add-cart-label');
+        if (label) {
+          label.textContent = 'ADDING...';
+        }
+      });
+
+      // Prevent accidental double submit on Add to Wishlist.
+      document.addEventListener('submit', (e) => {
+        const form = e.target;
+        if (!form || form.getAttribute('action') !== '/wishlist/add') return;
+        if (e.defaultPrevented) return;
+
+        const submitBtn = e.submitter || form.querySelector('button[type="submit"]');
+        if (!submitBtn) return;
+
+        if (submitBtn.dataset.submitting === 'true') {
+          e.preventDefault();
+          return;
+        }
+
+        submitBtn.dataset.submitting = 'true';
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+        const label = submitBtn.querySelector('.add-wishlist-label');
+        if (label) {
+          label.textContent = 'ADDING...';
+        }
       });
 
       window.addEventListener('pageshow', clearLoginRedirectState);

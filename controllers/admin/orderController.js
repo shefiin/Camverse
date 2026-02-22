@@ -3,6 +3,7 @@ const { findById } = require('../../models/admin');
 const Order = require('../../models/order');
 const Product = require('../../models/product');
 const Wallet = require('../../models/wallet')
+const { calculateRefundForItem } = require('../helpers/refundHelper');
 
 
 
@@ -200,8 +201,11 @@ const acceptReturn = async (req, res) => {
                 $inc: { stock: product.quantity }
             });
 
-            // Refund must always use the order line price (historical price at purchase time).
-            const refundAmount = Number(product.price) * Number(product.quantity);
+            // Refund uses order line price and applies coupon ineligibility adjustment when needed.
+            const { refundableAmount, couponDeduction } = await calculateRefundForItem(
+                order,
+                product
+            );
 
             let userWallet = await Wallet.findOne({ user: order.user._id });
             if(!userWallet) {
@@ -220,19 +224,26 @@ const acceptReturn = async (req, res) => {
                     txn.description === "Refund for returned item"
             );
 
+            let refundHandledNow = false;
             if (!existingRefund) {
-                userWallet.balance += refundAmount;
-                userWallet.transactions.push({
-                    type: "CREDIT",
-                    amount: refundAmount,
-                    orderId: order._id,
-                    orderItemId: product._id,
-                    productId: actualProductId,
-                    description: "Refund for returned item"
-                });
+                if (refundableAmount > 0) {
+                    userWallet.balance += refundableAmount;
+                    userWallet.transactions.push({
+                        type: "CREDIT",
+                        amount: refundableAmount,
+                        orderId: order._id,
+                        orderItemId: product._id,
+                        productId: actualProductId,
+                        description: "Refund for returned item"
+                    });
+                }
+                await userWallet.save();
+                refundHandledNow = true;
             }
 
-            await userWallet.save();
+            if (couponDeduction > 0 && refundHandledNow) {
+                order.couponRefundDeducted = Number(order.couponRefundDeducted || 0) + couponDeduction;
+            }
 
             product.status = "Returned";
             order.returnedAt = new Date();
