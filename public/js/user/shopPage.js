@@ -47,8 +47,8 @@ if (!window.__camverseSlowScrollBound) {
 
       e.preventDefault();
       window.scrollBy({
-        top: e.deltaY * 0.3,
-        left: e.deltaX * 0.3,
+        top: e.deltaY * 0.4,
+        left: e.deltaX * 0.4,
         behavior: 'auto'
       });
     },
