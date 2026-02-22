@@ -85,17 +85,78 @@
             </a>
           <% }) %>
         </div>
-      </section>      
+      </section>
+
+      <section class="px-4 md:px-16 py-12">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-center text-3xl md:text-4xl font-bold text-gray-700 mb-2">FAQs</h2>
+          <p class="text-center text-gray-600 mb-8">Quick answers about ordering cameras on Camverse.</p>
+
+          <div class="space-y-3">
+            <div class="faq-item border border-gray-200 rounded-xl bg-white overflow-hidden">
+              <button type="button" class="faq-toggle w-full flex items-center justify-between px-5 py-4 text-left">
+                <span class="font-medium text-gray-800">Are all cameras listed on Camverse genuine?</span>
+                <i class="fa-solid fa-plus text-gray-500 faq-icon"></i>
+              </button>
+              <div class="faq-content hidden px-5 pb-4 text-sm text-gray-600">
+                Yes. We list only original products from trusted brands and verified sources.
+              </div>
+            </div>
+
+            <div class="faq-item border border-gray-200 rounded-xl bg-white overflow-hidden">
+              <button type="button" class="faq-toggle w-full flex items-center justify-between px-5 py-4 text-left">
+                <span class="font-medium text-gray-800">Can I return a product after delivery?</span>
+                <i class="fa-solid fa-plus text-gray-500 faq-icon"></i>
+              </button>
+              <div class="faq-content hidden px-5 pb-4 text-sm text-gray-600">
+                Yes, eligible delivered orders can be returned from your order details page.
+              </div>
+            </div>
+
+            <div class="faq-item border border-gray-200 rounded-xl bg-white overflow-hidden">
+              <button type="button" class="faq-toggle w-full flex items-center justify-between px-5 py-4 text-left">
+                <span class="font-medium text-gray-800">How fast is shipping?</span>
+                <i class="fa-solid fa-plus text-gray-500 faq-icon"></i>
+              </button>
+              <div class="faq-content hidden px-5 pb-4 text-sm text-gray-600">
+                Delivery timelines vary by location, but most orders are shipped quickly with tracking updates.
+              </div>
+            </div>
+
+            <div class="faq-item border border-gray-200 rounded-xl bg-white overflow-hidden">
+              <button type="button" class="faq-toggle w-full flex items-center justify-between px-5 py-4 text-left">
+                <span class="font-medium text-gray-800">Do you support wallet and online payments?</span>
+                <i class="fa-solid fa-plus text-gray-500 faq-icon"></i>
+              </button>
+              <div class="faq-content hidden px-5 pb-4 text-sm text-gray-600">
+                Yes. You can pay via online methods, wallet balance, or a combination when available.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <%- include('partials/userFooter') %>
 
       <script src="/js/user/homePage.js"></script>
+      <script>
+        document.querySelectorAll(".faq-toggle").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const item = btn.closest(".faq-item");
+            const content = item?.querySelector(".faq-content");
+            const icon = item?.querySelector(".faq-icon");
+            if (!content || !icon) return;
+            content.classList.toggle("hidden");
+            icon.classList.toggle("fa-plus");
+            icon.classList.toggle("fa-minus");
+          });
+        });
+      </script>
 
 </body>
 </html>
 
  
-
 
 
 
