@@ -13,10 +13,14 @@ const getProductDetails = async (req, res) => {
       .populate('brand')
       .populate('category')
 
-    if (!product || 
-        product.isDeleted === true || 
-        product.brand.isDeleted === true || 
-        product.category.isDeleted === true
+    const brandMissingOrDeleted = !product?.brand || product.brand.isDeleted === true;
+    const categoryMissingOrDeleted = !product?.category || product.category.isDeleted === true;
+
+    if (
+        !product ||
+        product.isDeleted === true ||
+        brandMissingOrDeleted ||
+        categoryMissingOrDeleted
        ) {
       return res.redirect('/shop')
     }
