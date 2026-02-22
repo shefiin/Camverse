@@ -15,6 +15,10 @@ if (window.tailwind) {
   };
 }
 
+if (typeof window.IS_LOGGED_IN === "undefined") {
+  window.IS_LOGGED_IN = Boolean(document.querySelector('a[href="/logout"]'));
+}
+
 const toggleBtn = document.getElementById('menu-toggle');
 const menu = document.getElementById('menu');
 
@@ -152,6 +156,87 @@ function showWishlistToast(message) {
   }, 2000);
 }
 
+let loginRedirectInProgress = false;
+let loginRedirectTimeout = null;
+function clearLoginRedirectState() {
+  loginRedirectInProgress = false;
+  if (loginRedirectTimeout) {
+    clearTimeout(loginRedirectTimeout);
+    loginRedirectTimeout = null;
+  }
+  const banner = document.getElementById('login-redirect-banner');
+  if (banner) {
+    banner.remove();
+  }
+}
+
+function ensureLoginBannerSpinnerStyle() {
+  if (document.getElementById('login-banner-spinner-style')) return;
+  const style = document.createElement('style');
+  style.id = 'login-banner-spinner-style';
+  style.textContent = `
+    @keyframes loginBannerSpin {
+      to { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function showLoginRedirectBanner(message) {
+  ensureLoginBannerSpinnerStyle();
+  let banner = document.getElementById('login-redirect-banner');
+
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'login-redirect-banner';
+    banner.className = 'fixed left-1/2 bg-black text-white px-5 py-3 shadow-md z-[9999]';
+    banner.style.transform = 'translate(-50%, -140%)';
+    banner.style.transition = 'transform 280ms ease';
+    document.body.appendChild(banner);
+  }
+
+  const navbar = document.getElementById('navbar');
+  const navbarHeight = navbar ? navbar.offsetHeight : 64;
+  banner.style.top = `${navbarHeight + 8}px`;
+
+  banner.innerHTML = `
+    <div class="flex items-center gap-2">
+      <span
+        style="
+          display:inline-block;
+          width:16px;
+          height:16px;
+          border-radius:999px;
+          border:2px solid rgba(255,255,255,0.35);
+          border-top-color:#fff;
+          animation: loginBannerSpin 0.8s linear infinite;
+        "
+      ></span>
+      <span>${message}</span>
+    </div>
+  `;
+  banner.style.transform = 'translate(-50%, 0)';
+}
+
+function hideLoginRedirectBanner() {
+  const banner = document.getElementById('login-redirect-banner');
+  if (!banner) return;
+  banner.style.transform = 'translate(-50%, -140%)';
+}
+
+function triggerLoginRedirectPopup() {
+  if (loginRedirectInProgress) return;
+  loginRedirectInProgress = true;
+  showLoginRedirectBanner('Please login first');
+  setTimeout(() => {
+    hideLoginRedirectBanner();
+  }, 1200);
+  loginRedirectTimeout = setTimeout(() => {
+    clearLoginRedirectState();
+    window.location.href = '/login?error=Please login first';
+  }, 2000);
+}
+
 async function toggleWishlist(button) {
   const productId = button.dataset.productId;
   const isInWishlist = button.classList.contains('text-rose-500');
@@ -159,7 +244,7 @@ async function toggleWishlist(button) {
   if (!productId) return;
 
   if (!window.IS_LOGGED_IN) {
-    window.location.href = '/login?error=Please login first';
+    triggerLoginRedirectPopup();
     return;
   }
 
@@ -215,6 +300,28 @@ document.querySelectorAll('.wishlist-btn').forEach((button) => {
     event.stopPropagation();
     toggleWishlist(button);
   });
+});
+
+window.addEventListener('pageshow', () => {
+  clearLoginRedirectState();
+});
+
+window.addEventListener('pagehide', () => {
+  clearLoginRedirectState();
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    clearLoginRedirectState();
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (window.IS_LOGGED_IN) return;
+  const cartLink = e.target.closest('a[href="/cart"]');
+  if (!cartLink) return;
+  e.preventDefault();
+  triggerLoginRedirectPopup();
 });
 
 const filterDrawer = document.getElementById('filterDrawer');

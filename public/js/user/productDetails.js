@@ -25,6 +25,105 @@
           }
       }
 
+      if (typeof window.IS_LOGGED_IN === 'undefined') {
+        window.IS_LOGGED_IN = Boolean(document.querySelector('a[href="/logout"]'));
+      }
+
+      let loginRedirectInProgress = false;
+      let loginRedirectTimeout = null;
+
+      const clearLoginRedirectState = () => {
+        loginRedirectInProgress = false;
+        if (loginRedirectTimeout) {
+          clearTimeout(loginRedirectTimeout);
+          loginRedirectTimeout = null;
+        }
+        const banner = document.getElementById('login-redirect-banner');
+        if (banner) banner.remove();
+      };
+
+      const ensureLoginBannerSpinnerStyle = () => {
+        if (document.getElementById('login-banner-spinner-style')) return;
+        const style = document.createElement('style');
+        style.id = 'login-banner-spinner-style';
+        style.textContent = `
+          @keyframes loginBannerSpin {
+            to { transform: rotate(360deg); }
+          }
+        `;
+        document.head.appendChild(style);
+      };
+
+      const showLoginRedirectBanner = (message) => {
+        ensureLoginBannerSpinnerStyle();
+        let banner = document.getElementById('login-redirect-banner');
+
+        if (!banner) {
+          banner = document.createElement('div');
+          banner.id = 'login-redirect-banner';
+          banner.className = 'fixed left-1/2 bg-black text-white px-5 py-3 shadow-md z-[9999]';
+          banner.style.transform = 'translate(-50%, -140%)';
+          banner.style.transition = 'transform 280ms ease';
+          document.body.appendChild(banner);
+        }
+
+        const navbar = document.getElementById('navbar') || document.querySelector('nav');
+        const navbarHeight = navbar ? navbar.offsetHeight : 64;
+        banner.style.top = `${navbarHeight + 8}px`;
+
+        banner.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span
+              style="
+                display:inline-block;
+                width:16px;
+                height:16px;
+                border-radius:999px;
+                border:2px solid rgba(255,255,255,0.35);
+                border-top-color:#fff;
+                animation: loginBannerSpin 0.8s linear infinite;
+              "
+            ></span>
+            <span>${message}</span>
+          </div>
+        `;
+
+        banner.style.transform = 'translate(-50%, 0)';
+      };
+
+      const hideLoginRedirectBanner = () => {
+        const banner = document.getElementById('login-redirect-banner');
+        if (!banner) return;
+        banner.style.transform = 'translate(-50%, -140%)';
+      };
+
+      const triggerLoginRedirectPopup = () => {
+        if (loginRedirectInProgress) return;
+        loginRedirectInProgress = true;
+        showLoginRedirectBanner('Please login first');
+        setTimeout(() => hideLoginRedirectBanner(), 1200);
+        loginRedirectTimeout = setTimeout(() => {
+          clearLoginRedirectState();
+          window.location.href = '/login?error=Please login first';
+        }, 2000);
+      };
+
+      document.addEventListener('submit', (e) => {
+        if (window.IS_LOGGED_IN) return;
+        const action = e.target?.getAttribute('action');
+        if (action !== '/cart/add' && action !== '/wishlist/add') return;
+        e.preventDefault();
+        triggerLoginRedirectPopup();
+      });
+
+      window.addEventListener('pageshow', clearLoginRedirectState);
+      window.addEventListener('pagehide', clearLoginRedirectState);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          clearLoginRedirectState();
+        }
+      });
+
       const toggleBtn = document.getElementById('menu-toggle');
       const menu = document.getElementById('menu');
 
