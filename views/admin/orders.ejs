@@ -8,23 +8,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body style="font-family: 'Kanit', sans-serif;">
+<body class="bg-slate-50" style="font-family: 'Kanit', sans-serif;">
     
     <%- include('partials/adminNavbar') %>
 
     <div class="flex pt-[80px]">
       <%- include('partials/adminSidebar') %>
 
-      <main class="md:ml-56 flex-1 p-6 w-full relative">
-          <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mb-10">Order Management</h1>
+      <main class="md:ml-56 flex-1 p-6 md:p-10 w-full relative">
+          <div class="mb-8 border border-slate-200 bg-white p-6 md:p-8 shadow-sm">
+            <p class="text-xs uppercase tracking-[0.18em] text-slate-400">Admin Panel</p>
+            <h1 class="text-2xl md:text-3xl font-semibold text-slate-800 mt-2">Order Management</h1>
+            <p class="text-sm text-slate-500 mt-2">Monitor order lifecycle, return requests, and customer deliveries.</p>
+          </div>
 
-          <form method="GET" action="/admin/orders" class="flex gap-2 mb-4">
+          <form method="GET" action="/admin/orders" class="flex gap-2 mb-4 border border-slate-200 bg-white p-4 shadow-sm">
             <!-- Search -->
             <input type="text" name="search" placeholder="Search orders..."
-                value="<%= search %>" class="border px-2 py-1 rounded focus:outline-none focus:ring focus:border-none focus:ring-blue-200">
+                value="<%= search %>" class="border px-2 py-1 focus:outline-none focus:ring focus:border-none focus:ring-blue-200">
         
             <!-- Filter -->
-            <select name="status" class="border p-1 rounded focus:outline-none focus:ring focus:border-none focus:ring-blue-200">
+            <select name="status" class="border p-1 focus:outline-none focus:ring focus:border-none focus:ring-blue-200">
                 <option value="">All Status</option>
                 <option value="Pending" <%= statusFilter === 'Pending' ? 'selected' : '' %>>Placed</option>
                 <option value="Shipped" <%= statusFilter === 'Shipped' ? 'selected' : '' %>>Shipped</option>
@@ -34,14 +38,14 @@
             </select>
                 
             <!-- Buttons -->
-            <button type="submit" class="bg-teal-600 text-white px-4 py-1 rounded active:scale-[0.95] transition duration-150 ease-out transform">Apply</button>
-            <a href="/admin/orders" class="bg-gray-400 text-white px-4 py-1 rounded">Clear</a>
+            <button type="submit" class="bg-teal-600 text-white px-4 py-1 active:scale-[0.95] transition duration-150 ease-out transform">Apply</button>
+            <a href="/admin/orders" class="bg-gray-400 text-white px-4 py-1">Clear</a>
         </form>
         
 
         <div class="space-y-6">
           <% orders.forEach((order) => { %>
-            <div class="w-full bg-gray-900 text-gray-100 p-6 rounded-2xl shadow">
+            <div class="w-full bg-slate-900 border border-slate-700 text-gray-100 p-6 shadow">
               <!-- Header -->
               <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
                 <div>
@@ -89,7 +93,7 @@
                       <div class="flex items-center gap-3">
                         <% if (p.productId && p.productId.images?.length) { %>
                           <img src="<%= p.productId.images[0].url %>" alt="<%= p.productId.name %>"
-                              class="w-16 h-16 object-contain rounded bg-white
+                              class="w-16 h-16 object-contain bg-white
                               <%= p.status === 'Cancelled' || 
                               order.status === 'Cancelled' || 
                               order.status === "Returned"  ||
@@ -97,7 +101,7 @@
                               'opacity-60 grayscale' : '' %>">
                         <% } else { %>
                           <img src="/images/no-image.png" alt="No Image"
-                              class="w-16 h-16 object-contain rounded border">
+                              class="w-16 h-16 object-contain border">
                         <% } %>
                         <div>
                           <p class="font-medium"><%= p.productId ? p.productId.name : "Unknown Product" %></p>
@@ -116,7 +120,7 @@
                 </div>
         
                 <!-- Right: Shipping Address -->
-                <div class="bg-gray-800 p-4 rounded-xl self-start">
+                <div class="bg-slate-800 border border-slate-700 p-4 self-start">
                   <h4 class="font-semibold mb-3 text-gray-400">Shipping Address</h4>
                   <p><%= order.shippingAddress?.fullName %></p>
                   <p><%= order.shippingAddress?.house %></p>
@@ -131,7 +135,7 @@
               <div class="flex justify-between items-center mt-6">
                 <div class="flex gap-3">
                   <a href="/admin/orders/edit/<%= order._id %>" 
-                    class="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg text-sm transition duration-150 ease-out transform active:scale-[0.95]">
+                    class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-sm transition duration-150 ease-out transform active:scale-[0.95]">
                     Manage
                   </a>
                 </div>

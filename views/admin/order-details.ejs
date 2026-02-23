@@ -25,7 +25,7 @@
                 <% if (order.products.some(p => p.status === 'Return in process')) { %>
                 <button
                     id="returns-btn"
-                    class="border bg-orange-100 hover:bg-orange-200 border-orange-400 text-orange-500 rounded-lg py-1 px-3 active:scale-[0.95] transition duration-150 ease-out transform"
+                    class="border bg-orange-100 hover:bg-orange-200 border-orange-400 text-orange-500 py-1 px-3 active:scale-[0.95] transition duration-150 ease-out transform"
                     data-orderid="<%= order._id %>">
                     View Returns
                 </button>
@@ -36,7 +36,7 @@
             <div id="returns-modal" 
                 class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
                 <div id="returns-card"
-                    class="order-card bg-white rounded-xl shadow-lg p-6 max-h-[80vh] overflow-y-auto w-full max-w-3xl transform scale-90 opacity-0 transition-all duration-300">
+                    class="order-card bg-white shadow-lg p-6 max-h-[80vh] overflow-y-auto w-full max-w-3xl transform scale-90 opacity-0 transition-all duration-300">
                 <h2 class="text-xl font-semibold mb-6 text-gray-800">Return Requests</h2>
                 
                 <div class="space-y-6 divide-y divide-gray-300">
@@ -48,11 +48,11 @@
                         <% if (p.productId && p.productId.images && p.productId.images.length > 0) { %>
                             <img src="<%= p.productId.images[0].url %>" 
                                 alt="<%= p.productId.name %>" 
-                                class="w-20 h-20 p-1 object-contain bg-white rounded">
+                                class="w-20 h-20 p-1 object-contain bg-white">
                         <% } else { %>
                             <img src="/images/placeholder.png" 
                                 alt="No image available" 
-                                class="w-20 h-20 object-contain rounded">
+                                class="w-20 h-20 object-contain">
                         <% } %>
             
                         <!-- Product Info + Form -->
@@ -67,7 +67,7 @@
                             <% } %>
             
                             <!-- Return Reason -->
-                            <div class="border border-gray-300 rounded p-3 bg-gray-50 mb-3">
+                            <div class="border border-gray-300 p-3 bg-gray-50 mb-3">
                             <p class="text-sm text-gray-600">
                                 Reason: <%= p.returnReason || "No reason provided" %>
                             </p>
@@ -76,11 +76,11 @@
                             <!-- Accept / Reject Form -->
                             <form action="/admin/orders/<%= order.id %>/return/<%= p._id %>?_method=PATCH" method="POST" class="flex gap-3">
                             <button type="submit" name="action" value="accept"
-                                    class="px-4 py-1 bg-teal-600 text-white rounded-lg hover:bg-teal-700 active:scale-[0.95] transition duration-150 ease-out transform">
+                                    class="px-4 py-1 bg-teal-600 text-white hover:bg-teal-700 active:scale-[0.95] transition duration-150 ease-out transform">
                                 Accept
                             </button>
                             <button type="submit" name="action" value="reject"
-                                    class="px-4 py-1 bg-red-700 text-white rounded-lg hover:bg-red-800 active:scale-[0.95] transition duration-150 ease-out transform">
+                                    class="px-4 py-1 bg-red-700 text-white hover:bg-red-800 active:scale-[0.95] transition duration-150 ease-out transform">
                                 Reject
                             </button>
                             </form>
@@ -114,7 +114,7 @@
                   
                 
                 
-                <div class="order-card shadow-md block space-y-3 md:flex rounded-2xl justify-between items-center bg-gray-900 text-white p-6 px-10 mb-4 hover:shadow-lg transition ml-10 mr-10">
+                <div class="order-card shadow-md block space-y-3 md:flex justify-between items-center bg-gray-900 text-white p-6 px-10 mb-4 hover:shadow-lg transition ml-10 mr-10">
                     <div class="flex-col">
                         <p class="text-xs md:text-sm text-gray-500">Order ID:</p>
                         <p class="tex-sm text-white md:text-xl"> <%= orderID %> </p>
@@ -178,7 +178,7 @@
                         <button 
                         type="button" 
                         onclick="toggleDropdown('<%= order._id %>')" 
-                        class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center gap-2 active:scale-[0.95] transition duration-150 ease-out transform"
+                        class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 flex items-center gap-2 active:scale-[0.95] transition duration-150 ease-out transform"
                         >
                         Update Status
                         <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200" id="arrow-<%= order._id %>"></i>
@@ -187,7 +187,7 @@
                         <!-- Dropdown -->
                         <div 
                         id="dropdown-<%= order._id %>" 
-                        class="absolute right-0 mt-2 w-56 bg-white border rounded-lg shadow-lg z-50 p-4 transform scale-y-0 origin-top transition-transform duration-200"
+                        class="absolute right-0 mt-2 w-56 bg-white border shadow-lg z-50 p-4 transform scale-y-0 origin-top transition-transform duration-200"
                         >
                         <div class="space-y-2 text-gray-900">
                             <label class="flex items-center">
@@ -214,7 +214,7 @@
                     
                         <!-- Update button -->
                         <div class="mt-4 text-center">
-                            <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 w-full rounded-md active:scale-[0.95] transition duration-150 ease-out transform">
+                            <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 w-full active:scale-[0.95] transition duration-150 ease-out transform">
                             Update
                             </button>
                         </div>
@@ -233,7 +233,7 @@
                 </div>
         
         
-                <div class="shadow-md bg-gray-900 hover:shadow-lg transition rounded-2xl ml-10 mr-10 p-6 mb-4">
+                <div class="shadow-md bg-gray-900 hover:shadow-lg transition ml-10 mr-10 p-6 mb-4">
                     <h2 class="text-lg font-semibold text-white mb-6">Ordered Products</h2>
                   
                     <% order.products.forEach(p => { %>
@@ -292,7 +292,7 @@
         
                 <div class="grid md:grid-cols-3 gap-6 max-w-8xl mx-auto items-stretch ml-10 mr-10">
         
-                    <div class="md:col-span-1 bg-gray-900 rounded-2xl shadow p-6 space-y-6">
+                    <div class="md:col-span-1 bg-gray-900 shadow p-6 space-y-6">
         
                         <h2 class="text-lg text-white font-semibold mb-6">Order status</h2>
                     
@@ -368,7 +368,7 @@
                     </div>
                     
         
-                    <div class="md:col-span-1 bg-gray-900 rounded-2xl shadow p-6 space-y-6">              
+                    <div class="md:col-span-1 bg-gray-900 shadow p-6 space-y-6">              
                         <h2 class="text-lg text-white font-semibold mb-6">Shipping Details</h2>
                         <div class="text-xs md:text-sm text-white font-extralight space-y-1">
                             <p> <%= address.fullName %> </p>
@@ -380,7 +380,7 @@
                         </div>
                     </div> 
         
-                    <div class="md:col-span-1 bg-gray-900 rounded-2xl shadow p-6 space-y-6">
+                    <div class="md:col-span-1 bg-gray-900 shadow p-6 space-y-6">
                         
                         <h2 class="text-lg text-white font-semibold mb-6">Payment Information</h2>
                         <div class="text-xs md:text-sm font-extralight space-y-3">

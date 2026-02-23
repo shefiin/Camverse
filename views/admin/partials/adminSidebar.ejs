@@ -1,51 +1,90 @@
-<aside id="sidebar" 
-class="z-40 w-56 h-[calc(100vh-64px)] overflow-y-auto bg-gray-900 shadow-lg fixed top-[64px] left-0  flex flex-col justify-between px-4 py-6 hidden md:block">
-    
-    <div class="space-y-4 py-4 font-medium text-sm md:text-base">
+<aside id="sidebar"
+class="z-40 w-56 h-[calc(100vh-64px)] overflow-y-auto bg-slate-950 shadow-xl fixed top-[64px] left-0 flex flex-col justify-between px-3 py-5 hidden md:block border-r border-slate-800">
 
-        <a href="/admin/dashboard" class="flex items-center text-white hover:bg-gray-700 hover:text-gray-200 px-3 py-2 rounded-md space-x-2">
-            <i class="fa-solid fa-gauge pr-3"></i>
-            Dashboard
-        </a>
-        <a href="/admin/products" class="flex items-center text-white hover:bg-gray-700 hover:text-gray-200 px-3 py-2 rounded-md space-x-2">
-            <i class="fa-solid fa-warehouse pr-3"></i>
-            Products
-        </a>
-        <a href="/admin/users" class="flex items-center text-white hover:bg-gray-700 hover:text-gray-200 px-3 py-2 rounded-md space-x-2">
-            <i class="fa-solid fa-users pr-3"></i>
-            Users
-        </a>
-        <a href="/admin/orders" class="flex items-center text-white hover:bg-gray-700 hover:text-gray-200 px-3 py-2 rounded-md space-x-2">
-            <i class="fa-solid fa-box-open pr-3"></i>
-            Orders
-        </a>
-        <a href="/admin/categories" class="flex items-center text-white hover:bg-gray-700 hover:text-gray-200 px-3 py-2 rounded-md space-x-2">
-            <i class="fa-solid fa-table pr-3"></i>
-            Categories
-        </a>
-        <a href="/admin/brands" class="flex items-center text-white hover:bg-gray-700 hover:text-gray-200 px-3 py-2 rounded-md space-x-2">
-            <i class="fa-solid fa-tag pr-3"></i>
-            Brands
-        </a>
-        <a href="/admin/offers" class="flex items-center text-white hover:bg-gray-700 hover:text-gray-200 px-3 py-2 rounded-md space-x-2">
-            <i class="fa-solid fa-percent pr-3"></i>
-            Offers
-        </a>
-        <a href="/admin/settings" class="flex items-center text-white hover:bg-gray-700 hover:text-gray-200 px-3 py-2 rounded-md space-x-2">
-            <i class="fa-solid fa-gear pr-3"></i>
-            Settings
-        </a>
-        <a href="/admin/coupons" class="flex items-center text-white hover:bg-gray-700 hover:text-gray-200 px-3 py-2 rounded-md space-x-2">
-            <i class="fa-solid fa-ticket pr-3"></i>
-            Coupons
-        </a>
+    <div>
+
+        <nav class="pt-4 space-y-1 font-medium text-sm md:text-base">
+            <a href="/admin/dashboard" data-admin-nav class="group flex items-center text-slate-200 hover:bg-slate-800 hover:text-white px-2 py-2 transition duration-150 ease-out">
+                <span class="w-8 h-8 bg-slate-900 border border-slate-800 inline-flex items-center justify-center mr-3 group-hover:bg-slate-700">
+                    <i class="fa-solid fa-gauge text-sm"></i>
+                </span>
+                Dashboard
+            </a>
+            <a href="/admin/products" data-admin-nav class="group flex items-center text-slate-200 hover:bg-slate-800 hover:text-white px-2 py-2 transition duration-150 ease-out">
+                <span class="w-8 h-8 bg-slate-900 border border-slate-800 inline-flex items-center justify-center mr-3 group-hover:bg-slate-700">
+                    <i class="fa-solid fa-warehouse text-sm"></i>
+                </span>
+                Products
+            </a>
+            <a href="/admin/users" data-admin-nav class="group flex items-center text-slate-200 hover:bg-slate-800 hover:text-white px-2 py-2 transition duration-150 ease-out">
+                <span class="w-8 h-8 bg-slate-900 border border-slate-800 inline-flex items-center justify-center mr-3 group-hover:bg-slate-700">
+                    <i class="fa-solid fa-users text-sm"></i>
+                </span>
+                Users
+            </a>
+            <a href="/admin/orders" data-admin-nav class="group flex items-center text-slate-200 hover:bg-slate-800 hover:text-white px-2 py-2 transition duration-150 ease-out">
+                <span class="w-8 h-8 bg-slate-900 border border-slate-800 inline-flex items-center justify-center mr-3 group-hover:bg-slate-700">
+                    <i class="fa-solid fa-box-open text-sm"></i>
+                </span>
+                Orders
+            </a>
+            <a href="/admin/categories" data-admin-nav class="group flex items-center text-slate-200 hover:bg-slate-800 hover:text-white px-2 py-2 transition duration-150 ease-out">
+                <span class="w-8 h-8 bg-slate-900 border border-slate-800 inline-flex items-center justify-center mr-3 group-hover:bg-slate-700">
+                    <i class="fa-solid fa-table text-sm"></i>
+                </span>
+                Categories
+            </a>
+            <a href="/admin/brands" data-admin-nav class="group flex items-center text-slate-200 hover:bg-slate-800 hover:text-white px-2 py-2 transition duration-150 ease-out">
+                <span class="w-8 h-8 bg-slate-900 border border-slate-800 inline-flex items-center justify-center mr-3 group-hover:bg-slate-700">
+                    <i class="fa-solid fa-tag text-sm"></i>
+                </span>
+                Brands
+            </a>
+            <a href="/admin/offers" data-admin-nav class="group flex items-center text-slate-200 hover:bg-slate-800 hover:text-white px-2 py-2 transition duration-150 ease-out">
+                <span class="w-8 h-8 bg-slate-900 border border-slate-800 inline-flex items-center justify-center mr-3 group-hover:bg-slate-700">
+                    <i class="fa-solid fa-percent text-sm"></i>
+                </span>
+                Offers
+            </a>
+            <a href="/admin/settings" data-admin-nav class="group flex items-center text-slate-200 hover:bg-slate-800 hover:text-white px-2 py-2 transition duration-150 ease-out">
+                <span class="w-8 h-8 bg-slate-900 border border-slate-800 inline-flex items-center justify-center mr-3 group-hover:bg-slate-700">
+                    <i class="fa-solid fa-gear text-sm"></i>
+                </span>
+                Settings
+            </a>
+            <a href="/admin/coupons" data-admin-nav class="group flex items-center text-slate-200 hover:bg-slate-800 hover:text-white px-2 py-2 transition duration-150 ease-out">
+                <span class="w-8 h-8 bg-slate-900 border border-slate-800 inline-flex items-center justify-center mr-3 group-hover:bg-slate-700">
+                    <i class="fa-solid fa-ticket text-sm"></i>
+                </span>
+                Coupons
+            </a>
+        </nav>
     </div>
 
-    <a href="/admin/logout" class="flex items-center text-red-600 font-semibold hover:bg-gray-100 px-3 py-2 rounded-md">
-        <i class="fa-solid fa-arrow-right-from-bracket pr-3"></i>
-        Logout
-    </a>
-    
-
-
+    <div class="pt-4 border-t border-slate-800">
+        <a href="/admin/logout" class="group flex items-center text-red-300 font-semibold hover:bg-red-950/70 hover:text-red-200 px-2 py-2 transition duration-150 ease-out">
+            <span class="w-8 h-8 bg-slate-900 border border-slate-800 inline-flex items-center justify-center mr-3 group-hover:bg-red-900/60">
+                <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+            </span>
+            Logout
+        </a>
+    </div>
 </aside>
+
+<script>
+(() => {
+  const current = window.location.pathname;
+  const links = document.querySelectorAll('#sidebar [data-admin-nav]');
+  links.forEach((link) => {
+    const href = link.getAttribute('href');
+    if (!href) return;
+    const isMatch = current === href || (href !== '/admin/dashboard' && current.startsWith(href));
+    if (isMatch) {
+      link.classList.remove('text-slate-200');
+      link.classList.add('text-white', 'bg-slate-800', 'border-l-2', 'border-cyan-400', 'pl-[6px]');
+      const iconBox = link.querySelector('span');
+      if (iconBox) iconBox.classList.add('bg-slate-700', 'border-slate-600');
+    }
+  });
+})();
+</script>

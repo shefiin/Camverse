@@ -222,8 +222,8 @@ function hideNavLoginRedirectBanner() {
 
 function handleGuestCartClick(e) {
   if (window.IS_LOGGED_IN) return;
-  const cartLink = e.target.closest('a[href="/cart"]');
-  if (!cartLink) return;
+  const guardedLink = e.target.closest('a[href="/cart"], a[href="/order/details"], a[href="/wishlist"], a[href="/user/wishlist"], a[href="/user/account"]');
+  if (!guardedLink) return;
   e.preventDefault();
   if (navLoginRedirectInProgress) return;
 

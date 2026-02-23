@@ -90,7 +90,7 @@
                     type="checkbox"
                     name="brand"
                     value="<%= brand._id %>"
-                    class="mr-2"
+                    class="mr-2 rounded-none"
                     <%= (Array.isArray(queryParams.brand) && queryParams.brand.includes(brand._id.toString())) || queryParams.brand === brand._id.toString() ? "checked" : "" %>
                   >
                   <%= brand.name %>
@@ -108,7 +108,7 @@
                     type="checkbox"
                     name="category"
                     value="<%= category._id %>"
-                    class="mr-2"
+                    class="mr-2 rounded-none"
                     <%= (Array.isArray(queryParams.category) && queryParams.category.includes(category._id.toString())) || queryParams.category === category._id.toString() ? "checked" : "" %>
                   >
                   <%= category.name %>
@@ -126,7 +126,7 @@
                     type="checkbox"
                     name="price"
                     value="<%= rangeValue %>"
-                    class="mr-2"
+                    class="mr-2 rounded-none"
                     <%= (Array.isArray(queryParams.price) && queryParams.price.includes(rangeValue)) || queryParams.price === rangeValue ? "checked" : "" %>
                   >
                   <%= range.label %>

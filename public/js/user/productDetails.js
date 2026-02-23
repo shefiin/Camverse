@@ -155,6 +155,14 @@
         triggerLoginRedirectPopup();
       });
 
+      document.addEventListener('click', (e) => {
+        if (window.IS_LOGGED_IN) return;
+        const guardedLink = e.target.closest('a[href="/cart"], a[href="/order/details"], a[href="/wishlist"], a[href="/user/wishlist"], a[href="/user/account"]');
+        if (!guardedLink) return;
+        e.preventDefault();
+        triggerLoginRedirectPopup();
+      });
+
       // Prevent accidental double submit on Add to Cart.
       document.addEventListener('submit', (e) => {
         const form = e.target;

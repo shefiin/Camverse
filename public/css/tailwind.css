@@ -213,6 +213,9 @@
 .max-w-\[220px\] {
   max-width: 220px;
 }
+.max-w-\[240px\] {
+  max-width: 240px;
+}
 .max-w-\[250px\] {
   max-width: 250px;
 }
@@ -391,6 +394,9 @@
 .rounded-full {
   border-radius: calc(infinity * 1px);
 }
+.rounded-none {
+  border-radius: 0;
+}
 .border {
   border-style: var(--tw-border-style);
   border-width: 1px;
@@ -414,6 +420,10 @@
 .border-l-2 {
   border-left-style: var(--tw-border-style);
   border-left-width: 2px;
+}
+.border-l-4 {
+  border-left-style: var(--tw-border-style);
+  border-left-width: 4px;
 }
 .border-dashed {
   --tw-border-style: dashed;
@@ -470,6 +480,9 @@
 }
 .pt-\[80px\] {
   padding-top: 80px;
+}
+.pl-\[6px\] {
+  padding-left: 6px;
 }
 .text-center {
   text-align: center;
