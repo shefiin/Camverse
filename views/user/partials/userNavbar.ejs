@@ -29,7 +29,7 @@
             
 
             <li class="relative group">
-                <a href="" class="hover:underline <%= navHoverTextClass %>">Brands</a>
+                <span class="cursor-default hover:underline <%= navHoverTextClass %>">Brands</span>
                 <ul class="absolute left-0 top-full bg-white shadow-md w-40 hidden group-hover:block z-50">
                     <% brands.forEach(brand => { %>
                         <li><a href="/shop/brand/<%= brand._id %>" class="block px-4 py-2 hover:bg-gray-100"><%= brand.name %></a></li>
@@ -37,7 +37,7 @@
                 </ul>
             </li>
             <li class="relative group">
-                <a href="" class="hover:underline <%= navHoverTextClass %>">Categories</a>
+                <span class="cursor-default hover:underline <%= navHoverTextClass %>">Categories</span>
                 <ul class="absolute left-0 top-full bg-white shadow-md w-40 hidden group-hover:block z-50">
                     <% categories.forEach(category => { %>
                         <li><a href="/shop/category/<%= category._id %>"  class="block px-4 py-2 hover:bg-gray-100"><%= category.name %></a></li>
@@ -163,9 +163,29 @@
     </li>
 </ul>
 
+<div id="global-page-loader" class="hidden fixed inset-0 z-[9998] bg-white">
+  <div class="absolute inset-0 flex items-center justify-center">
+    <div class="flex flex-col items-center gap-3">
+      <span class="global-loader-spinner"></span>
+      <p class="text-sm text-gray-700 tracking-wide">Loading...</p>
+    </div>
+  </div>
+</div>
+
 
 
 <style>
+  @keyframes globalLoaderSpin {
+    to { transform: rotate(360deg); }
+  }
+  .global-loader-spinner {
+    width: 38px;
+    height: 38px;
+    border: 3px solid rgba(17, 24, 39, 0.2);
+    border-top-color: #111827;
+    border-radius: 9999px;
+    animation: globalLoaderSpin 0.7s linear infinite;
+  }
   #navbar.scrolled-light {
     background-color: #ffffff !important;
   }
@@ -191,3 +211,56 @@
     color: #374151 !important;
   }
 </style>
+
+<script>
+(() => {
+  if (!document.querySelector('link[rel="icon"]')) {
+    const favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.type = 'image/png';
+    favicon.href = '/images/Favicon.png';
+    document.head.appendChild(favicon);
+  }
+
+  const loader = document.getElementById('global-page-loader');
+  if (!loader) return;
+
+  const showLoader = () => loader.classList.remove('hidden');
+  const hideLoader = () => loader.classList.add('hidden');
+
+  const isPlainLeftClick = (e) =>
+    e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+
+  document.addEventListener('click', (e) => {
+    if (!isPlainLeftClick(e)) return;
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+    if (link.hasAttribute('download') || link.dataset.noLoader === 'true') return;
+    if (link.target && link.target !== '_self') return;
+
+    const href = link.getAttribute('href') || '';
+    if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+
+    const url = new URL(link.href, window.location.origin);
+    if (url.origin !== window.location.origin) return;
+
+    setTimeout(() => {
+      if (e.defaultPrevented) return;
+      showLoader();
+    }, 0);
+  });
+
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement)) return;
+    if (form.dataset.noLoader === 'true') return;
+    setTimeout(() => {
+      if (e.defaultPrevented) return;
+      showLoader();
+    }, 0);
+  });
+
+  window.addEventListener('pageshow', hideLoader);
+  window.addEventListener('load', hideLoader);
+})();
+</script>

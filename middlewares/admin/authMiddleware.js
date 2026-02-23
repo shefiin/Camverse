@@ -6,7 +6,15 @@ const checkAdminAuth = (req, res, next) => {
     }
 };
 
+const checkAdminNotAuth = (req, res, next) => {
+    if (req.session && req.session.adminId) {
+        return res.redirect('/admin/dashboard');
+    }
+    next();
+};
+
 
 module.exports = {
-    checkAdminAuth
+    checkAdminAuth,
+    checkAdminNotAuth
 }

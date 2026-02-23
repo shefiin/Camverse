@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {renderLoginPage, loginAdmin} = require('../../controllers/admin/adminController');
-const { checkAdminAuth } = require('../../middlewares/admin/authMiddleware');
+const { checkAdminNotAuth } = require('../../middlewares/admin/authMiddleware');
 const { logoutAdmin } = require('../../controllers/admin/adminController');
 
 
@@ -12,8 +12,8 @@ router.use((req, res, next) => {
     next();
 })
 
-router.get('/login', renderLoginPage);
-router.post('/login', loginAdmin);
+router.get('/login', checkAdminNotAuth, renderLoginPage);
+router.post('/login', checkAdminNotAuth, loginAdmin);
 
 router.get('/logout', logoutAdmin);
 

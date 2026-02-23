@@ -6,3 +6,79 @@
       </button>
   </div>
 </nav>
+
+<div id="global-admin-loader" class="hidden fixed inset-0 z-[9998] bg-white">
+  <div class="absolute inset-0 flex items-center justify-center">
+    <div class="flex flex-col items-center gap-3">
+      <span class="admin-loader-spinner"></span>
+      <p class="text-sm text-gray-700 tracking-wide">Loading...</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes adminLoaderSpin {
+    to { transform: rotate(360deg); }
+  }
+  .admin-loader-spinner {
+    width: 38px;
+    height: 38px;
+    border: 3px solid rgba(17, 24, 39, 0.2);
+    border-top-color: #111827;
+    border-radius: 9999px;
+    animation: adminLoaderSpin 0.7s linear infinite;
+  }
+</style>
+
+<script>
+(() => {
+  if (!document.querySelector('link[rel="icon"]')) {
+    const favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.type = 'image/png';
+    favicon.href = '/images/Favicon.png';
+    document.head.appendChild(favicon);
+  }
+
+  const loader = document.getElementById('global-admin-loader');
+  if (!loader) return;
+
+  const showLoader = () => loader.classList.remove('hidden');
+  const hideLoader = () => loader.classList.add('hidden');
+
+  const isPlainLeftClick = (e) =>
+    e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+
+  document.addEventListener('click', (e) => {
+    if (!isPlainLeftClick(e)) return;
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+    if (link.hasAttribute('download') || link.dataset.noLoader === 'true') return;
+    if (link.target && link.target !== '_self') return;
+
+    const href = link.getAttribute('href') || '';
+    if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+
+    const url = new URL(link.href, window.location.origin);
+    if (url.origin !== window.location.origin) return;
+
+    setTimeout(() => {
+      if (e.defaultPrevented) return;
+      showLoader();
+    }, 0);
+  });
+
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement)) return;
+    if (form.dataset.noLoader === 'true') return;
+    setTimeout(() => {
+      if (e.defaultPrevented) return;
+      showLoader();
+    }, 0);
+  });
+
+  window.addEventListener('pageshow', hideLoader);
+  window.addEventListener('load', hideLoader);
+})();
+</script>

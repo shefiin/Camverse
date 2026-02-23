@@ -8,6 +8,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+<style>
+  @keyframes modal-pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-modal {
+    animation: modal-pop 0.3s ease-out forwards;
+  }
+</style>
 <body class="bg-slate-50" style="font-family: 'Kanit', sans-serif;">
     
     <%- include('partials/adminNavbar') %>
@@ -142,39 +158,72 @@
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <div id="blockPermission" 
+         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
+      <div class="bg-white p-10 shadow-lg w-full max-w-md animate-modal">
+        <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: Michroma, sans-serif;">Camverse</h2>
+        <div class="w-full flex items-center justify-center py-4 px-4 text-7xl text-gray-300">
+          <i class="fa-solid fa-circle-exclamation"></i>
+        </div>
+        <p id="blockModalMessage" class="text-lg font-extralight mb-6 text-center" style="font-family: 'Kanit', sans-serif;">
+          Are you sure?
+        </p>
+        <div class="flex items-center justify-center space-x-4 mt-4">
+          <button id="confirmBlock" class="bg-red-600 w-full text-white px-12 py-2 hover:bg-red-700 transition duration-200 ease-in-out active:scale-[0.95] transition duration-150 ease-out transform">
+            Confirm
+          </button>
+          <button id="cancelBlock" class="bg-blue-500 w-full text-white px-12 py-2 hover:bg-blue-600 transition duration-200 ease-in-out active:scale-[0.95] transition duration-150 ease-out transform">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
 
     <script>
         const menuBtn = document.getElementById('menu-toggle');
         const menu = document.getElementById('sidebar');
+        const blockModal = document.getElementById('blockPermission');
+        const confirmBlockBtn = document.getElementById('confirmBlock');
+        const cancelBlockBtn = document.getElementById('cancelBlock');
+        const blockModalMessage = document.getElementById('blockModalMessage');
+        let pendingBlockForm = null;
 
         menuBtn.addEventListener('click', () => {
             menu.classList.toggle('hidden');
         })
 
         document.querySelectorAll('.block-form').forEach(form => {
-        form.addEventListener('submit', function (e) {
-          e.preventDefault(); 
-    
-          const isUnblock = form.action.includes('/unblock');
-    
-          Swal.fire({
-            title: isUnblock ? 'Unblock User?' : 'Block User?',
-            text: isUnblock 
-              ? "This will allow the user access again." 
-              : "This will restrict the user from accessing the system.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: isUnblock ? '#16a34a' : '#dc2626',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: isUnblock ? 'Yes, Unblock' : 'Yes, Block'
-          }).then((result) => {
-            if (result.isConfirmed) {
-              form.submit(); 
-            }
+          form.addEventListener('submit', function (e) {
+            e.preventDefault(); 
+            pendingBlockForm = form;
+            const isUnblock = form.action.includes('/unblock');
+
+            blockModalMessage.textContent = isUnblock
+              ? 'Are you sure you want to unblock this user?'
+              : 'Are you sure you want to block this user?';
+            confirmBlockBtn.textContent = isUnblock ? 'Unblock' : 'Block';
+            confirmBlockBtn.className = `${isUnblock ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} w-full text-white px-12 py-2 transition duration-200 ease-in-out active:scale-[0.95] transition duration-150 ease-out transform`;
+
+            blockModal.classList.remove('hidden');
           });
         });
-      });
+
+        confirmBlockBtn.addEventListener('click', () => {
+          if (!pendingBlockForm) return;
+          pendingBlockForm.submit();
+        });
+
+        cancelBlockBtn.addEventListener('click', () => {
+          blockModal.classList.add('hidden');
+          pendingBlockForm = null;
+        });
+
+        blockModal.addEventListener('click', (e) => {
+          if (e.target === blockModal) {
+            blockModal.classList.add('hidden');
+            pendingBlockForm = null;
+          }
+        });
 
 
     </script>

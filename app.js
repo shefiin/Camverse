@@ -65,6 +65,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/favicon.ico', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'images', 'Favicon.png'));
+});
+
 
 app.use(session({
     secret: process.env.SESSION_SECRET,

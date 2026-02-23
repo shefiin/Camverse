@@ -171,11 +171,11 @@
                                   <td class="px-4 py-2">₹<%= product.price %></td>
                                   <td class="px-4 py-3">
                                     <% if(product.isDeleted) { %>
-                                      <span class="text-red-400 font-medium">Deleted</span>
+                                      <span class="px-4 py-1 rounded-full text-red-400 bg-red-900/40 text-sm">Deleted</span>
                                     <% } else if (product.status === 'Active') { %>
-                                        <span class="text-green-400 font-medium">Active</span>
+                                        <span class="px-4 py-1 rounded-full text-green-400 bg-green-900/40 text-sm">Active</span>
                                     <% } else { %>
-                                        <span class="text-red-400 font-medium">Inactive</span>
+                                        <span class="px-4 py-1 rounded-full text-gray-300 bg-gray-700/40 text-sm">Inactive</span>
                                     <% } %>
                                     </td>
                                   <td class="px-4 py-2">
