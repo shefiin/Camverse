@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:css\"",
     "dev:server": "nodemon app.js",
-    "dev:css": "npx tailwindcss -i ./public/tailwind-src/input.css -o ./public/css/tailwind.css --watch"
+    "dev:css": "npx tailwindcss -i ./public/tailwind-src/input.css -o ./public/css/tailwind.css --watch",
+    "build": "npx tailwindcss -i ./public/tailwind-src/input.css -o ./public/css/tailwind.css --minify",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
