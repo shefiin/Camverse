@@ -194,6 +194,7 @@
 
 const form = document.querySelector('form');
 const imagesInput = document.getElementById('images');
+const submitBtn = document.getElementById('addProductBtn');
 const nameInput = document.getElementById('name');
 const brandSelect = document.getElementById('brand');
 const categorySelect = document.getElementById('category');
@@ -206,9 +207,9 @@ const removePreviewBtn = document.getElementById('removePreviewBtn');
 const thumbnailContainer = document.getElementById('thumbnailContainer');
 const imageError = document.getElementById('imageError');
 
-// NEW: track removed images
 let currentImages = [];
 let removedImages = [];
+let initialState = '';
 const removedImagesInput = document.createElement('input');
 removedImagesInput.type = 'hidden';
 removedImagesInput.name = 'removedImages';
@@ -257,7 +258,6 @@ function renderImages() {
       img.alt = `Product image ${index + 1}`;
       img.dataset.index = index;
 
-      // NEW: add remove button for each thumbnail
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'absolute -top-2 -right-2 bg-white text-gray-700 hover:text-red-600 rounded-full w-5 h-5 flex items-center justify-center shadow';
@@ -267,6 +267,7 @@ function renderImages() {
           removedImagesInput.value = JSON.stringify(removedImages);
           currentImages = currentImages.filter(src => src !== imgSrc);
           renderImages();
+          updateSubmitState();
       });
 
       wrapper.appendChild(img);
@@ -284,7 +285,6 @@ thumbnailContainer.addEventListener('click', (e) => {
     }
 });
 
-// Main preview remove
 removePreviewBtn.addEventListener('click', () => {
     clearError();
     const currentSrc = previewImage.src;
@@ -304,6 +304,7 @@ removePreviewBtn.addEventListener('click', () => {
     }
 
     imagesInput.value = '';
+    updateSubmitState();
 });
 
 imagesInput.addEventListener('change', () => {
@@ -315,30 +316,73 @@ imagesInput.addEventListener('change', () => {
     if (files.length > 10) {
       showError('You can upload a maximum of 10 images only.');
       imagesInput.value = '';
+      updateSubmitState();
       return;
     }
 
     currentImages = files.map(file => URL.createObjectURL(file));
     renderImages();
+    updateSubmitState();
 });
+
+const setSubmitEnabled = (enabled) => {
+  submitBtn.disabled = !enabled;
+  submitBtn.classList.toggle('bg-gray-400', !enabled);
+  submitBtn.classList.toggle('cursor-not-allowed', !enabled);
+  submitBtn.classList.toggle('bg-green-600', enabled);
+  submitBtn.classList.toggle('hover:bg-green-700', enabled);
+};
+
+const isFormValid = () => {
+  if (!nameInput.value.trim() || nameInput.value.trim().length > 100) return false;
+  if (!brandSelect.value || !categorySelect.value) return false;
+
+  const price = Number(priceInput.value);
+  const mrp = Number(mrpInput.value);
+  const stock = Number(stockInput.value);
+
+  if (!Number.isFinite(price) || price <= 0) return false;
+  if (!Number.isFinite(mrp) || mrp < price) return false;
+  if (!Number.isFinite(stock) || stock < 0) return false;
+  if (!descriptionInput.value.trim() || descriptionInput.value.trim().length > 500) return false;
+  if (currentImages.length === 0) return false;
+  if (imagesInput.files && imagesInput.files.length > 10) return false;
+
+  return true;
+};
+
+const getFormState = () => JSON.stringify({
+  name: nameInput.value.trim(),
+  brand: brandSelect.value,
+  category: categorySelect.value,
+  price: priceInput.value,
+  mrp: mrpInput.value,
+  stock: stockInput.value,
+  description: descriptionInput.value.trim(),
+  images: currentImages,
+  removedImages
+});
+
+const updateSubmitState = () => {
+  const isDirty = getFormState() !== initialState;
+  setSubmitEnabled(isFormValid() && isDirty);
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   loadExistingImages();
   renderImages();
+  initialState = getFormState();
+  updateSubmitState();
+});
+
+[nameInput, brandSelect, categorySelect, priceInput, mrpInput, stockInput, descriptionInput].forEach((el) => {
+  el.addEventListener('input', updateSubmitState);
+  el.addEventListener('change', updateSubmitState);
 });
 
 form.addEventListener('submit', (e) => {
-  let valid = true;
-
-  document.querySelectorAll('span.text-red-500').forEach(el => el.classList.add('hidden'));
-  imageError.classList.add('hidden');
-
-  if (currentImages.length === 0) {
-    showError('Please upload at least one image.');
-    valid = false;
+  updateSubmitState();
+  if (submitBtn.disabled) {
+    e.preventDefault();
   }
-
-  // ... keep your other validations
-
-  if (!valid) e.preventDefault();
 });

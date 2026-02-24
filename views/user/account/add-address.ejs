@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/fonts.css">
     <title>Add address</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/tailwind.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body style="font-family:'Open Sans', sans-serif;">
 
-    <%- include('../partials/userNavbar') %>
+    <%- include('../partials/userNavbar', { navbarTheme: 'light' }) %>
 
     <section class="px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
         
@@ -28,48 +28,48 @@
               <div>
                 <label class="block text-sm font-extralight text-gray-700 mb-1">Full Name (First and Last name)</label>
                 <input type="text" name="name"
-                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                       class="w-full border border-gray-300 font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
               </div>
 
               <div>
                 <label class="block text-sm font-extralight text-gray-700 mb-1">Phone</label>
                 <input type="tel" name="phone"
-                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                       class="w-full border border-gray-300 font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
               </div>
 
               <div>
                 <label class="block text-sm font-extralight text-gray-700 mb-1">Pincode</label>
                 <input type="text" name="pincode"
-                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                       class="w-full border border-gray-300 font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
               </div>
 
               <div>
                 <label class="block text-sm font-extralight text-gray-700 mb-1">Flat, House no., Building, Company, Apartment</label>
                 <input type="text" name="flat" 
-                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                       class="w-full border border-gray-300 font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
               </div>
 
               <div>
                 <label class="block text-sm font-extralight text-gray-700 mb-1">Area, Street, Sector, Village</label>
                 <input type="text" name="area" 
-                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                       class="w-full border border-gray-300 font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
               </div>
 
               <div>
                 <label class="block text-sm font-extralight text-gray-700 mb-1">Landmark</label>
                 <input type="text" name="landmark" 
-                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                       class="w-full border border-gray-300 font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
               </div>
 
               <div>
                 <label class="block text-sm font-extralight text-gray-700 mb-1">Town/City</label>
                 <input type="text" name="town" 
-                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                       class="w-full border border-gray-300 font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
               </div>
               <div>
                 <label class="block text-sm font-extralight text-gray-700 mb-1">State</label>
                 <input type="text" name="state" 
-                       class="w-full border font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                       class="w-full border border-gray-300 font-extralight p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
               </div>
                  
               <!-- Submit Button -->

@@ -78,29 +78,45 @@ document.addEventListener('DOMContentLoaded', () => {
             previewImage.src = '';
             previewContainer.classList.add('hidden');
         }
-
-        if(imageFiles.length <= maxImages) {
+        if (imageFiles.length <= maxImages) {
             imageContainer.classList.remove('border-red-500');
             imageError.classList.add('hidden');
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-            
         }
+
+        validateForm();
     });
 
 
     const form = document.querySelector('form');
     const submitBtn = document.getElementById('addProductBtn');
     const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+    const statusInput = document.getElementById('status');
+    const isEditPage = /\/admin\/brands\/edit\//.test(window.location.pathname);
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     const nameInput = document.getElementById('name')
     const descriptionInput = document.getElementById('description')
     const nameError = document.getElementById('nameError');
     const descError = document.getElementById('descError');
+    let initialFormState = '';
     
    
   
+
+    const setSubmitEnabled = (enabled) => {
+        submitBtn.disabled = !enabled;
+        submitBtn.classList.toggle('bg-gray-400', !enabled);
+        submitBtn.classList.toggle('cursor-not-allowed', !enabled);
+        submitBtn.classList.toggle('bg-green-600', enabled);
+        submitBtn.classList.toggle('hover:bg-green-700', enabled);
+    };
+
+    const getFormState = () => JSON.stringify({
+        name: nameInput ? nameInput.value.trim() : '',
+        description: descriptionInput ? descriptionInput.value.trim() : '',
+        status: statusInput ? statusInput.value : '',
+        imageCount: imageFiles.length,
+        hasPreview: previewImage ? Boolean(previewImage.src) : false
+    });
 
     function validateForm() {
         let isValid = true;
@@ -160,16 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-
-        if(isValid) {
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-        } else {
-            submitBtn.disabled = true;
-            submitBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-            submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
-        }
+        const isDirty = !isEditPage || getFormState() !== initialFormState;
+        setSubmitEnabled(isValid && isDirty);
     }
 
     inputs.forEach(input => {
@@ -179,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+    initialFormState = getFormState();
     validateForm();
 
     if (success === '1') {
@@ -194,4 +203,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 })
-

@@ -1,185 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/fonts.css">
-    <title>My Account</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/fonts.css">
+  <title>My Profile</title>
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body style="font-family:'Open Sans', sans-serif;">
+<body class="bg-white" style="font-family:'Open Sans', sans-serif;">
 
-    <%- include('partials/userNavbar') %>
+  <%- include('partials/userNavbar', { navbarTheme: 'light' }) %>
 
-    <section class="px-4 min-h-screen md:px-8 lg:px-12 py-12 md:py-20 mt-8">
-        <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 my-10 mb-20 text-center">
-          My Profile
-        </h1>
-      
-        <!-- Success Modal -->
-        <div id="successMessage"
-             class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
-          <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
-            <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: Michroma, sans-serif;">Camverse</h2>
-            <div class="w-full flex items-center justify-center py-4 px-4 text-6xl text-green-600">
-              <i class="fa-regular fa-circle-check"></i>
-            </div>
-            <h1 class="flex items-center justify-center text-2xl font-extralight mb-2" style="font-family: 'Kanit', sans-serif;">
-              Profile updated successfully
-            </h1>
-          </div>
-        </div>
-      
-        <!-- Cards Grid -->
-        <div class="container grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          <!-- Profile Card -->
-          <div class="bg-white p-8 shadow-lg flex flex-col h-full">
-            <div class="flex items-center space-x-6">
-              <% if(user.profileImage) { %>
-                <img src="<%= user.profileImage %>" alt="Profile Picture"
-                     class="w-20 h-20 rounded-full object-cover" />
+  <section class="px-4 md:px-8 lg:px-12 pt-28 pb-16 min-h-screen">
+    <div class="mx-auto max-w-6xl">
+      <div class="border border-gray-200 bg-white shadow-sm overflow-hidden">
+        <div class="h-0"></div>
+        <div class="px-6 md:px-10 pb-8">
+          <div class="mt-6 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div class="flex items-end gap-4">
+              <% if (user.profileImage) { %>
+                <img src="<%= user.profileImage %>" alt="Profile"
+                     class="w-24 h-24 md:w-28 md:h-28 object-cover border-4 border-white shadow-sm bg-white">
               <% } else { %>
-                <i class="fa-solid fa-circle-user text-7xl text-gray-200"></i>
+                <div class="w-24 h-24 md:w-28 md:h-28 border-4 border-white shadow-sm bg-white flex items-center justify-center">
+                  <i class="fa-solid fa-circle-user text-6xl text-gray-300"></i>
+                </div>
               <% } %>
-              <div>
-                <h2 class="text-2xl font-medium"><%= user.name %></h2>
-                <p class="text-gray-500"><%= user.email %></p>
+
+              <div class="pb-1">
+                <h1 class="text-2xl md:text-3xl font-semibold text-gray-900"><%= user.name %></h1>
+                <p class="text-sm md:text-base text-gray-500"><%= user.email %></p>
               </div>
             </div>
-      
-            <hr class="my-6">
-      
-            <p><strong class="font-semibold">Phone:</strong>
-              <span class="font-extralight text-gray-500"><%= user.phone || 'Not provided' %></span>
-            </p>
-            <p><strong class="font-semibold">Gender:</strong>
-              <span class="font-extralight text-gray-500"><%= user.gender || 'Not specified' %></span>
-            </p>
-            <p><strong class="font-semibold">Date of Birth:</strong>
-              <span class="font-extralight text-gray-500"><%= user.dateOfBirth ? user.dateOfBirth.toDateString() : 'Not provided' %></span>
-            </p>
-            <p><strong class="font-semibold">Joined:</strong>
-              <span class="font-extralight text-gray-500"><%= user.createdAt.toDateString() %></span>
-            </p>
-      
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-6 gap-4">
+
+            <div class="flex flex-wrap gap-3 pb-1">
               <a href="/user/profile/edit/<%= user._id %>"
-                 class="bg-teal-600 text-white px-5 py-2.5 hover:bg-teal-700 text-center">
+                 class="px-5 py-2.5 bg-teal-600 text-white hover:bg-teal-700 transition duration-150 ease-out transform active:scale-[0.95]">
                 Edit Profile
               </a>
-              <a href="/reset" class="text-teal-600 font-extralight text-center sm:text-right">
-                Change Password >
+              <a href="/reset"
+                 class="px-5 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-150 ease-out transform active:scale-[0.95]">
+                Change Password
               </a>
             </div>
           </div>
-      
-          <!-- Referral Card -->
-          <div class="bg-white p-8 shadow-lg flex flex-col h-full">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-2">Refer & Earn</h2>
-            <p class="text-gray-500 text-sm mb-6 font-extralight">
-              Share your referral code with friends. You get ₹500 and your friend gets ₹200 in wallet credits.
-            </p>
-      
-            <!-- Referral Code -->
-            <label class="block text-gray-700 mb-2 text-sm font-medium">Your Referral Code</label>
-            <div class="flex items-center">
-              <input type="text" value="<%= user.referralToken %>" readonly
-                     class="flex-1 px-4 py-2 border font-mono border-gray-200 bg-gray-50 text-xl text-gray-800 
-                            focus:outline-none focus:ring-0 focus:border-gray-200">
-                <button onclick="navigator.clipboard.writeText('<%= user.referralToken %>')"
-                        class="bg-black text-white px-4 py-3 text-lg flex items-center gap-2 
-                                hover:bg-gray-500 transform transition active:scale-[0.95] duration-150 ease-out">
-                    <i class="fa-solid fa-copy"></i>
-                </button>
-                        
-            </div>
-      
-            <!-- Share Buttons -->
-            <div class="flex flex-wrap gap-4 mt-6 mb-6">
-              <button id="copyLinkBtn" 
-                class="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white hover:bg-teal-700 active:scale-[0.95] transition duration-150 ease-out transform">
-                <i class="fa-solid fa-link"></i> <span id="copyText">Copy Link</span>
-              </button>
-                            
-              <a href="<%= whatsappLink %>"
-                 target="_blank" class="hover:text-[#25D366]">
-                <i class="fa-brands fa-square-whatsapp text-4xl"></i>
-              </a>
-              <a href="<%= twitterLink %>"
-                 target="_blank" class="hover:text-[#1DA1F2]">
-                <i class="fa-brands fa-square-x-twitter text-4xl"></i>
-              </a>
-              <a href="https://www.instagram.com/?url=Join%20me%20using%20referral%20code%20<%= user.referralToken %>"
-                 target="_blank" class="group">
-                <i class="fa-brands fa-square-instagram text-4xl
-                          group-hover:bg-gradient-to-tr group-hover:from-yellow-400 group-hover:via-pink-500 group-hover:to-purple-600
-                          group-hover:bg-clip-text group-hover:text-transparent"></i>
-              </a>
-              <a href="<%= facebookLink %>"
-                 target="_blank" class="hover:text-[#1877F2]">
-                <i class="fa-brands fa-square-facebook text-4xl"></i>
-              </a>
-            </div>
-            <% if(user.totalReferrals) { %>
-              <div class="bg-gray-50 border flex justify-between items-center px-3 py-2">
-                <div>
-                  <p class="text-base font-semibold">Total Referrals</p>
-                  <p class="font-extralight">
-                    <%= user.totalReferrals %> successful referral<%= user.totalReferrals === 1 ? '' : 's' %>
-                  </p>                  
-                </div>
-                <div class="text-center">
-                  <p class="font-extralight">
-                    Total Earned
-                  </p>
-                  <p class="font-bold text-2xl">
-                    ₹<%= user.referralEarnings %>
-                  </p>
-                </div>
-              </div>
-            <% } %>
 
+          <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="border border-gray-200 bg-gray-50 p-3 text-center">
+              <p class="text-xs text-gray-500 uppercase tracking-wide">Phone</p>
+              <p class="text-sm font-medium text-gray-800 mt-1"><%= user.phone || 'Not provided' %></p>
+            </div>
+            <div class="border border-gray-200 bg-gray-50 p-3 text-center">
+              <p class="text-xs text-gray-500 uppercase tracking-wide">Gender</p>
+              <p class="text-sm font-medium text-gray-800 mt-1"><%= user.gender || 'Not specified' %></p>
+            </div>
+            <div class="border border-gray-200 bg-gray-50 p-3 text-center">
+              <p class="text-xs text-gray-500 uppercase tracking-wide">Date of Birth</p>
+              <p class="text-sm font-medium text-gray-800 mt-1"><%= user.dateOfBirth ? user.dateOfBirth.toDateString() : 'Not provided' %></p>
+            </div>
+            <div class="border border-gray-200 bg-gray-50 p-3 text-center">
+              <p class="text-xs text-gray-500 uppercase tracking-wide">Joined</p>
+              <p class="text-sm font-medium text-gray-800 mt-1"><%= user.createdAt.toDateString() %></p>
+            </div>
           </div>
         </div>
-      </section>
-       
+      </div>
 
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div class="lg:col-span-2 border border-gray-200 bg-white p-6 md:p-8 shadow-sm">
+          <h2 class="text-xl md:text-2xl font-semibold text-gray-900">About Profile</h2>
+          <p class="text-sm text-gray-500 mt-2 leading-6">
+            Keep your account details up to date so checkout, support, and order updates remain smooth.
+          </p>
 
-    <%- include('partials/userFooter') %>
+          <div class="mt-6 space-y-4 text-sm md:text-base">
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-user text-gray-400 mt-1"></i>
+              <div>
+                <p class="text-gray-500 text-xs uppercase tracking-wide">Full Name</p>
+                <p class="text-gray-800 font-medium"><%= user.name %></p>
+              </div>
+            </div>
 
-    <script src="/js/user/homePage.js"></script>
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-envelope text-gray-400 mt-1"></i>
+              <div>
+                <p class="text-gray-500 text-xs uppercase tracking-wide">Email</p>
+                <p class="text-gray-800 font-medium"><%= user.email %></p>
+              </div>
+            </div>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const success = urlParams.get('success');
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-phone text-gray-400 mt-1"></i>
+              <div>
+                <p class="text-gray-500 text-xs uppercase tracking-wide">Mobile</p>
+                <p class="text-gray-800 font-medium"><%= user.phone || 'Not provided' %></p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        if (success === '1') {
-            const message = document.getElementById('successMessage');
-            message.classList.remove('hidden');
+        <div class="border border-gray-200 bg-white p-6 md:p-8 shadow-sm">
+          <h2 class="text-xl font-semibold text-gray-900">Refer & Earn</h2>
+          <p class="text-sm text-gray-500 mt-2 leading-6">
+            Share your code with friends. You get ₹500 and your friend gets ₹200 wallet credit.
+          </p>
 
-            setTimeout(() => {
-            message.classList.add('hidden');
-            const newUrl = window.location.pathname;
-            window.history.replaceState({}, document.title, newUrl);
-            }, 2000);
-        }
+          <div class="mt-5">
+            <label class="text-xs text-gray-500 uppercase tracking-wide">Your Referral Code</label>
+            <div class="mt-2 flex items-stretch">
+              <input type="text" value="<%= user.referralToken %>" readonly
+                     class="w-full border border-gray-300 bg-gray-50 px-3 py-2 text-lg font-mono text-gray-900 focus:outline-none">
+              <button type="button" onclick="navigator.clipboard.writeText('<%= user.referralToken %>')"
+                      class="px-4 bg-gray-900 text-white hover:bg-gray-700 transition duration-150 ease-out transform active:scale-[0.95]">
+                <i class="fa-solid fa-copy"></i>
+              </button>
+            </div>
+          </div>
 
-        document.getElementById("copyLinkBtn").addEventListener("click", () => {
-            const link = "localhost:3000/register?ref=<%= user.referralToken %>"; 
-            navigator.clipboard.writeText(link).then(() => {
-            const copyText = document.getElementById("copyText");
-            copyText.textContent = "Copied!";
-        
-            // Reset back to original text after 2 seconds
-            setTimeout(() => {
-                copyText.textContent = "Copy Link";
-            }, 2000);
-            });
+          <div class="flex flex-wrap gap-3 mt-5">
+            <button id="copyLinkBtn" type="button"
+                    class="px-4 py-2 bg-teal-600 text-white hover:bg-teal-700 transition duration-150 ease-out transform active:scale-[0.95]">
+              <i class="fa-solid fa-link mr-1"></i><span id="copyText">Copy Link</span>
+            </button>
+            <a href="<%= whatsappLink %>" target="_blank" class="px-3 py-2 border border-gray-300 text-gray-700 hover:text-[#25D366] transition duration-150 ease-out transform active:scale-[0.95]"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="<%= twitterLink %>" target="_blank" class="px-3 py-2 border border-gray-300 text-gray-700 hover:text-[#1DA1F2] transition duration-150 ease-out transform active:scale-[0.95]"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="<%= facebookLink %>" target="_blank" class="px-3 py-2 border border-gray-300 text-gray-700 hover:text-[#1877F2] transition duration-150 ease-out transform active:scale-[0.95]"><i class="fa-brands fa-facebook-f"></i></a>
+          </div>
+
+          <div class="mt-5 border border-gray-200 bg-gray-50 p-4">
+            <p class="text-xs text-gray-500 uppercase tracking-wide">Referral Stats</p>
+            <div class="flex items-center justify-between mt-2">
+              <div>
+                <p class="text-sm text-gray-600">Successful Referrals</p>
+                <p class="text-xl font-semibold text-gray-900"><%= user.totalReferrals || 0 %></p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm text-gray-600">Total Earned</p>
+                <p class="text-xl font-semibold text-gray-900">₹<%= user.referralEarnings || 0 %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="successMessage"
+         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
+      <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-xl font-semibold text-gray-600 mb-6" style="font-family: Michroma, sans-serif;">Camverse</h2>
+        <div class="w-full flex items-center justify-center py-4 px-4 text-6xl text-green-600">
+          <i class="fa-regular fa-circle-check"></i>
+        </div>
+        <h1 class="flex items-center justify-center text-2xl font-extralight mb-2" style="font-family: 'Kanit', sans-serif;">
+          Profile updated successfully
+        </h1>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/userFooter') %>
+
+  <script src="/js/user/homePage.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+
+    if (success === '1') {
+      const message = document.getElementById('successMessage');
+      message.classList.remove('hidden');
+
+      setTimeout(() => {
+        message.classList.add('hidden');
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }, 2000);
+    }
+
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener('click', () => {
+        const link = `${window.location.origin}/register?ref=<%= user.referralToken %>`;
+        navigator.clipboard.writeText(link).then(() => {
+          const copyText = document.getElementById('copyText');
+          if (!copyText) return;
+          copyText.textContent = 'Copied!';
+          setTimeout(() => {
+            copyText.textContent = 'Copy Link';
+          }, 2000);
         });
+      });
+    }
+  </script>
 
-    </script>
- 
 </body>
-</html>    
+</html>

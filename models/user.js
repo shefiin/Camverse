@@ -43,7 +43,12 @@ const userSchema = new mongoose.Schema({
         enum: ['Male', 'Female'],
         default: null
     },
-    referralToken: { type: String, unique: true },
+    referralToken: { type: String, unique: true, sparse: true, trim: true, uppercase: true },
+    referredBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
     referralEarnings: {
         type: Number,
         default: 0

@@ -1,13 +1,3 @@
-tailwind.config = {
-    theme: {
-    extend: {
-        screens: {
-        'tablet': '950px'  
-        }
-    }
-    }
-}
-
 if (typeof window.IS_LOGGED_IN === 'undefined') {
   window.IS_LOGGED_IN = Boolean(document.querySelector('a[href="/logout"]'));
 }

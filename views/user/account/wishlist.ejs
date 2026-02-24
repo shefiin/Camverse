@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/fonts.css">
     <title>My Account</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/tailwind.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body style="font-family:'Open Sans', sans-serif";>
 
-    <%- include('../partials/userNavbar') %>
+    <%- include('../partials/userNavbar', { navbarTheme: 'light' }) %>
 
     <section class="px-6 py-20 min-h-screen lg:px-12 lg:py-20 md-px-10 mt-8">
 

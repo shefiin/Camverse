@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/fonts.css">
   <title>Register</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind.css">
   <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -24,6 +24,7 @@
           type="text"
           name="name"
           id="name"
+          value="<%= formData?.name || '' %>"
           class="w-full px-3 py-2 font-extralight border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
           <p id="nameError" class="text-xs font-extralight text-red-500 mt-1 hidden">Name must not contain numbers or special characters</p>
       </div>
@@ -34,6 +35,7 @@
           type="email"
           name="email"
           id="email"
+          value="<%= formData?.email || '' %>"
           class="w-full px-3 py-2 font-extralight border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 requiredFields"/>
           <p id="emailError" class="text-xs font-extralight text-red-500 mt-1 <%= typeof error !== 'undefined' && error ? '' : 'hidden' %>">
             <%- error || 'Please enter a valid email address' %>
@@ -103,7 +105,7 @@
       <hr class="flex-grow border-gray-300">
     </div>
 
-    <a href="/auth/google" class="flex items-center justify-center w-full border border-gray-300 py-2 px-4 hover:bg-gray-100">
+    <a href="/auth/google<%= referral ? `?ref=${encodeURIComponent(referral)}` : '' %>" class="flex items-center justify-center w-full border border-gray-300 py-2 px-4 hover:bg-gray-100">
       <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5 mr-2">
       <span class="text-sm text-gray-700 font-medium">Continue with Google</span>
     </a>

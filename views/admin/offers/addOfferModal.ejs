@@ -1,23 +1,23 @@
 <div id="offer-modal-<%= product._id %>" 
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
     <div id="offer-card-<%= product._id %>"
-      class="order-card bg-white rounded-xl shadow-lg p-6 max-h-[80vh] overflow-y-auto w-full max-w-3xl transform scale-90 opacity-0 transition-all duration-300">
+      class="order-card bg-white rounded-none shadow-lg p-6 max-h-[80vh] overflow-y-auto w-full max-w-3xl transform scale-90 opacity-0 transition-all duration-300">
       
       <h2 id="modal-title" class="text-xl font-semibold mb-6 text-gray-800">Add Offer</h2>
 
       <!-- Product Info -->
       <div class="flex items-center gap-4 mb-4">
         <% if (product.images && product.images.length > 0) { %>
-          <img src="<%= product.images[0].url %>" alt="<%= product.name %>" class="w-24 h-24 object-contain bg-white border rounded bg-gray-100 p-2">
+          <img src="<%= product.images[0].url %>" alt="<%= product.name %>" class="w-24 h-24 object-contain bg-white border border-gray-300 rounded-none bg-gray-100 p-2">
         <% } else { %>
-          <img src="/images/placeholder.png" alt="No image" class="w-24 h-24 object-contain rounded bg-gray-100 p-2">
+          <img src="/images/placeholder.png" alt="No image" class="w-24 h-24 object-contain border border-gray-300 rounded-none bg-gray-100 p-2">
         <% } %>
         <h3 class="text-xl font-semibold"><%= product.name %></h3>
       </div>
   
 
       <!-- Offer Form -->
-      <form id="offer-form" action="/admin/offers/add/<%= product._id %>?_method=PATCH" method="POST" class="space-y-6">
+      <form id="offer-form" action="/admin/offers/add/<%= product._id %>?_method=PATCH" method="POST" class="space-y-6" data-is-edit="<%= (product.individualOffer && product.individualOffer.isActive) ? 'true' : 'false' %>">
         <!-- Offer Type -->
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-2">Offer Type</label>
@@ -43,7 +43,7 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">Offer Value</label>
           <input type="number" name="offerValue" 
                  value="<%= product.individualOffer ? product.individualOffer.discountValue : '' %>"
-                 class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-teal-500" 
+                 class="w-full border border-gray-300 rounded-none px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-200 focus:border-teal-500" 
                  placeholder="Enter percentage or amount" required>
         </div>
   
@@ -53,25 +53,25 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">From</label>
             <input type="date" name="startDate" 
                    value="<%= product.individualOffer && product.individualOffer.startDate ? product.individualOffer.startDate.toISOString().split('T')[0] : '' %>"
-                   class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-teal-500" required>
+                   class="w-full border border-gray-300 rounded-none px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-200 focus:border-teal-500" required>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">To</label>
             <input type="date" name="endDate" 
                    value="<%= product.individualOffer && product.individualOffer.endDate ? product.individualOffer.endDate.toISOString().split('T')[0] : '' %>"
-                   class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-teal-500" required>
+                   class="w-full border border-gray-300 rounded-none px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-200 focus:border-teal-500" required>
           </div>
         </div>
   
         <!-- Buttons -->
         <div class="flex justify-end gap-4 mt-6">
             <button type="button" 
-            class="close-modal px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 active:scale-[0.95] transition duration-150 ease-out transform"
+            class="close-modal px-4 py-2 bg-gray-200 rounded-none hover:bg-gray-300 active:scale-[0.95] transition duration-150 ease-out transform"
             data-id="<%= product._id %>">
                 Cancel
             </button>
           <button type="submit"
-                  class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 active:scale-[0.95] transition duration-150 ease-out transform">Save Offer</button>
+                  class="px-4 py-2 bg-teal-600 text-white rounded-none hover:bg-teal-700 active:scale-[0.95] transition duration-150 ease-out transform">Save Offer</button>
         </div>
       </form>
     </div>
@@ -79,17 +79,72 @@
 
 
   <script>
+    (() => {
+    const setOfferSubmitEnabled = (submitBtn, enabled) => {
+      if (!submitBtn) return;
+      submitBtn.disabled = !enabled;
+      submitBtn.classList.toggle('bg-gray-400', !enabled);
+      submitBtn.classList.toggle('cursor-not-allowed', !enabled);
+      submitBtn.classList.toggle('bg-teal-600', enabled);
+      submitBtn.classList.toggle('hover:bg-teal-700', enabled);
+    };
+
+    const serializeOfferForm = (form) => {
+      const offerType = form.querySelector('input[name="offerType"]:checked')?.value || '';
+      const offerValue = form.querySelector('input[name="offerValue"]')?.value || '';
+      const startDate = form.querySelector('input[name="startDate"]')?.value || '';
+      const endDate = form.querySelector('input[name="endDate"]')?.value || '';
+      return JSON.stringify({ offerType, offerValue, startDate, endDate });
+    };
+
+    const isOfferFormValid = (form) => {
+      const offerType = form.querySelector('input[name="offerType"]:checked')?.value || '';
+      const offerValue = Number(form.querySelector('input[name="offerValue"]')?.value || 0);
+      const startDate = form.querySelector('input[name="startDate"]')?.value || '';
+      const endDate = form.querySelector('input[name="endDate"]')?.value || '';
+      return Boolean(offerType) && offerValue > 0 && Boolean(startDate) && Boolean(endDate);
+    };
+
+    const updateOfferSubmitState = (form) => {
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const isEdit = form.dataset.isEdit === 'true';
+      const isDirty = serializeOfferForm(form) !== (form.dataset.initialState || '');
+      const enabled = isOfferFormValid(form) && (isEdit ? isDirty : true);
+      setOfferSubmitEnabled(submitBtn, enabled);
+    };
+
+    const bindOfferFormState = (form) => {
+      if (!form || form.dataset.stateBound === 'true') return;
+      form.dataset.stateBound = 'true';
+      form.querySelectorAll('input').forEach((input) => {
+        input.addEventListener('input', () => updateOfferSubmitState(form));
+        input.addEventListener('change', () => updateOfferSubmitState(form));
+      });
+      form.addEventListener('submit', (e) => {
+        updateOfferSubmitState(form);
+        if (form.querySelector('button[type="submit"]')?.disabled) {
+          e.preventDefault();
+        }
+      });
+    };
+
     // Open modal
     document.querySelectorAll(".addOffer-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         const productId = btn.dataset.id;
         const modal = document.getElementById(`offer-modal-${productId}`);
         const card = document.getElementById(`offer-card-${productId}`);
+        const form = modal ? modal.querySelector('form') : null;
   
         if (modal && card) {
           modal.classList.remove("opacity-0", "pointer-events-none");
           card.classList.remove("scale-90", "opacity-0");
           card.classList.add("scale-100", "opacity-100");
+          if (form) {
+            bindOfferFormState(form);
+            form.dataset.initialState = serializeOfferForm(form);
+            updateOfferSubmitState(form);
+          }
         }
       });
     });
@@ -122,6 +177,7 @@
         }
       });
     });
+    })();
   </script>
   
   

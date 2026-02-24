@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/fonts.css">
     <title>Order Success</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/tailwind.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body style="font-family:'Open Sans', sans-serif;">
 
-    <%- include('../partials/userNavbar') %>
+    <%- include('../partials/userNavbar', { navbarTheme: 'light' }) %>
 
     <div class="bg-white p-10 w-full max-w-xl mt-20 mb-20 mx-auto">
       <div class="mx-auto space-y-2 pt-10">

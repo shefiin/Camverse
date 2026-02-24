@@ -1,20 +1,4 @@
 
-if (window.tailwind) {
-  tailwind.config = {
-    theme: {
-      extend: {
-        screens: {
-          'tablet': '800px',
-          'xs': '610px',
-          'sm2': '800px',
-          'md2': '1201px',
-          'lg2': '1321px',
-        }
-      }
-    },
-  };
-}
-
 if (typeof window.IS_LOGGED_IN === "undefined") {
   window.IS_LOGGED_IN = Boolean(document.querySelector('a[href="/logout"]'));
 }

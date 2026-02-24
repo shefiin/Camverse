@@ -5,19 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/fonts.css">
     <title>My Account</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/tailwind.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body style="font-family:'Open Sans', sans-serif";>
+<body class="min-h-screen flex flex-col" style="font-family:'Open Sans', sans-serif;">
 
-    <%- include('partials/userNavbar') %>
+    <%- include('partials/userNavbar', { navbarTheme: 'light' }) %>
 
-    <section class="px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
-        <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-10">My Account</h1>
-
-
+    <section class="flex-1 px-6 py-20 lg:px-12 lg:py-20 md-px-10 mt-8">
         <div class="px-6 py-20 lg:px-12 lg:py-20">
-            <h1 class="text-2xl md:text-3xl text-gray-800 mb-8">My Addresses</h1>
+            <h1 class="text-2xl md:text-3xl text-gray-800 mb-8 text-center">My Addresses</h1>
 
 
             <div id="successMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
@@ -53,42 +50,51 @@
           
             <!-- Add Address Button -->
             <a href="/user/address/add" 
-               class="mb-6 inline-block bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">
+               class="mb-6 inline-block bg-teal-600 text-white px-4 py-2 rounded-none hover:bg-teal-700">
                <i class="fa-solid fa-plus"></i>
                Add New Address
             </a>
           
             <!-- Address List -->
             <div class="grid gap-6 sm:grid-cols-2">
-              <% addresses.forEach((address, index) => { %>    
-                <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
-                  
-                  <% if (address.isDefault) { %>
-                    <span class="inline-block text-white text-xs px-2 py-1 rounded-full" style="background-color: #ff5a5f;">
-                      DEFAULT
-                    </span>
-                  <% } %>
-
-                  <h2 class="font-medium text-lg mt-2"> <%= address.fullName %> </h2>
-                  <p class="text-gray-500 font-extralight text-sm"> <%= address.mobile %> </p>
-                  <p class="text-gray-500 font-extralight text-sm mt-2">
-                    <%= address.house %>, <%= address.area %>,
-                    <%= address.city %>, <%= address.state %> - <%= address.pincode %>
-                  </p>
-                  <% if(address.landmark) { %>
-                    <p class="text-gray-500 font-extralight text-sm mt-1">Landmark: <%= address.landmark %></p>
-                  <% } %>
-            
-                  <div class="mt-4 flex gap-4">
-                    <a href="/user/address/edit/<%= address._id %>" 
-                      class="text-blue-600 hover:bg-gray-100 text-xs border p-1">Edit</a>
-                    <a href="/user/address/delete/<%= address._id %>" 
-                      class="text-red-600 hover:bg-gray-100 text-xs border p-1">Delete</a>
-                    <a href="/user/address/default/<%= address._id %>" 
-                      class="text-teal-600 hover:bg-gray-100 text-xs border p-1">Set as Default</a>
-                  </div>
+              <% if (!addresses || addresses.length === 0) { %>
+                <div class="sm:col-span-2 bg-white p-8 text-center border border-gray-200">
+                  <p class="text-gray-600">No saved addresses yet.</p>
+                  <p class="text-sm text-gray-400 mt-1">Click "Add New Address" to create your first address.</p>
                 </div>
-              <% }) %>
+              <% } %>
+
+              <% if (addresses && addresses.length > 0) { %>
+                <% addresses.forEach((address, index) => { %>    
+                  <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+                    
+                    <% if (address.isDefault) { %>
+                      <span class="inline-block text-white text-xs px-2 py-1 rounded-full" style="background-color: #ff5a5f;">
+                        DEFAULT
+                      </span>
+                    <% } %>
+
+                    <h2 class="font-medium text-lg mt-2"> <%= address.fullName %> </h2>
+                    <p class="text-gray-500 font-extralight text-sm"> <%= address.mobile %> </p>
+                    <p class="text-gray-500 font-extralight text-sm mt-2">
+                      <%= address.house %>, <%= address.area %>,
+                      <%= address.city %>, <%= address.state %> - <%= address.pincode %>
+                    </p>
+                    <% if(address.landmark) { %>
+                      <p class="text-gray-500 font-extralight text-sm mt-1">Landmark: <%= address.landmark %></p>
+                    <% } %>
+              
+                    <div class="mt-4 flex gap-4">
+                      <a href="/user/address/edit/<%= address._id %>" 
+                        class="text-blue-600 hover:bg-gray-100 text-xs border p-1">Edit</a>
+                      <a href="/user/address/delete/<%= address._id %>" 
+                        class="text-red-600 hover:bg-gray-100 text-xs border p-1">Delete</a>
+                      <a href="/user/address/default/<%= address._id %>" 
+                        class="text-teal-600 hover:bg-gray-100 text-xs border p-1">Set as Default</a>
+                    </div>
+                  </div>
+                <% }) %>
+              <% } %>
             </div>
         </div>
           

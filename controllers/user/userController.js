@@ -4,6 +4,7 @@ const Category = require('../../models/category');
 const sendOTP = require('../../utils/sendEmail');
 const Wallet = require('../../models/wallet');
 const user = require('../../models/user');
+const { generateUniqueReferralToken } = require('../../utils/referral');
 
 
 const userAccount = async (req, res) => {
@@ -32,8 +33,13 @@ const userProfile = async (req, res) => {
         const brands = await Brand.find();
         const categories = await Category.find();
 
+        if (!user.referralToken) {
+            user.referralToken = await generateUniqueReferralToken(User);
+            await user.save();
+        }
+
         const referralToken = user.referralToken;
-        const referralLink = `http://localhost:3000/register?ref=${referralToken}`;
+        const referralLink = `${req.protocol}://${req.get('host')}/register?ref=${referralToken}`;
 
         const message = `Join me on Camverse! Use my referral code ${referralToken} to sign up and get exclusive discounts! ${referralLink}`;
 

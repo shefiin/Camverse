@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/fonts.css">
     <title>Checkout</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/tailwind.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
@@ -60,7 +60,7 @@
             <p id="checkoutWarningText" class="text-center text-lg font-extralight text-gray-700 mt-3 mb-6" style="font-family: 'Kanit', sans-serif;">
               Please select or add a delivery address.
             </p>
-            <button id="closeCheckoutWarning" type="button" class="w-full bg-teal-700 hover:bg-teal-800 text-white py-2 transition duration-150 ease-out transform active:scale-[0.95]">
+            <button id="closeCheckoutWarning" type="button" class="w-full bg-teal-700 border border-transparent hover:bg-teal-800 text-white py-2 transition duration-150 ease-out transform active:scale-[0.95]">
               OK
             </button>
           </div>
@@ -119,11 +119,11 @@
 
             <div class="pt-4 text-center">
               <button id="submitButton" type="submit"
-                      class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 transition duration-150 ease-out transform active:scale-[0.95]">
+                      class="bg-teal-600 border border-transparent hover:bg-teal-700 text-white px-4 py-2 transition duration-150 ease-out transform active:scale-[0.95]">
                 Add address
               </button>
               <button type="button" id="closeModal" 
-                      class="bg-gray-400 hover:bg-gray-500 text-white px-9 py-2 transition duration-150 ease-out transform active:scale-[0.95]">
+                      class="bg-gray-400 border border-gray-300 hover:bg-gray-500 text-white px-9 py-2 transition duration-150 ease-out transform active:scale-[0.95]">
                 Cancel
               </button>
             </div>
@@ -138,7 +138,7 @@
             <div class="bg-white shadow p-6">
               <% if (!user.addresses || user.addresses.length === 0) { %>
                 <p class="text-gray-500">
-                  <button type="button" class="openAddressModal bg-[#ffd500] rounded-lg text-black px-3 py-2 transition duration-150 ease-out transform active:scale-[0.95]">
+                  <button type="button" class="openAddressModal bg-[#ffd500] border border-gray-300 rounded-lg text-black px-3 py-2 transition duration-150 ease-out transform active:scale-[0.95]">
                     <i class="fa-solid fa-location-crosshairs"></i> Add delivery address
                   </button>                    
                 </p>
@@ -284,7 +284,7 @@
                 </div>
 
                 <button type="submit" 
-                  class="block w-full text-center bg-teal-600 text-white py-2 hover:bg-teal-700 transition duration-150 ease-out transform active:scale-[0.95]">
+                  class="block w-full text-center bg-teal-600 border border-transparent text-white py-2 hover:bg-teal-700 transition duration-150 ease-out transform active:scale-[0.95]">
                   Place Order
                 </button>
               </form>

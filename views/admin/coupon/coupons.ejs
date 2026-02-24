@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/fonts.css">
     <title>Coupon Management</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/tailwind.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         .coupon {
@@ -155,6 +155,7 @@
                                           </form>
                                         <% } else { %>
                                           <button 
+                                            type="button"
                                             class="edit-coupon-btn w-24 text-white bg-blue-500 px-2 py-1 text-xs hover:bg-blue-600 active:scale-[0.95] transition duration-150 ease-out transform"
                                             data-id="<%= coupon._id %>"
                                             data-name="<%= coupon.name %>"
@@ -253,10 +254,76 @@
         const couponMinPurchaseInput = document.getElementById("couponMinPurchase");
         const couponStartDateInput = document.getElementById("couponStartDate");
         const couponEndDateInput = document.getElementById("couponEndDate");
+        const addCouponOpenBtn = document.getElementById("open-coupon-modal");
+        let couponEditMode = false;
+        let couponInitialState = "";
 
-        menuBtn.addEventListener('click', () => {
+        const setCouponSubmitEnabled = (enabled) => {
+          if (!couponSubmitBtn) return;
+          couponSubmitBtn.disabled = !enabled;
+          couponSubmitBtn.classList.toggle("bg-gray-400", !enabled);
+          couponSubmitBtn.classList.toggle("cursor-not-allowed", !enabled);
+          couponSubmitBtn.classList.toggle("bg-teal-600", enabled);
+          couponSubmitBtn.classList.toggle("hover:bg-teal-700", enabled);
+        };
+
+        const getCouponState = () => JSON.stringify({
+          name: couponNameInput ? couponNameInput.value.trim() : "",
+          description: couponDescriptionInput ? couponDescriptionInput.value.trim() : "",
+          discountValue: couponDiscountValueInput ? couponDiscountValueInput.value : "",
+          minPurchase: couponMinPurchaseInput ? couponMinPurchaseInput.value : "",
+          startDate: couponStartDateInput ? couponStartDateInput.value : "",
+          endDate: couponEndDateInput ? couponEndDateInput.value : "",
+          discountType: couponForm ? (couponForm.querySelector('input[name="discountType"]:checked')?.value || "") : ""
+        });
+
+        const couponFormValid = () => {
+          const state = JSON.parse(getCouponState());
+          return Boolean(state.name) &&
+                 Boolean(state.description) &&
+                 Number(state.discountValue) > 0 &&
+                 Number(state.minPurchase) >= 0 &&
+                 Boolean(state.startDate) &&
+                 Boolean(state.endDate) &&
+                 Boolean(state.discountType);
+        };
+
+        const updateCouponSubmitState = () => {
+          if (!couponSubmitBtn) return;
+          if (!couponEditMode) {
+            setCouponSubmitEnabled(couponFormValid());
+            return;
+          }
+          const isDirty = getCouponState() !== couponInitialState;
+          setCouponSubmitEnabled(couponFormValid() && isDirty);
+        };
+
+        if (menuBtn && menu) {
+          menuBtn.addEventListener('click', () => {
             menu.classList.toggle('hidden');
-        })
+          });
+        }
+
+        [couponNameInput, couponDescriptionInput, couponDiscountValueInput, couponMinPurchaseInput, couponStartDateInput, couponEndDateInput].forEach((el) => {
+          if (!el) return;
+          el.addEventListener("input", updateCouponSubmitState);
+          el.addEventListener("change", updateCouponSubmitState);
+        });
+        if (couponForm) {
+          couponForm.querySelectorAll('input[name="discountType"]').forEach((radio) => {
+            radio.addEventListener("change", updateCouponSubmitState);
+          });
+          couponForm.addEventListener("submit", (e) => {
+            updateCouponSubmitState();
+            if (couponSubmitBtn && couponSubmitBtn.disabled) e.preventDefault();
+          });
+        }
+        if (addCouponOpenBtn) {
+          addCouponOpenBtn.addEventListener("click", () => {
+            couponEditMode = false;
+            setTimeout(updateCouponSubmitState, 0);
+          });
+        }
 
 
         document.querySelectorAll(".coupon-btn").forEach(btn => {
@@ -314,41 +381,61 @@
             });
         });
 
-        document.querySelectorAll(".edit-coupon-btn").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const id = btn.dataset.id;
-            if (!id || !couponForm) return;
+        const openEditCoupon = (btn) => {
+          const id = btn?.dataset?.id;
+          if (!id || !couponForm) return;
 
-            couponForm.action = `/admin/coupons/edit/${id}?_method=PATCH`;
-            if (modalTitle) modalTitle.textContent = "Edit Coupon";
-            if (couponSubmitBtn) couponSubmitBtn.textContent = "Save Changes";
-            if (couponNameInput) couponNameInput.value = btn.dataset.name || "";
-            if (couponDescriptionInput) couponDescriptionInput.value = btn.dataset.description || "";
-            if (couponDiscountValueInput) couponDiscountValueInput.value = btn.dataset.discountValue || "";
-            if (couponMinPurchaseInput) couponMinPurchaseInput.value = btn.dataset.minPurchase || "0";
-            if (couponStartDateInput) couponStartDateInput.value = btn.dataset.startDate || "";
-            if (couponEndDateInput) couponEndDateInput.value = btn.dataset.endDate || "";
+          couponForm.action = `/admin/coupons/edit/${id}?_method=PATCH`;
+          if (modalTitle) modalTitle.textContent = "Edit Coupon";
+          if (couponSubmitBtn) couponSubmitBtn.textContent = "Save Changes";
+          if (couponNameInput) couponNameInput.value = btn.dataset.name || "";
+          if (couponDescriptionInput) couponDescriptionInput.value = btn.dataset.description || "";
+          if (couponDiscountValueInput) couponDiscountValueInput.value = btn.dataset.discountValue || "";
+          if (couponMinPurchaseInput) couponMinPurchaseInput.value = btn.dataset.minPurchase || "0";
+          if (couponStartDateInput) couponStartDateInput.value = btn.dataset.startDate || "";
+          if (couponEndDateInput) couponEndDateInput.value = btn.dataset.endDate || "";
 
-            const selectedType = btn.dataset.discountType || "";
-            const typeRadio = couponForm.querySelector(`input[name="discountType"][value="${selectedType}"]`);
-            if (typeRadio) typeRadio.checked = true;
+          const selectedType = btn.dataset.discountType || "";
+          const typeRadio = couponForm.querySelector(`input[name="discountType"][value="${selectedType}"]`);
+          if (typeRadio) typeRadio.checked = true;
+          couponEditMode = true;
+          couponInitialState = getCouponState();
+          updateCouponSubmitState();
 
-            if (typeof window.openCouponModal === "function") {
-              window.openCouponModal();
+          if (typeof window.openCouponModal === "function") {
+            window.openCouponModal();
+          } else {
+            const modal = document.getElementById("coupon-modal");
+            const card = document.getElementById("coupon-card");
+            if (modal && card) {
+              modal.classList.remove("opacity-0", "pointer-events-none");
+              card.classList.remove("scale-90", "opacity-0");
+              card.classList.add("scale-100", "opacity-100");
             }
-          });
-        });
+          }
+        };
 
         const deleteModal = document.getElementById("deletePermission");
         const confirmDeleteBtn = document.getElementById("confirmDelete");
         const cancelDeleteBtn = document.getElementById("cancelDelete");
         let selectedDeleteForm = null;
 
-        document.querySelectorAll(".open-delete-modal").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            selectedDeleteForm = btn.closest("form");
-            deleteModal.classList.remove("hidden");
-          });
+        document.addEventListener("click", (e) => {
+          const editBtn = e.target.closest(".edit-coupon-btn");
+          if (editBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            openEditCoupon(editBtn);
+            return;
+          }
+
+          const deleteBtn = e.target.closest(".open-delete-modal");
+          if (deleteBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            selectedDeleteForm = deleteBtn.closest("form");
+            if (deleteModal) deleteModal.classList.remove("hidden");
+          }
         });
 
         if (cancelDeleteBtn) {

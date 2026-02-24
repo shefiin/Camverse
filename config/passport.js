@@ -1,6 +1,7 @@
 const passport = require('passport');
 const User = require('../models/user')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const { generateUniqueReferralToken } = require('../utils/referral');
 
 
 passport.use(new GoogleStrategy({
@@ -11,6 +12,7 @@ passport.use(new GoogleStrategy({
 
 async (accessToken, refreshToken, profile, done) => {
     try{
+        let isNewGoogleUser = false;
         let user = await User.findOne({ googleId: profile.id })
 
         if (!user) {
@@ -22,6 +24,9 @@ async (accessToken, refreshToken, profile, done) => {
                 }
 
                 user.googleId = profile.id;
+                if (!user.referralToken) {
+                    user.referralToken = await generateUniqueReferralToken(User);
+                }
                 await user.save()
             } else {
                 user = await User.create({
@@ -29,15 +34,23 @@ async (accessToken, refreshToken, profile, done) => {
                     name: profile.displayName,
                     email: profile.emails[0].value,
                     authType: 'google',
+                    referralToken: await generateUniqueReferralToken(User)
                 });
+                isNewGoogleUser = true;
             }
     
         } else {
             if (user.isBlocked) {
                 return done(null, false, { message: 'Your account is blocked by admin.' });
-            }       
+            }
+
+            if (!user.referralToken) {
+                user.referralToken = await generateUniqueReferralToken(User);
+                await user.save();
+            }
         }
 
+        user._isNewGoogleUser = isNewGoogleUser;
         return done(null, user);
 
     } catch(error){

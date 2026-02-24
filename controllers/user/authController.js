@@ -1,11 +1,11 @@
 const bcrypt = require('bcrypt');
 const User = require('../../models/user');
 const sendOTP = require('../../utils/sendEmail');
-const crypto = require('crypto');
+const { normalizeReferralCode, generateUniqueReferralToken } = require('../../utils/referral');
 
 const renderRegisterPage = (req, res) => {
     if (req.query.ref) {
-        req.session.referral = req.query.ref;
+        req.session.referral = normalizeReferralCode(req.query.ref);
         req.session.save();
     }
     res.render('user/register', {
@@ -68,7 +68,8 @@ const register = async (req, res) => {
                 error: `An account with this email already exists.
                 <a href="/login" class="underline text-red-500 hover:text-red-700">Sign in</a> or
                 <a href="/reset-password" class="underline text-red-500 hover:text-red-700">reset password</a>.`,
-                formData: { name, email }
+                formData: { name, email },
+                referral: normalizeReferralCode(linkReferral || req.session.referral)
             });
         }
 
@@ -76,16 +77,21 @@ const register = async (req, res) => {
         const otp = generateOTP();
 
 
-        function generateReferralToken(){
-            const prefix = "CAMRF";
+        const referralToken = await generateUniqueReferralToken(User);
+        const normalizedManualReferral = normalizeReferralCode(manualReferral);
+        const normalizedLinkReferral = normalizeReferralCode(linkReferral || req.session.referral);
+        const referralUsed = normalizedManualReferral || normalizedLinkReferral || null;
 
-            const randomNum = Math.floor(1000 + Math.random() * 9000);
-            return `${prefix}${randomNum}`;
+        if (referralUsed) {
+            const referrer = await User.findOne({ referralToken: referralUsed });
+            if (!referrer) {
+                return res.render('user/register', {
+                    error: 'Invalid referral code.',
+                    formData: { name, email },
+                    referral: normalizedLinkReferral
+                });
+            }
         }
-
-        const referralToken = generateReferralToken();
-
-        const referralUsed = linkReferral || manualReferral || null;
 
         req.session.tempUser = {
             name,
@@ -102,9 +108,7 @@ const register = async (req, res) => {
         req.session.otpExpiry = Date.now() + 5 * 60 * 1000;
         req.session.resendAllowedAt = Date.now() + 30 * 1000;
 
-        if (req.body.referral) {
-            req.session.referral = req.body.referral;
-        }
+        req.session.referral = normalizedLinkReferral || '';
 
         await sendOTP(email, otp);
             
@@ -117,7 +121,8 @@ const register = async (req, res) => {
             formData: {
                 name: req.body.name,
                 email: req.body.email
-            }
+            },
+            referral: normalizeReferralCode(req.body.linkReferral || req.session.referral)
         })
     }
 };
