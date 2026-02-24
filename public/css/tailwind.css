@@ -201,6 +201,18 @@
 .w-px {
   width: 1px;
 }
+.max-w-\[0px\] {
+  max-width: 0px;
+}
+.max-w-\[3\] {
+  max-width: 3;
+}
+.max-w-\[4px\] {
+  max-width: 4px;
+}
+.max-w-\[40px\] {
+  max-width: 40px;
+}
 .max-w-\[78px\] {
   max-width: 78px;
 }
@@ -230,6 +242,12 @@
 }
 .max-w-\[380px\] {
   max-width: 380px;
+}
+.max-w-\[400px\] {
+  max-width: 400px;
+}
+.max-w-\[420px\] {
+  max-width: 420px;
 }
 .max-w-\[500px\] {
   max-width: 500px;
