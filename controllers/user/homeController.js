@@ -61,7 +61,7 @@ const renderHomePage = async (req, res) => {
                 
         const brands = await Brand.find();
 
-        res.render('user/homePage', {
+        res.render('user/homepage', {
             categories,
             brands
         });
